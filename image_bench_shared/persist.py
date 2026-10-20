@@ -73,6 +73,9 @@ def write_file_content(file_path: str, content: str):
         file_path: Path to write to
         content: String content to write
     """
+    # store/ is not shipped: a new install creates it with the first write
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(content)
 
@@ -85,6 +88,8 @@ def write_file_bytes(file_path: str, content: bytes):
         file_path: Path to write to
         content: Bytes to write
     """
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
     with open(file_path, 'wb') as f:
         f.write(content)
 
