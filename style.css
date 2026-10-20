@@ -1,0 +1,52 @@
+/* Header button waiting for the backend (e.g. the Civitai model info lookup):
+   its icon is replaced by a spinning ring */
+.image-bench-spinner {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    box-sizing: border-box;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    vertical-align: middle;
+    animation: image-bench-spin 0.8s linear infinite;
+}
+
+@keyframes image-bench-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* txt2img prompts locked by the Generate tab of the popup: an overlay with an Unlock button */
+.image-bench-locked {
+    position: relative;
+}
+
+.image-bench-lock {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px dashed rgba(44, 191, 138, 0.55);
+    border-radius: 6px;
+    background: rgba(11, 15, 25, 0.62);
+    color: #e3e6ea;
+    font-size: 13px;
+}
+
+.image-bench-lock button {
+    padding: 3px 12px;
+    border: 1px solid #3a3f48;
+    border-radius: 5px;
+    background: #1d2025;
+    color: #e3e6ea;
+    cursor: pointer;
+}
+
+.image-bench-lock button:hover {
+    background: #252930;
+}

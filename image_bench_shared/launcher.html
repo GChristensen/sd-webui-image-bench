@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image Bench</title>
+<!-- Served at /image-bench/app by both hosts (shared_backend/launcher.py): loads Image Bench in the embedded mode
+     (the host UI in its own iframe tab) in this tab, or with the openInWindow setting opens it as a popup window,
+     then closes itself if it may. An app already open is activated instead -->
+<style>
+  :root { color-scheme: dark; --bg: #16161a; --fg: #e4e4e7; --muted: #9a9aa3; --accent: #f97316; --ink: #1a0b00; }
+  @media (prefers-color-scheme: light) {
+    :root { color-scheme: light; --bg: #f6f6f7; --fg: #1d1d21; --muted: #5f5f68; }
+  }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; align-items: center; justify-content: center; padding: 0 16px;
+    background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, sans-serif;
+  }
+  main { max-width: 420px; text-align: center; }
+  h1 { font-size: 20px; font-weight: 600; margin: 0 0 8px; }
+  p { color: var(--muted); margin: 0 0 20px; }
+  button {
+    font: inherit; font-weight: 600; padding: 10px 22px; border: 0; border-radius: 8px; cursor: pointer;
+    background: var(--accent); color: var(--ink);
+  }
+  a { color: var(--muted); font-size: 13px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<!-- Shown only with a message: a found app or the redirect to the app leave the page blank -->
+<main hidden>
+  <h1>🔬 Image Bench</h1>
+  <div id="blocked" hidden>
+    <p>The browser blocked the popup window. Open it with the button, or allow popups for this site to open
+      Image Bench directly next time.</p>
+    <button id="open" type="button">Open Image Bench</button>
+    <p style="margin-top: 16px"><a href="#" id="here">Open in this tab instead</a></p>
+  </div>
+  <div id="opened" hidden>
+    <p>Image Bench is open in a popup window. This tab can be closed.</p>
+  </div>
+  <div id="found" hidden>
+    <p>Image Bench is already open in another window. This tab can be closed.</p>
+  </div>
+</main>
+<script>
+  const APP_URL = "/image-bench/window?embedded";
+  const WINDOW_NAME = "imageBenchApp";
+  // Written by the app in the embedded mode (src/hostWindow.js)
+  const GEOMETRY_KEY = "imageBench_appWindowGeometry";
+  const DEFAULT_GEOMETRY = {width: 1200, height: 820, left: 80, top: 60};
+
+  function readGeometry() {
+    try {
+      return {...DEFAULT_GEOMETRY, ...JSON.parse(localStorage.getItem(GEOMETRY_KEY) || "{}")};
+    } catch {
+      return DEFAULT_GEOMETRY;
+    }
+  }
+
+  function windowFeatures() {
+    const g = readGeometry();
+    return `popup,width=${g.width},height=${g.height},left=${g.left},top=${g.top}`;
+  }
+
+  function openHere() {
+    location.replace(APP_URL);
+  }
+
+  // The empty URL finds an open Image Bench window without reloading it (and the host page in its iframe)
+  function openPopup() {
+    const win = window.open("", WINDOW_NAME, windowFeatures());
+
+    if (!win)
+      return false;
+
+    let fresh = true;
+
+    try {
+      fresh = win.location.href === "about:blank";
+    } catch {
+      // Not readable: another page was loaded into it, replace it
+    }
+
+    if (fresh)
+      win.location.replace(new URL(APP_URL, location.href).href);
+    else
+      win.focus();
+
+    return true;
+  }
+
+  function opened(message = "opened") {
+    // Closing succeeds only for a tab with one history entry (a typed URL or a bookmark opened in a new tab)
+    window.close();
+    setTimeout(() => show(message), 200);
+  }
+
+  function show(id) {
+    document.querySelector("main").hidden = false;
+    document.getElementById(id).hidden = false;
+  }
+
+  // An open app answers on this channel and activates itself (src/hostWindow.js). Its window cannot be found by
+  // name from here: browsers look names up only among the windows opened from one another
+  const FIND_TIMEOUT = 150;
+
+  function findOpenApp() {
+    if (typeof BroadcastChannel === "undefined")
+      return Promise.resolve(false);
+
+    return new Promise(resolve => {
+      const channel = new BroadcastChannel("imageBench_app");
+      const done = found => {
+        clearTimeout(timer);
+        channel.close();
+        resolve(found);
+      };
+      const timer = setTimeout(() => done(false), FIND_TIMEOUT);
+
+      channel.onmessage = e => e.data?.type === "found" && done(true);
+      channel.postMessage({type: "find"});
+    });
+  }
+
+  // The openInWindow setting opens the app as a popup instead of loading it in this tab
+  async function readOpenInWindow() {
+    try {
+      const response = await fetch("/image-bench/config.json", {cache: "no-store"});
+      return response.ok && !!(await response.json())?.openInWindow;
+    } catch {
+      return false;
+    }
+  }
+
+  document.getElementById("open").addEventListener("click", () => {
+    if (openPopup()) {
+      document.getElementById("blocked").hidden = true;
+      opened();
+    }
+  });
+
+  document.getElementById("here").addEventListener("click", e => {
+    e.preventDefault();
+    openHere();
+  });
+
+  async function launch() {
+    const [found, openInWindow] = await Promise.all([findOpenApp(), readOpenInWindow()]);
+
+    if (found)
+      opened("found");
+    else if (!openInWindow)
+      openHere();
+    // Firefox allows a popup without a click only for sites in its popup exceptions, try it right away
+    else if (openPopup())
+      opened();
+    else
+      show("blocked");
+  }
+
+  launch();
+</script>
+</body>
+</html>

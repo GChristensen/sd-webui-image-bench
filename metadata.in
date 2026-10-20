@@ -1,0 +1,7 @@
+[Extension]
+
+name=image-bench
+
+[scripts]
+
+Before=config-presets

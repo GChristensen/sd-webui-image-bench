@@ -1,0 +1,60 @@
+Image Bench includes third-party material distributed under the licenses below.
+
+================================================================================
+comfyui-styles-all
+https://github.com/aegis72/comfyui-styles-all (commit acfea62)
+A clone of the styles of azazeal04, removed by the author on 2024-01-21.
+
+Used in: common-extension/shared_backend/default_snippets.json, the default
+snippets of the Library tab. The SAI folder is sdxl_styles_sai.json, the TWRI
+folder sdxl_styles_twri.json, and the General folder the styles of data/ (one
+subfolder per data folder; the word lists nouns, adjective, verbing and
+preposition and the artist styles are left out). "None" entries are omitted,
+whitespace is normalized, and a "{prompt}" placeholder that ended a style of
+data/ is moved to its start, so the style is appended to the prompt.
+--------------------------------------------------------------------------------
+MIT License
+
+Copyright (c) 2024 Major Studio
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+Fooocus
+https://github.com/lllyasviel/Fooocus (sdxl_styles/sdxl_styles_diva.json,
+commit 635b6fc)
+Copyright (c) lllyasviel and the Fooocus contributors
+
+Used in: common-extension/shared_backend/default_snippets.json, the DIVA folder
+of the default snippets. "None" entries are omitted and whitespace is normalized.
+--------------------------------------------------------------------------------
+Licensed under the GNU General Public License v3.0, the license of Image Bench;
+its text is in LICENSE.
+
+================================================================================
+danbooru-tag-list
+https://github.com/BetaDoggo/danbooru-tag-list, release "Model specific sets"
+(Model-Tags), file anima-1.0.csv
+By BetaDoggo; tag names, categories, post counts and aliases from Danbooru
+(https://danbooru.donmai.us).
+
+Used in: model-docs/docs/Image/anima-1.0-danbooru-tag.csv, the tag list of the
+Anima model docs (Library tab), unchanged apart from the file name.
+--------------------------------------------------------------------------------
+The repository states no license.

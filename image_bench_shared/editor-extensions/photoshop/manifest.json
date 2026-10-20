@@ -1,0 +1,73 @@
+{
+  "manifestVersion": 5,
+  "id": "image-bench.photoshop",
+  "name": "Image Bench",
+  "version": "1.3.0",
+  "main": "index.html",
+  "host": {
+    "app": "PS",
+    "minVersion": "25.0.0"
+  },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "imageBenchPanel",
+      "label": {"default": "Image Bench"},
+      "minimumSize": {"width": 180, "height": 140},
+      "maximumSize": {"width": 2000, "height": 2000},
+      "preferredDockedSize": {"width": 240, "height": 200},
+      "preferredFloatingSize": {"width": 240, "height": 200}
+    },
+    {
+      "type": "command",
+      "id": "sendImage",
+      "label": {"default": "Send Image to Input / Inpaint"}
+    },
+    {
+      "type": "command",
+      "id": "sendMask",
+      "label": {"default": "Send Selection as Inpaint Mask"}
+    },
+    {
+      "type": "command",
+      "id": "sendImageAndMask",
+      "label": {"default": "Send Image and Selection Mask"}
+    },
+    {
+      "type": "command",
+      "id": "sendControlNetPreprocess",
+      "label": {"default": "Send Image to ControlNet Preprocessor"}
+    },
+    {
+      "type": "command",
+      "id": "sendControlNetImage",
+      "label": {"default": "Send Image as ControlNet Control Image"}
+    },
+    {
+      "type": "command",
+      "id": "sendControlNetMask",
+      "label": {"default": "Send Selection as ControlNet Mask"}
+    },
+    {
+      "type": "command",
+      "id": "sendCompare",
+      "label": {"default": "Add Image to Compare Tab"}
+    },
+    {
+      "type": "command",
+      "id": "saveFile",
+      "label": {"default": "Save Document to Project as File"}
+    },
+    {
+      "type": "command",
+      "id": "saveFinal",
+      "label": {"default": "Save Document to Project as Final"}
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+      "domains": "all"
+    },
+    "localFileSystem": "plugin"
+  }
+}
