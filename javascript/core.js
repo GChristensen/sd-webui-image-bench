@@ -18,7 +18,7 @@ import {adapter} from "./adapters/adapter.js";
 import {UIOperations} from "./facade/UIOperations.js";
 import {messageBus} from "./shared/messaging/MessageBus.js";
 import {SELECTORS} from "./adapters/selectors.js";
-import {restoreUiParams, saveUiParams} from "./persistence.js";
+import {saveUiParams, scheduleUiParamsRestore} from "./persistence.js";
 import {initControlNetPreviewButtons, initEditorBridge} from "./editor.js";
 import {createHeaderButton} from "./utils_html.js";
 import {createWebUIMirror} from "./mirror.js";
@@ -182,7 +182,7 @@ async function initUI() {
     //console.log(appConfig)
     // Let Gradio finish initializing its components before restoring
     if (appConfig?.persistGenerationParams)
-        setTimeout(() => restoreUiParams(uiOperations), 1500);
+        scheduleUiParamsRestore(uiOperations, 1500);
 
     if (appConfig?.repositionConfigPresetsDropdown)
         setTimeout(async () => {

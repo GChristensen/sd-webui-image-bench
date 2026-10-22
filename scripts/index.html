@@ -10930,6 +10930,7 @@ const useSDWebUIStateStore = defineStore("sdWebUIState", () => {
   const inputs = ref({ mode: null, image: null, mask: null });
   const busy = ref(false);
   const switchingUiPreset = ref(false);
+  const restoringParams = ref(false);
   const workflow = ref(null);
   const workflows = ref([]);
   const promptsLocked = ref(false);
@@ -10949,6 +10950,7 @@ const useSDWebUIStateStore = defineStore("sdWebUIState", () => {
       features.value = e.features ?? null;
       busy.value = e.busy;
       switchingUiPreset.value = !!e.switchingUiPreset;
+      restoringParams.value = !!e.restoringParams;
       promptsLocked.value = e.locked;
       workflow.value = e.workflow ?? null;
       workflows.value = e.workflows ?? [];
@@ -10979,6 +10981,7 @@ const useSDWebUIStateStore = defineStore("sdWebUIState", () => {
     inputs,
     busy,
     switchingUiPreset,
+    restoringParams,
     workflow,
     workflows,
     promptsLocked,
@@ -12443,7 +12446,7 @@ const _hoisted_2$1a = {
 };
 const _hoisted_3$14 = /* @__PURE__ */ _withScopeId$C(() => /* @__PURE__ */ createBaseVNode("h3", null, "Clean up", -1));
 const _hoisted_4$Y = { class: "actions-modal-body" };
-const _hoisted_5$U = { class: "action-icons" };
+const _hoisted_5$T = { class: "action-icons" };
 const _hoisted_6$P = /* @__PURE__ */ _withScopeId$C(() => /* @__PURE__ */ createBaseVNode("span", { class: "action-text" }, [
   /* @__PURE__ */ createTextVNode("Clear generated images"),
   /* @__PURE__ */ createBaseVNode("small", null, "Trays, prompts and parameters are kept, files stay on disk")
@@ -12548,7 +12551,7 @@ const _sfc_main$1f = {
                         class: "action-button",
                         onClick: onClearViewsClick
                       }, [
-                        createBaseVNode("span", _hoisted_5$U, [
+                        createBaseVNode("span", _hoisted_5$T, [
                           createVNode(AppIcon, {
                             name: "nuke",
                             size: 16
@@ -12621,7 +12624,7 @@ const _hoisted_3$13 = {
   role: "listbox"
 };
 const _hoisted_4$X = ["aria-selected", "onMouseenter", "onMousedown"];
-const _hoisted_5$T = {
+const _hoisted_5$S = {
   key: 0,
   class: "combo-empty"
 };
@@ -12744,7 +12747,7 @@ const _sfc_main$1e = {
               onMousedown: withModifiers(($event) => pick(item), ["prevent"])
             }, toDisplayString(item), 43, _hoisted_4$X);
           }), 128)),
-          !__props.items.length ? (openBlock(), createElementBlock("li", _hoisted_5$T, "No recent values")) : createCommentVNode("", true)
+          !__props.items.length ? (openBlock(), createElementBlock("li", _hoisted_5$S, "No recent values")) : createCommentVNode("", true)
         ])) : createCommentVNode("", true)
       ]);
     };
@@ -12761,7 +12764,7 @@ const _hoisted_3$12 = {
   class: "group label-small"
 };
 const _hoisted_4$W = ["title"];
-const _hoisted_5$S = ["checked", "onChange"];
+const _hoisted_5$R = ["checked", "onChange"];
 const _hoisted_6$O = { class: "label" };
 const _hoisted_7$K = {
   key: 0,
@@ -12850,7 +12853,7 @@ const _sfc_main$1d = {
                     type: "checkbox",
                     checked: model.value.includes(item.value),
                     onChange: (e) => toggle(item.value, e.target.checked)
-                  }, null, 40, _hoisted_5$S),
+                  }, null, 40, _hoisted_5$R),
                   createBaseVNode("span", _hoisted_6$O, toDisplayString(item.label), 1),
                   item.note ? (openBlock(), createElementBlock("span", _hoisted_7$K, toDisplayString(item.note), 1)) : createCommentVNode("", true)
                 ], 8, _hoisted_4$W);
@@ -12869,7 +12872,7 @@ const _hoisted_1$1a = { class: "model-info" };
 const _hoisted_2$17 = ["src"];
 const _hoisted_3$11 = { class: "details" };
 const _hoisted_4$V = { class: "version" };
-const _hoisted_5$R = { class: "meta" };
+const _hoisted_5$Q = { class: "meta" };
 const _hoisted_6$N = {
   key: 0,
   class: "chip"
@@ -12913,7 +12916,7 @@ const _sfc_main$1c = {
         }, null, 8, _hoisted_2$17)) : createCommentVNode("", true),
         createBaseVNode("div", _hoisted_3$11, [
           createBaseVNode("div", _hoisted_4$V, toDisplayString(__props.info.versionName), 1),
-          createBaseVNode("div", _hoisted_5$R, [
+          createBaseVNode("div", _hoisted_5$Q, [
             __props.info.type ? (openBlock(), createElementBlock("span", _hoisted_6$N, toDisplayString(__props.info.type), 1)) : createCommentVNode("", true),
             __props.info.baseModel ? (openBlock(), createElementBlock("span", _hoisted_7$J, toDisplayString(__props.info.baseModel), 1)) : createCommentVNode("", true)
           ]),
@@ -12954,7 +12957,7 @@ const _hoisted_3$10 = {
   class: "dialog-header"
 };
 const _hoisted_4$U = { class: "dialog-body" };
-const _hoisted_5$Q = ["for"];
+const _hoisted_5$P = ["for"];
 const _hoisted_6$M = {
   key: 2,
   class: "dialog-message"
@@ -13079,7 +13082,7 @@ const _sfc_main$1b = {
               key: 0,
               class: "dialog-message",
               for: `dialog-input-${__props.entry.id}`
-            }, toDisplayString(__props.entry.message), 9, _hoisted_5$Q)) : __props.entry.kind === "modelInfo" ? (openBlock(), createBlock(ModelInfoContent, {
+            }, toDisplayString(__props.entry.message), 9, _hoisted_5$P)) : __props.entry.kind === "modelInfo" ? (openBlock(), createBlock(ModelInfoContent, {
               key: 1,
               info: options.value.info
             }, null, 8, ["info"])) : __props.entry.message ? (openBlock(), createElementBlock("p", _hoisted_6$M, toDisplayString(__props.entry.message), 1)) : createCommentVNode("", true),
@@ -13871,7 +13874,7 @@ const _hoisted_3$$ = {
   class: "item-icon"
 };
 const _hoisted_4$T = { class: "item-label" };
-const _hoisted_5$P = {
+const _hoisted_5$O = {
   class: "menu submenu",
   role: "menu"
 };
@@ -13985,7 +13988,7 @@ const _sfc_main$19 = {
                     class: "submenu-arrow"
                   })
                 ]),
-                createBaseVNode("div", _hoisted_5$P, [
+                createBaseVNode("div", _hoisted_5$O, [
                   (openBlock(true), createElementBlock(Fragment, null, renderList(item.submenu, (subitem, subindex) => {
                     return openBlock(), createElementBlock(Fragment, { key: subindex }, [
                       subitem.separator ? (openBlock(), createElementBlock("hr", _hoisted_6$L)) : (openBlock(), createElementBlock("button", {
@@ -14077,7 +14080,7 @@ const _hoisted_3$_ = {
   class: "spinner"
 };
 const _hoisted_4$S = { class: "name" };
-const _hoisted_5$O = {
+const _hoisted_5$N = {
   key: 0,
   class: "dot",
   "aria-label": "Unsaved changes"
@@ -14195,7 +14198,7 @@ const _sfc_main$17 = {
               size: 13
             }, null, 8, ["name"]),
             createBaseVNode("span", _hoisted_4$S, toDisplayString(unref(store).current.name), 1),
-            unref(store).unsaved ? (openBlock(), createElementBlock("span", _hoisted_5$O)) : createCommentVNode("", true)
+            unref(store).unsaved ? (openBlock(), createElementBlock("span", _hoisted_5$N)) : createCommentVNode("", true)
           ]),
           _: 1
         }, 8, ["title"]),
@@ -14907,7 +14910,7 @@ const _hoisted_3$Z = [
   _hoisted_2$12
 ];
 const _hoisted_4$R = /* @__PURE__ */ _withScopeId$z(() => /* @__PURE__ */ createBaseVNode("span", { class: "title" }, "Console", -1));
-const _hoisted_5$N = ["title"];
+const _hoisted_5$M = ["title"];
 const _hoisted_6$J = /* @__PURE__ */ _withScopeId$z(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
 const _hoisted_7$F = ["disabled", "title", "aria-label"];
 const HEIGHT_KEY = "imageBench_consoleHeight";
@@ -15021,7 +15024,7 @@ const _sfc_main$15 = {
           createBaseVNode("span", {
             class: normalizeClass(["state", { on: connected.value }]),
             title: connected.value ? `Connected to ${unref(HOST_NAME)}` : `Waiting for ${unref(HOST_NAME)}…`
-          }, null, 10, _hoisted_5$N),
+          }, null, 10, _hoisted_5$M),
           _hoisted_6$J,
           createBaseVNode("button", {
             type: "button",
@@ -15130,7 +15133,7 @@ const _hoisted_4$Q = {
   key: 0,
   class: "count"
 };
-const _hoisted_5$M = {
+const _hoisted_5$L = {
   key: 0,
   class: "count"
 };
@@ -15463,7 +15466,7 @@ const _sfc_main$14 = {
                 size: 14
               }),
               createTextVNode("Concept tray"),
-              unref(conceptTrayStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_5$M, toDisplayString(unref(conceptTrayStore).images.length), 1)) : createCommentVNode("", true)
+              unref(conceptTrayStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_5$L, toDisplayString(unref(conceptTrayStore).images.length), 1)) : createCommentVNode("", true)
             ]),
             _: 1
           }, 8, ["class"]),
@@ -15703,7 +15706,7 @@ const _hoisted_3$X = [
   _hoisted_2$10
 ];
 const _hoisted_4$P = ["d", "fill"];
-const _hoisted_5$L = ["d", "stroke"];
+const _hoisted_5$K = ["d", "stroke"];
 const _hoisted_6$H = ["x", "y", "font-size"];
 const _hoisted_7$D = ["transform", "filter", "innerHTML"];
 const _hoisted_8$x = ["d", "aria-label", "onPointerenter", "onPointerleave", "onClick", "onAuxclick"];
@@ -16037,7 +16040,7 @@ const _sfc_main$13 = {
                 stroke: sector.item.color,
                 "stroke-width": "3",
                 fill: "none"
-              }, null, 8, _hoisted_5$L),
+              }, null, 8, _hoisted_5$K),
               sector.item.emoji ? (openBlock(), createElementBlock("text", {
                 key: 0,
                 x: sector.x,
@@ -16121,7 +16124,7 @@ const _hoisted_4$O = {
   viewBox: "0 0 48 48",
   "aria-hidden": "true"
 };
-const _hoisted_5$K = ["stroke-dashoffset"];
+const _hoisted_5$J = ["stroke-dashoffset"];
 const _hoisted_6$G = {
   key: 2,
   class: "progress"
@@ -16249,7 +16252,7 @@ const _sfc_main$12 = {
               r: RING_RADIUS,
               "stroke-dasharray": RING_LENGTH,
               "stroke-dashoffset": ringOffset.value
-            }, null, 8, _hoisted_5$K)
+            }, null, 8, _hoisted_5$J)
           ])) : createCommentVNode("", true),
           createVNode(AppIcon, {
             name: paused.value ? "play" : "pause",
@@ -16273,7 +16276,7 @@ const _hoisted_1$10 = {
 const _hoisted_2$_ = ["src", "title"];
 const _hoisted_3$V = ["src", "title"];
 const _hoisted_4$N = ["checked"];
-const _hoisted_5$J = { class: "select-circle" };
+const _hoisted_5$I = { class: "select-circle" };
 const _hoisted_6$F = ["aria-pressed"];
 const _hoisted_7$C = ["title"];
 const _hoisted_8$w = { class: "image-bottom-bar" };
@@ -16609,7 +16612,7 @@ const _sfc_main$11 = {
               checked: __props.selected,
               onChange: _cache[7] || (_cache[7] = ($event) => _ctx.$emit("select", $event.target.checked))
             }, null, 40, _hoisted_4$N),
-            createBaseVNode("span", _hoisted_5$J, [
+            createBaseVNode("span", _hoisted_5$I, [
               createVNode(AppIcon, {
                 name: "check",
                 size: 12
@@ -16699,7 +16702,7 @@ const _hoisted_4$M = {
   key: 0,
   class: "params-grid"
 };
-const _hoisted_5$I = { class: "param-key" };
+const _hoisted_5$H = { class: "param-key" };
 const _hoisted_6$E = {
   key: 0,
   class: "param-entries"
@@ -16752,7 +16755,7 @@ const _sfc_main$10 = {
               key: item.key,
               class: normalizeClass(["param", { wide: item.wide }])
             }, [
-              createBaseVNode("span", _hoisted_5$I, toDisplayString(item.key), 1),
+              createBaseVNode("span", _hoisted_5$H, toDisplayString(item.key), 1),
               item.entries ? (openBlock(), createElementBlock("span", _hoisted_6$E, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList(item.entries, (entry) => {
                   return openBlock(), createElementBlock("span", {
@@ -16839,7 +16842,7 @@ const _hoisted_1$Z = {
 const _hoisted_2$X = /* @__PURE__ */ _withScopeId$v(() => /* @__PURE__ */ createBaseVNode("div", { class: "controlnet-title" }, "ControlNet", -1));
 const _hoisted_3$S = { class: "controlnet-unit-header" };
 const _hoisted_4$L = { class: "controlnet-unit-name" };
-const _hoisted_5$H = { class: "controlnet-unit-summary" };
+const _hoisted_5$G = { class: "controlnet-unit-summary" };
 const _hoisted_6$D = { class: "controlnet-images" };
 const _hoisted_7$A = ["href", "title"];
 const _hoisted_8$v = ["src", "alt"];
@@ -16886,7 +16889,7 @@ const _sfc_main$_ = {
           }, [
             createBaseVNode("div", _hoisted_3$S, [
               createBaseVNode("span", _hoisted_4$L, "Unit " + toDisplayString(unit.index + 1), 1),
-              createBaseVNode("span", _hoisted_5$H, toDisplayString(unitSummary(unit.params || {})), 1)
+              createBaseVNode("span", _hoisted_5$G, toDisplayString(unitSummary(unit.params || {})), 1)
             ]),
             createBaseVNode("div", _hoisted_6$D, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(unitImages(unit), (item) => {
@@ -17012,7 +17015,7 @@ const _hoisted_4$K = {
   key: 0,
   class: "params-panel"
 };
-const _hoisted_5$G = { class: "params-body" };
+const _hoisted_5$F = { class: "params-body" };
 const _hoisted_6$C = ["title"];
 const _hoisted_7$z = { class: "marking-bar" };
 const _hoisted_8$u = ["title", "onClick"];
@@ -17414,7 +17417,7 @@ const _sfc_main$Y = {
                       onReuse,
                       onClose: _cache[10] || (_cache[10] = ($event) => showParamsPanel.value = false)
                     }, null, 8, ["reusable"]),
-                    createBaseVNode("div", _hoisted_5$G, [
+                    createBaseVNode("div", _hoisted_5$F, [
                       createVNode(GenerationParameters, {
                         parameters: __props.image.parameters
                       }, null, 8, ["parameters"]),
@@ -17611,7 +17614,7 @@ const _hoisted_4$J = {
   key: 0,
   class: "models"
 };
-const _hoisted_5$F = ["title", "onClick"];
+const _hoisted_5$E = ["title", "onClick"];
 const _hoisted_6$B = {
   key: 0,
   class: "spinner"
@@ -17689,7 +17692,7 @@ const _sfc_main$X = {
                               size: 12
                             })),
                             createTextVNode(toDisplayString(model.kind === "lora" ? "LoRA: " : "") + toDisplayString(model.name), 1)
-                          ], 8, _hoisted_5$F);
+                          ], 8, _hoisted_5$E);
                         }), 128))
                       ])) : createCommentVNode("", true),
                       createVNode(GenerationParameters, {
@@ -17869,7 +17872,7 @@ const _hoisted_1$V = {
 const _hoisted_2$T = { class: "params-modal-header" };
 const _hoisted_3$O = ["title"];
 const _hoisted_4$I = { class: "params-modal-body" };
-const _hoisted_5$E = /* @__PURE__ */ _withScopeId$t(() => /* @__PURE__ */ createBaseVNode("label", null, "Sampling method", -1));
+const _hoisted_5$D = /* @__PURE__ */ _withScopeId$t(() => /* @__PURE__ */ createBaseVNode("label", null, "Sampling method", -1));
 const _hoisted_6$A = /* @__PURE__ */ _withScopeId$t(() => /* @__PURE__ */ createBaseVNode("option", { value: "" }, "— default —", -1));
 const _hoisted_7$y = ["value"];
 const _hoisted_8$t = /* @__PURE__ */ _withScopeId$t(() => /* @__PURE__ */ createBaseVNode("label", null, "Schedule type", -1));
@@ -17988,7 +17991,7 @@ const _sfc_main$W = {
                       }, "✖")
                     ]),
                     createBaseVNode("div", _hoisted_4$I, [
-                      _hoisted_5$E,
+                      _hoisted_5$D,
                       withDirectives(createBaseVNode("select", {
                         ref_key: "firstFieldRef",
                         ref: firstFieldRef,
@@ -18095,7 +18098,7 @@ const _hoisted_1$U = {
 const _hoisted_2$S = { class: "params-modal-header" };
 const _hoisted_3$N = ["title"];
 const _hoisted_4$H = { class: "params-modal-body" };
-const _hoisted_5$D = /* @__PURE__ */ _withScopeId$s(() => /* @__PURE__ */ createBaseVNode("label", null, "Weight", -1));
+const _hoisted_5$C = /* @__PURE__ */ _withScopeId$s(() => /* @__PURE__ */ createBaseVNode("label", null, "Weight", -1));
 const _hoisted_6$z = /* @__PURE__ */ _withScopeId$s(() => /* @__PURE__ */ createBaseVNode("label", null, "Extra text", -1));
 const _hoisted_7$x = /* @__PURE__ */ _withScopeId$s(() => /* @__PURE__ */ createBaseVNode("div", { class: "footer-spacer" }, null, -1));
 const _sfc_main$V = {
@@ -18193,7 +18196,7 @@ const _sfc_main$V = {
                       }, "✖")
                     ]),
                     createBaseVNode("div", _hoisted_4$H, [
-                      _hoisted_5$D,
+                      _hoisted_5$C,
                       withDirectives(createBaseVNode("input", {
                         ref_key: "firstFieldRef",
                         ref: firstFieldRef,
@@ -18245,7 +18248,7 @@ const _hoisted_1$T = { class: "check-tree" };
 const _hoisted_2$R = { class: "items" };
 const _hoisted_3$M = ["title", "onClick"];
 const _hoisted_4$G = ["aria-label", "aria-expanded", "onClick"];
-const _hoisted_5$C = /* @__PURE__ */ _withScopeId$r(() => /* @__PURE__ */ createBaseVNode("svg", {
+const _hoisted_5$B = /* @__PURE__ */ _withScopeId$r(() => /* @__PURE__ */ createBaseVNode("svg", {
   viewBox: "0 0 8 8",
   width: "8",
   height: "8"
@@ -18256,7 +18259,7 @@ const _hoisted_5$C = /* @__PURE__ */ _withScopeId$r(() => /* @__PURE__ */ create
   })
 ], -1));
 const _hoisted_6$y = [
-  _hoisted_5$C
+  _hoisted_5$B
 ];
 const _hoisted_7$w = ["checked", "indeterminate", "onChange"];
 const _hoisted_8$s = { class: "item-label" };
@@ -18413,7 +18416,7 @@ const _hoisted_1$S = { class: "explore-list" };
 const _hoisted_2$Q = { class: "preset" };
 const _hoisted_3$L = /* @__PURE__ */ _withScopeId$q(() => /* @__PURE__ */ createBaseVNode("span", { class: "label-small" }, "Preset", -1));
 const _hoisted_4$F = { class: "select-wrap" };
-const _hoisted_5$B = ["value"];
+const _hoisted_5$A = ["value"];
 const _hoisted_6$x = ["value"];
 const _hoisted_7$v = ["aria-expanded"];
 const _hoisted_8$r = {
@@ -18532,7 +18535,7 @@ const _sfc_main$T = {
                     value: name
                   }, toDisplayString(name), 9, _hoisted_6$x);
                 }), 128))
-              ], 40, _hoisted_5$B),
+              ], 40, _hoisted_5$A),
               createVNode(AppIcon, {
                 name: "chevron",
                 size: 14
@@ -18903,7 +18906,7 @@ const _hoisted_4$E = {
   class: "toolbar-group-label",
   title: "Images per model"
 };
-const _hoisted_5$A = ["title"];
+const _hoisted_5$z = ["title"];
 const _hoisted_6$w = ["disabled", "aria-checked"];
 const _hoisted_7$u = ["disabled", "aria-checked"];
 const _hoisted_8$q = ["aria-pressed", "disabled", "title"];
@@ -19352,7 +19355,7 @@ const _sfc_main$P = {
                   title: "One image per model and LoRA, with the same seed",
                   onClick: _cache[5] || (_cache[5] = ($event) => matrixMode.value = true)
                 }, "Matrix", 10, _hoisted_7$u)
-              ], 8, _hoisted_5$A),
+              ], 8, _hoisted_5$z),
               createBaseVNode("button", {
                 class: normalizeClass(["btn lora-free", { on: unref(appConfigStore).exploreLoraFreeImages }]),
                 "aria-pressed": unref(appConfigStore).exploreLoraFreeImages,
@@ -19816,7 +19819,7 @@ const _hoisted_1$N = { class: "toolbar" };
 const _hoisted_2$M = { class: "toolbar-group" };
 const _hoisted_3$H = { class: "toolbar-group-label" };
 const _hoisted_4$D = ["disabled", "title"];
-const _hoisted_5$z = ["aria-pressed", "disabled", "title"];
+const _hoisted_5$y = ["aria-pressed", "disabled", "title"];
 const _hoisted_6$v = ["disabled"];
 const _hoisted_7$t = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("div", { class: "vsep" }, null, -1));
 const _hoisted_8$p = ["aria-pressed", "title"];
@@ -20036,7 +20039,7 @@ const _sfc_main$N = /* @__PURE__ */ Object.assign({
                 name: "infinity",
                 size: 14
               })
-            ], 10, _hoisted_5$z)
+            ], 10, _hoisted_5$y)
           ]),
           createBaseVNode("button", {
             class: "btn outline",
@@ -20803,7 +20806,7 @@ const _hoisted_1$L = { class: "settings-container" };
 const _hoisted_2$L = { class: "settings-left" };
 const _hoisted_3$G = /* @__PURE__ */ _withScopeId$n(() => /* @__PURE__ */ createBaseVNode("h3", null, "Appearance", -1));
 const _hoisted_4$C = { class: "setting-label accent-setting" };
-const _hoisted_5$y = /* @__PURE__ */ _withScopeId$n(() => /* @__PURE__ */ createBaseVNode("span", null, "Accent color", -1));
+const _hoisted_5$x = /* @__PURE__ */ _withScopeId$n(() => /* @__PURE__ */ createBaseVNode("span", null, "Accent color", -1));
 const _hoisted_6$u = {
   class: "accent-swatches",
   role: "radiogroup",
@@ -20996,7 +20999,7 @@ const _sfc_main$L = {
         createBaseVNode("div", _hoisted_2$L, [
           _hoisted_3$G,
           createBaseVNode("div", _hoisted_4$C, [
-            _hoisted_5$y,
+            _hoisted_5$x,
             createBaseVNode("div", _hoisted_6$u, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(unref(ACCENT_COLORS), (color, key) => {
                 return openBlock(), createElementBlock("button", {
@@ -21361,7 +21364,7 @@ const _hoisted_4$B = {
   key: 1,
   class: "empty"
 };
-const _hoisted_5$x = {
+const _hoisted_5$w = {
   key: 2,
   class: "live-progress"
 };
@@ -21608,7 +21611,7 @@ const _sfc_main$K = {
             src: __props.resultUrl,
             alt: ""
           }, null, 8, _hoisted_3$F)) : (openBlock(), createElementBlock("span", _hoisted_4$B, "The generated image appears here")),
-          __props.liveProgress !== null ? (openBlock(), createElementBlock("span", _hoisted_5$x, [
+          __props.liveProgress !== null ? (openBlock(), createElementBlock("span", _hoisted_5$w, [
             createBaseVNode("i", {
               style: normalizeStyle({ width: `${__props.liveProgress}%` })
             }, null, 4)
@@ -21896,7 +21899,6 @@ const _hoisted_3$E = {
   title: "Tokens"
 };
 const _hoisted_4$A = ["disabled"];
-const _hoisted_5$w = { class: "overlay" };
 const _sfc_main$J = {
   __name: "PromptField",
   props: /* @__PURE__ */ mergeModels({
@@ -21955,15 +21957,12 @@ const _sfc_main$J = {
           }, null, 40, _hoisted_4$A), [
             [vModelText, model.value]
           ])
-        ]),
-        createBaseVNode("span", _hoisted_5$w, [
-          renderSlot(_ctx.$slots, "default", {}, void 0)
         ])
       ]);
     };
   }
 };
-const PromptField = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["__scopeId", "data-v-efcd266b"]]);
+const PromptField = /* @__PURE__ */ _export_sfc(_sfc_main$J, [["__scopeId", "data-v-95ab2599"]]);
 const _withScopeId$l = (n) => (pushScopeId("data-v-f11d3260"), n = n(), popScopeId(), n);
 const _hoisted_1$I = { class: "row" };
 const _hoisted_2$I = {
@@ -25393,7 +25392,7 @@ function useControlNetUnit({ unit, tab, has: has2 }) {
     previewStale
   };
 }
-const _withScopeId$d = (n) => (pushScopeId("data-v-eb21246e"), n = n(), popScopeId(), n);
+const _withScopeId$d = (n) => (pushScopeId("data-v-52821f3d"), n = n(), popScopeId(), n);
 const _hoisted_1$o = { class: "view-container generate" };
 const _hoisted_2$o = { class: "toolbar" };
 const _hoisted_3$n = { class: "toolbar-group" };
@@ -25403,147 +25402,147 @@ const _hoisted_6$h = { class: "toolbar-group-label" };
 const _hoisted_7$g = ["disabled", "title"];
 const _hoisted_8$d = ["aria-pressed", "disabled", "title"];
 const _hoisted_9$9 = ["disabled"];
-const _hoisted_10$8 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("div", { class: "toolbar-spacer" }, null, -1));
-const _hoisted_11$8 = {
-  key: 2,
-  class: "chip"
+const _hoisted_10$8 = { class: "status-slot" };
+const _hoisted_11$8 = ["title"];
+const _hoisted_12$7 = {
+  key: 0,
+  class: "dot"
 };
-const _hoisted_12$7 = ["aria-pressed"];
-const _hoisted_13$7 = ["disabled"];
-const _hoisted_14$8 = ["disabled"];
-const _hoisted_15$8 = ["aria-pressed", "disabled", "title"];
-const _hoisted_16$8 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "toolbar-divider" }, null, -1));
-const _hoisted_17$7 = ["aria-pressed", "title"];
-const _hoisted_18$7 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "toolbar-divider" }, null, -1));
-const _hoisted_19$7 = ["disabled", "title"];
-const _hoisted_20$6 = {
-  key: 5,
+const _hoisted_13$7 = {
+  key: 1,
+  class: "spinner"
+};
+const _hoisted_14$8 = { class: "status-text" };
+const _hoisted_15$8 = ["aria-pressed"];
+const _hoisted_16$8 = ["disabled"];
+const _hoisted_17$7 = ["disabled"];
+const _hoisted_18$7 = ["aria-pressed", "disabled", "title"];
+const _hoisted_19$7 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "toolbar-divider" }, null, -1));
+const _hoisted_20$6 = ["aria-pressed", "title"];
+const _hoisted_21$6 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "toolbar-divider" }, null, -1));
+const _hoisted_22$5 = ["disabled", "title"];
+const _hoisted_23$5 = {
+  key: 4,
   class: "toolbar-divider"
 };
-const _hoisted_21$6 = {
-  key: 6,
+const _hoisted_24$5 = {
+  key: 5,
   class: "seg modes",
   role: "radiogroup",
   "aria-label": "Generation mode"
 };
-const _hoisted_22$5 = ["aria-checked", "disabled", "title", "onClick"];
-const _hoisted_23$5 = ["disabled"];
-const _hoisted_24$5 = { class: "model-row" };
-const _hoisted_25$4 = ["title", "aria-label"];
-const _hoisted_26$4 = {
+const _hoisted_25$4 = ["aria-checked", "disabled", "title", "onClick"];
+const _hoisted_26$4 = ["disabled"];
+const _hoisted_27$3 = { class: "model-row" };
+const _hoisted_28$3 = ["title", "aria-label"];
+const _hoisted_29$3 = {
   key: 3,
   class: "select-wrap checkpoint"
 };
-const _hoisted_27$3 = ["value", "title"];
-const _hoisted_28$3 = ["value"];
-const _hoisted_29$3 = {
+const _hoisted_30$3 = ["value", "title"];
+const _hoisted_31$3 = ["value"];
+const _hoisted_32$2 = {
   key: 4,
   class: "checkpoint"
 };
-const _hoisted_30$3 = ["disabled"];
-const _hoisted_31$3 = {
+const _hoisted_33$2 = ["disabled"];
+const _hoisted_34$3 = {
   key: 0,
   class: "spinner"
 };
-const _hoisted_32$2 = ["title", "aria-label"];
-const _hoisted_33$2 = {
+const _hoisted_35$3 = ["title", "aria-label"];
+const _hoisted_36$3 = {
   key: 7,
   class: "inline-field"
 };
-const _hoisted_34$3 = { class: "lora-header" };
-const _hoisted_35$3 = {
+const _hoisted_37$3 = { class: "lora-header" };
+const _hoisted_38$3 = {
   key: 0,
   class: "side-tabs",
   role: "tablist"
 };
-const _hoisted_36$3 = ["aria-selected"];
-const _hoisted_37$3 = {
+const _hoisted_39$3 = ["aria-selected"];
+const _hoisted_40$3 = {
   key: 0,
   class: "count",
   title: "LoRAs in the prompt"
 };
-const _hoisted_38$3 = ["aria-selected"];
-const _hoisted_39$3 = {
+const _hoisted_41$3 = ["aria-selected"];
+const _hoisted_42$3 = {
   key: 0,
   class: "count",
   title: "Reference images"
 };
-const _hoisted_40$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "label-small" }, "LoRA", -1));
-const _hoisted_41$3 = {
+const _hoisted_43$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "label-small" }, "LoRA", -1));
+const _hoisted_44$3 = {
   key: 0,
   class: "count",
   title: "LoRAs in the prompt"
 };
-const _hoisted_42$3 = ["disabled"];
-const _hoisted_43$3 = {
+const _hoisted_45$3 = ["disabled"];
+const _hoisted_46$3 = {
   key: 0,
   class: "spinner"
 };
-const _hoisted_44$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
-const _hoisted_45$3 = ["aria-checked"];
-const _hoisted_46$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_47$3 = { class: "history-info" };
-const _hoisted_48$3 = ["aria-pressed"];
-const _hoisted_49$3 = {
-  key: 0,
-  class: "switching-badge",
-  role: "status"
-};
-const _hoisted_50$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "spinner" }, null, -1));
-const _hoisted_51$3 = { class: "side" };
-const _hoisted_52$3 = {
+const _hoisted_47$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
+const _hoisted_48$3 = ["aria-checked"];
+const _hoisted_49$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_50$3 = { class: "history-info" };
+const _hoisted_51$3 = ["aria-pressed"];
+const _hoisted_52$3 = { class: "side" };
+const _hoisted_53$3 = {
   key: 1,
   class: "lora-tree side-panel"
 };
-const _hoisted_53$3 = {
+const _hoisted_54$3 = {
   key: 1,
   class: "empty"
 };
-const _hoisted_54$3 = ["aria-valuenow"];
-const _hoisted_55$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_56$3 = [
-  _hoisted_55$3
+const _hoisted_55$3 = ["aria-valuenow"];
+const _hoisted_56$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_57$3 = [
+  _hoisted_56$3
 ];
-const _hoisted_57$3 = ["aria-label", "aria-valuenow"];
-const _hoisted_58$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_59$3 = [
-  _hoisted_58$3
+const _hoisted_58$3 = ["aria-label", "aria-valuenow"];
+const _hoisted_59$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_60$3 = [
+  _hoisted_59$3
 ];
-const _hoisted_60$3 = ["aria-valuenow"];
-const _hoisted_61$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_62$3 = [
-  _hoisted_61$3
+const _hoisted_61$3 = ["aria-valuenow"];
+const _hoisted_62$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_63$3 = [
+  _hoisted_62$3
 ];
-const _hoisted_63$3 = { class: "lower" };
-const _hoisted_64$3 = ["aria-valuenow", "aria-valuemin", "aria-valuemax"];
-const _hoisted_65$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_66$3 = [
-  _hoisted_65$3
+const _hoisted_64$3 = { class: "lower" };
+const _hoisted_65$3 = ["aria-valuenow", "aria-valuemin", "aria-valuemax"];
+const _hoisted_66$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_67$3 = [
+  _hoisted_66$3
 ];
-const _hoisted_67$3 = {
+const _hoisted_68$3 = {
   key: 1,
   class: "groups-collapsed"
 };
-const _hoisted_68$3 = {
+const _hoisted_69$3 = {
   key: 0,
   class: "count"
 };
-const _hoisted_69$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
-const _hoisted_70$3 = ["aria-valuenow"];
-const _hoisted_71$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
-const _hoisted_72$3 = [
-  _hoisted_71$3
+const _hoisted_70$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
+const _hoisted_71$3 = ["aria-valuenow"];
+const _hoisted_72$3 = /* @__PURE__ */ _withScopeId$d(() => /* @__PURE__ */ createBaseVNode("i", null, null, -1));
+const _hoisted_73$3 = [
+  _hoisted_72$3
 ];
-const _hoisted_73$3 = { class: "lower-pane params-pane" };
-const _hoisted_74$3 = ["checked"];
-const _hoisted_75$3 = {
+const _hoisted_74$3 = { class: "lower-pane params-pane" };
+const _hoisted_75$3 = ["checked"];
+const _hoisted_76$2 = {
   class: "lower-tabs",
   role: "tablist",
   "aria-orientation": "vertical"
 };
-const _hoisted_76$2 = ["aria-selected"];
 const _hoisted_77$2 = ["aria-selected"];
-const _hoisted_78$2 = {
+const _hoisted_78$2 = ["aria-selected"];
+const _hoisted_79$2 = {
   key: 0,
   class: "count"
 };
@@ -25948,6 +25947,17 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
         restarting2.value = false;
       }
     }
+    const toolbarStatus = computed(() => {
+      if (!connected.value)
+        return { text: `Waiting for ${HOST_NAME}…`, waiting: true };
+      if (restarting2.value)
+        return { text: "Restarting the generation…" };
+      if (sdWebUI.restoringParams)
+        return { text: "Restoring parameters…" };
+      if (switchingUiPreset.value)
+        return { text: "Switching UI preset…" };
+      return null;
+    });
     function onGenerateButton(e) {
       if (restarting2.value)
         return;
@@ -26387,7 +26397,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
             createBaseVNode("div", _hoisted_3$n, [
               createBaseVNode("button", {
                 class: normalizeClass(["btn swap", generating.value ? "stop" : "primary"]),
-                disabled: !generating.value && !connected.value,
+                disabled: !generating.value && (!connected.value || unref(sdWebUI).restoringParams),
                 title: generating.value ? "Stop; Ctrl+click or middle click: stop and generate again" : void 0,
                 onClick: onGenerateButton,
                 onMousedown: _cache[4] || (_cache[4] = withModifiers(() => {
@@ -26486,8 +26496,25 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               completed: progress.value.completed || 0,
               total: progress.value.total || 0
             }, null, 8, ["value", "label", "completed", "total"])) : createCommentVNode("", true),
-            _hoisted_10$8,
-            !connected.value ? (openBlock(), createElementBlock("span", _hoisted_11$8, "Waiting for " + toDisplayString(unref(HOST_NAME)) + "…", 1)) : createCommentVNode("", true),
+            createBaseVNode("div", _hoisted_10$8, [
+              createVNode(Transition, {
+                name: "status",
+                mode: "out-in"
+              }, {
+                default: withCtx(() => [
+                  toolbarStatus.value ? (openBlock(), createElementBlock("span", {
+                    key: toolbarStatus.value.text,
+                    class: normalizeClass(["status-pill", { waiting: toolbarStatus.value.waiting }]),
+                    role: "status",
+                    title: toolbarStatus.value.text
+                  }, [
+                    toolbarStatus.value.waiting ? (openBlock(), createElementBlock("span", _hoisted_12$7)) : (openBlock(), createElementBlock("span", _hoisted_13$7)),
+                    createBaseVNode("span", _hoisted_14$8, toDisplayString(toolbarStatus.value.text), 1)
+                  ], 10, _hoisted_11$8)) : createCommentVNode("", true)
+                ]),
+                _: 1
+              })
+            ]),
             createBaseVNode("button", {
               class: normalizeClass(["ib", { on: snippetsOpen.value }]),
               "aria-pressed": snippetsOpen.value,
@@ -26501,7 +26528,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 name: "snippet",
                 size: 14
               })
-            ], 42, _hoisted_12$7),
+            ], 42, _hoisted_15$8),
             createBaseVNode("button", {
               class: "ib",
               disabled: !connected.value,
@@ -26513,7 +26540,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 name: "fileSearch",
                 size: 14
               })
-            ], 8, _hoisted_13$7),
+            ], 8, _hoisted_16$8),
             createBaseVNode("button", {
               class: "ib danger",
               disabled: !connected.value,
@@ -26525,9 +26552,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 name: "eraser",
                 size: 14
               })
-            ], 8, _hoisted_14$8),
+            ], 8, _hoisted_17$7),
             unref(has2)("promptLock") ? (openBlock(), createElementBlock("button", {
-              key: 3,
+              key: 2,
               class: normalizeClass(["ib", { on: unref(sdWebUI).promptsLocked }]),
               "aria-pressed": unref(sdWebUI).promptsLocked,
               disabled: !connected.value,
@@ -26539,8 +26566,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 name: unref(sdWebUI).promptsLocked ? "lock" : "unlock",
                 size: 14
               }, null, 8, ["name"])
-            ], 10, _hoisted_15$8)) : createCommentVNode("", true),
-            _hoisted_16$8,
+            ], 10, _hoisted_18$7)) : createCommentVNode("", true),
+            _hoisted_19$7,
             createBaseVNode("button", {
               class: normalizeClass(["ib", { on: unref(consoleOpen) }]),
               "aria-pressed": unref(consoleOpen),
@@ -26552,9 +26579,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 name: "terminal",
                 size: 14
               })
-            ], 10, _hoisted_17$7),
-            unref(has2)("workflowSelect") ? (openBlock(), createElementBlock(Fragment, { key: 4 }, [
-              _hoisted_18$7,
+            ], 10, _hoisted_20$6),
+            unref(has2)("workflowSelect") ? (openBlock(), createElementBlock(Fragment, { key: 3 }, [
+              _hoisted_21$6,
               createVNode(WorkflowSelect, {
                 class: "workflow-select",
                 workflows: unref(sdWebUI).workflows,
@@ -26573,10 +26600,10 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   name: "save",
                   size: 14
                 })
-              ], 10, _hoisted_19$7)
+              ], 10, _hoisted_22$5)
             ], 64)) : createCommentVNode("", true),
-            unref(has2)("modeSwitch") ? (openBlock(), createElementBlock("span", _hoisted_20$6)) : createCommentVNode("", true),
-            unref(has2)("modeSwitch") ? (openBlock(), createElementBlock("div", _hoisted_21$6, [
+            unref(has2)("modeSwitch") ? (openBlock(), createElementBlock("span", _hoisted_23$5)) : createCommentVNode("", true),
+            unref(has2)("modeSwitch") ? (openBlock(), createElementBlock("div", _hoisted_24$5, [
               (openBlock(), createElementBlock(Fragment, null, renderList(MODES, (item) => {
                 return createBaseVNode("button", {
                   key: item.value,
@@ -26587,7 +26614,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   disabled: !connected.value || generating.value,
                   title: item.title,
                   onClick: ($event) => onModeSelect(item.value)
-                }, toDisplayString(item.label), 11, _hoisted_22$5);
+                }, toDisplayString(item.label), 11, _hoisted_25$4);
               }), 64))
             ])) : createCommentVNode("", true)
           ]),
@@ -26598,7 +26625,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
             style: normalizeStyle(gridStyle.value),
             disabled: !connected.value
           }, [
-            createBaseVNode("div", _hoisted_24$5, [
+            createBaseVNode("div", _hoisted_27$3, [
               unref(has2)("uiPreset") && form.uiPreset !== null && form.uiPreset !== void 0 ? (openBlock(), createBlock(UiPresetSelect, {
                 key: 0,
                 "model-value": form.uiPreset,
@@ -26618,14 +26645,14 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   name: shownModelSlot.value === "modules" ? "puzzle" : "box",
                   size: 14
                 }, null, 8, ["name"])
-              ], 8, _hoisted_25$4)) : createCommentVNode("", true),
+              ], 8, _hoisted_28$3)) : createCommentVNode("", true),
               shownModelSlot.value === "modules" ? (openBlock(), createBlock(ModulesSelect, {
                 key: 2,
                 class: "checkpoint",
                 "model-value": form.modules,
                 choices: modules.value,
                 "onUpdate:modelValue": _cache[16] || (_cache[16] = (v) => setParam("modules", v))
-              }, null, 8, ["model-value", "choices"])) : unref(has2)("checkpoint") ? (openBlock(), createElementBlock("div", _hoisted_26$4, [
+              }, null, 8, ["model-value", "choices"])) : unref(has2)("checkpoint") ? (openBlock(), createElementBlock("div", _hoisted_29$3, [
                 createBaseVNode("select", {
                   value: checkpointValue.value,
                   "aria-label": "Checkpoint",
@@ -26636,14 +26663,14 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                     return openBlock(), createElementBlock("option", {
                       key: title,
                       value: title
-                    }, toDisplayString(title), 9, _hoisted_28$3);
+                    }, toDisplayString(title), 9, _hoisted_31$3);
                   }), 128))
-                ], 40, _hoisted_27$3),
+                ], 40, _hoisted_30$3),
                 createVNode(AppIcon, {
                   name: "chevron",
                   size: 14
                 })
-              ])) : (openBlock(), createElementBlock("span", _hoisted_29$3)),
+              ])) : (openBlock(), createElementBlock("span", _hoisted_32$2)),
               unref(has2)("checkpoint") ? (openBlock(), createElementBlock("button", {
                 key: 5,
                 class: normalizeClass(["ib", { busy: modelInfoBusy.value }]),
@@ -26652,12 +26679,12 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 "aria-label": "Civitai model info",
                 onClick: onModelInfo
               }, [
-                modelInfoBusy.value ? (openBlock(), createElementBlock("span", _hoisted_31$3)) : (openBlock(), createBlock(AppIcon, {
+                modelInfoBusy.value ? (openBlock(), createElementBlock("span", _hoisted_34$3)) : (openBlock(), createBlock(AppIcon, {
                   key: 1,
                   name: "info",
                   size: 14
                 }))
-              ], 10, _hoisted_30$3)) : createCommentVNode("", true),
+              ], 10, _hoisted_33$2)) : createCommentVNode("", true),
               unref(has2)("size") ? (openBlock(), createElementBlock(Fragment, { key: 6 }, [
                 createBaseVNode("button", {
                   type: "button",
@@ -26670,7 +26697,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                     name: sizeInputs.value ? "ruler" : "list",
                     size: 14
                   }, null, 8, ["name"])
-                ], 8, _hoisted_32$2),
+                ], 8, _hoisted_35$3),
                 sizeInputs.value ? (openBlock(), createBlock(ResizeToInput, {
                   key: 0,
                   class: "size",
@@ -26686,7 +26713,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onChange: _cache[19] || (_cache[19] = (width, height) => setParams({ width, height }))
                 }, null, 8, ["width", "height"]))
               ], 64)) : createCommentVNode("", true),
-              unref(has2)("steps") ? (openBlock(), createElementBlock("label", _hoisted_33$2, [
+              unref(has2)("steps") ? (openBlock(), createElementBlock("label", _hoisted_36$3, [
                 createTextVNode("Steps "),
                 createVNode(NumberStepper, {
                   "model-value": form.steps ?? "",
@@ -26697,8 +26724,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 }, null, 8, ["model-value"])
               ])) : createCommentVNode("", true)
             ]),
-            createBaseVNode("div", _hoisted_34$3, [
-              references.value ? (openBlock(), createElementBlock("div", _hoisted_35$3, [
+            createBaseVNode("div", _hoisted_37$3, [
+              references.value ? (openBlock(), createElementBlock("div", _hoisted_38$3, [
                 createBaseVNode("button", {
                   type: "button",
                   role: "tab",
@@ -26707,8 +26734,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onClick: _cache[21] || (_cache[21] = ($event) => sideTab.value = "lora")
                 }, [
                   createTextVNode("LoRA "),
-                  selectedLoras.value.size ? (openBlock(), createElementBlock("span", _hoisted_37$3, toDisplayString(selectedLoras.value.size), 1)) : createCommentVNode("", true)
-                ], 10, _hoisted_36$3),
+                  selectedLoras.value.size ? (openBlock(), createElementBlock("span", _hoisted_40$3, toDisplayString(selectedLoras.value.size), 1)) : createCommentVNode("", true)
+                ], 10, _hoisted_39$3),
                 createBaseVNode("button", {
                   type: "button",
                   role: "tab",
@@ -26717,11 +26744,11 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onClick: _cache[22] || (_cache[22] = ($event) => sideTab.value = "references")
                 }, [
                   createTextVNode("References "),
-                  references.value.images.length ? (openBlock(), createElementBlock("span", _hoisted_39$3, toDisplayString(references.value.images.length), 1)) : createCommentVNode("", true)
-                ], 10, _hoisted_38$3)
+                  references.value.images.length ? (openBlock(), createElementBlock("span", _hoisted_42$3, toDisplayString(references.value.images.length), 1)) : createCommentVNode("", true)
+                ], 10, _hoisted_41$3)
               ])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
-                _hoisted_40$3,
-                selectedLoras.value.size ? (openBlock(), createElementBlock("span", _hoisted_41$3, toDisplayString(selectedLoras.value.size), 1)) : createCommentVNode("", true)
+                _hoisted_43$3,
+                selectedLoras.value.size ? (openBlock(), createElementBlock("span", _hoisted_44$3, toDisplayString(selectedLoras.value.size), 1)) : createCommentVNode("", true)
               ], 64)),
               shownSideTab.value === "lora" ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
                 withDirectives(createBaseVNode("input", {
@@ -26741,14 +26768,14 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   "aria-label": "Refresh the checkpoints and LoRAs",
                   onClick: refreshModels
                 }, [
-                  refreshing.value ? (openBlock(), createElementBlock("span", _hoisted_43$3)) : (openBlock(), createBlock(AppIcon, {
+                  refreshing.value ? (openBlock(), createElementBlock("span", _hoisted_46$3)) : (openBlock(), createBlock(AppIcon, {
                     key: 1,
                     name: "refresh",
                     size: 13
                   }))
-                ], 10, _hoisted_42$3)
+                ], 10, _hoisted_45$3)
               ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 3 }, [
-                _hoisted_44$3,
+                _hoisted_47$3,
                 references.value.edit !== null ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
@@ -26758,9 +26785,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   title: "Edit with the references (the WebUI setting of the current model)",
                   onClick: _cache[24] || (_cache[24] = ($event) => setReferenceParam("edit", "edit", !references.value.edit))
                 }, [
-                  _hoisted_46$3,
+                  _hoisted_49$3,
                   createTextVNode("Edit")
-                ], 8, _hoisted_45$3)) : createCommentVNode("", true)
+                ], 8, _hoisted_48$3)) : createCommentVNode("", true)
               ], 64))
             ]),
             createVNode(PromptField, {
@@ -26774,20 +26801,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               onDragover: onPromptDragOver,
               onDrop: onPromptDrop,
               onFocusin: _cache[30] || (_cache[30] = ($event) => snippetTarget.value = "prompt")
-            }, createSlots({
-              default: withCtx(() => [
-                createVNode(Transition, { name: "switching" }, {
-                  default: withCtx(() => [
-                    switchingUiPreset.value || restarting2.value ? (openBlock(), createElementBlock("span", _hoisted_49$3, [
-                      _hoisted_50$3,
-                      createTextVNode(toDisplayString(switchingUiPreset.value ? "Switching UI preset…" : "Restarting the generation…"), 1)
-                    ])) : createCommentVNode("", true)
-                  ]),
-                  _: 1
-                })
-              ]),
-              _: 2
-            }, [
+            }, createSlots({ _: 2 }, [
               unref(promptHistory).entries.length || unref(promptHistory).variants.length ? {
                 name: "after-label",
                 fn: withCtx(() => [
@@ -26808,7 +26822,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   }, null, 8, ["variants", "selected"])) : createCommentVNode("", true),
                   historyEntry.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                     historyIndex.value !== null ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-                      createBaseVNode("span", _hoisted_47$3, "#" + toDisplayString(historyIndex.value + 1) + " · " + toDisplayString(unref(formatHistoryTime)(historyEntry.value.time)), 1),
+                      createBaseVNode("span", _hoisted_50$3, "#" + toDisplayString(historyIndex.value + 1) + " · " + toDisplayString(unref(formatHistoryTime)(historyEntry.value.time)), 1),
                       createBaseVNode("button", {
                         type: "button",
                         class: "history-btn icon",
@@ -26834,7 +26848,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                         size: 11
                       }),
                       createTextVNode("Diff")
-                    ], 10, _hoisted_48$3),
+                    ], 10, _hoisted_51$3),
                     createBaseVNode("button", {
                       type: "button",
                       class: "history-btn use",
@@ -26863,7 +26877,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 key: "1"
               } : void 0
             ]), 1032, ["tokens", "model-value"]),
-            createBaseVNode("div", _hoisted_51$3, [
+            createBaseVNode("div", _hoisted_52$3, [
               shownSideTab.value === "references" ? (openBlock(), createBlock(ReferencesPanel, {
                 key: 0,
                 class: "side-panel",
@@ -26876,7 +26890,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 onEnabled: _cache[34] || (_cache[34] = (value) => setReferenceParam("enabled", "referencesEnabled", value)),
                 onMaxSize: _cache[35] || (_cache[35] = (value) => setReferenceParam("maxSize", "referenceMaxSize", value)),
                 onEditorTarget: setEditorTarget
-              }, null, 8, ["references", "editor-target", "has"])) : (openBlock(), createElementBlock("div", _hoisted_52$3, [
+              }, null, 8, ["references", "editor-target", "has"])) : (openBlock(), createElementBlock("div", _hoisted_53$3, [
                 loraItems.value.length ? (openBlock(), createBlock(CheckTree, {
                   key: 0,
                   items: loraItems.value,
@@ -26885,7 +26899,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onToggle: _cache[36] || (_cache[36] = (name, checked) => onLoraToggle([name], checked)),
                   onToggleMany: onLoraToggle,
                   onFocus: _cache[37] || (_cache[37] = (name) => onLoraToggle([name], !selectedLoras.value.has(name)))
-                }, null, 8, ["items", "selected"])) : (openBlock(), createElementBlock("div", _hoisted_53$3, toDisplayString(loras.value.length ? "No matching LoRAs" : "No LoRAs"), 1))
+                }, null, 8, ["items", "selected"])) : (openBlock(), createElementBlock("div", _hoisted_54$3, toDisplayString(loras.value.length ? "No matching LoRAs" : "No LoRAs"), 1))
               ])),
               !wide.value ? (openBlock(), createElementBlock("div", {
                 key: 2,
@@ -26899,7 +26913,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 onPointerdown: _cache[38] || (_cache[38] = (...args) => imageHeight.onPointerDown && imageHeight.onPointerDown(...args)),
                 onKeydown: _cache[39] || (_cache[39] = (...args) => imageHeight.onKeydown && imageHeight.onKeydown(...args)),
                 onDblclick: _cache[40] || (_cache[40] = (...args) => imageHeight.reset && imageHeight.reset(...args))
-              }, _hoisted_56$3, 42, _hoisted_54$3)) : createCommentVNode("", true),
+              }, _hoisted_57$3, 42, _hoisted_55$3)) : createCommentVNode("", true),
               createVNode(GenerateImageCell, {
                 class: "image-cell",
                 style: normalizeStyle(wide.value ? null : { height: `${imageHeight.size}px` }),
@@ -26929,7 +26943,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               onPointerdown: _cache[42] || (_cache[42] = (...args) => sideWidth.onPointerDown && sideWidth.onPointerDown(...args)),
               onKeydown: _cache[43] || (_cache[43] = (...args) => sideWidth.onKeydown && sideWidth.onKeydown(...args)),
               onDblclick: _cache[44] || (_cache[44] = (...args) => sideWidth.reset && sideWidth.reset(...args))
-            }, _hoisted_59$3, 42, _hoisted_57$3),
+            }, _hoisted_60$3, 42, _hoisted_58$3),
             wide.value ? (openBlock(), createElementBlock("div", {
               key: 0,
               class: normalizeClass(["column-grip image-grip", { active: imageWidth.resizing }]),
@@ -26942,8 +26956,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               onPointerdown: _cache[45] || (_cache[45] = (...args) => imageWidth.onPointerDown && imageWidth.onPointerDown(...args)),
               onKeydown: _cache[46] || (_cache[46] = (...args) => imageWidth.onKeydown && imageWidth.onKeydown(...args)),
               onDblclick: _cache[47] || (_cache[47] = (...args) => imageWidth.reset && imageWidth.reset(...args))
-            }, _hoisted_62$3, 42, _hoisted_60$3)) : createCommentVNode("", true),
-            createBaseVNode("div", _hoisted_63$3, [
+            }, _hoisted_63$3, 42, _hoisted_61$3)) : createCommentVNode("", true),
+            createBaseVNode("div", _hoisted_64$3, [
               unref(has2)("negativePrompt") ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                 createBaseVNode("div", {
                   class: normalizeClass(["grip", { active: negative.resizing }]),
@@ -26958,7 +26972,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onPointerdown: _cache[48] || (_cache[48] = (...args) => negative.onPointerDown && negative.onPointerDown(...args)),
                   onKeydown: _cache[49] || (_cache[49] = (...args) => negative.onKeydown && negative.onKeydown(...args)),
                   onDblclick: _cache[50] || (_cache[50] = (...args) => negative.reset && negative.reset(...args))
-                }, _hoisted_66$3, 42, _hoisted_64$3),
+                }, _hoisted_67$3, 42, _hoisted_65$3),
                 createVNode(PromptField, {
                   ref_key: "negativeField",
                   ref: negativeField,
@@ -26983,7 +26997,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   } : void 0
                 ]), 1032, ["tokens", "style", "model-value"])
               ], 64)) : createCommentVNode("", true),
-              lowerCollapsed.value ? (openBlock(), createElementBlock("div", _hoisted_67$3, [
+              lowerCollapsed.value ? (openBlock(), createElementBlock("div", _hoisted_68$3, [
                 createBaseVNode("button", {
                   type: "button",
                   class: "collapsed-tab label-small",
@@ -26997,9 +27011,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onClick: _cache[54] || (_cache[54] = ($event) => showLowerTab("session"))
                 }, [
                   createTextVNode("Session "),
-                  unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_68$3, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
+                  unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_69$3, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
                 ]),
-                _hoisted_69$3,
+                _hoisted_70$3,
                 createBaseVNode("button", {
                   type: "button",
                   class: "params-toggle restore",
@@ -27025,12 +27039,12 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   onPointerdown: _cache[56] || (_cache[56] = (...args) => lowerHeight.onPointerDown && lowerHeight.onPointerDown(...args)),
                   onKeydown: _cache[57] || (_cache[57] = (...args) => lowerHeight.onKeydown && lowerHeight.onKeydown(...args)),
                   onDblclick: _cache[58] || (_cache[58] = (...args) => lowerHeight.reset && lowerHeight.reset(...args))
-                }, _hoisted_72$3, 42, _hoisted_70$3),
+                }, _hoisted_73$3, 42, _hoisted_71$3),
                 createBaseVNode("div", {
                   class: "lower-area",
                   style: normalizeStyle({ height: `${lowerHeight.size}px` })
                 }, [
-                  withDirectives(createBaseVNode("div", _hoisted_73$3, [
+                  withDirectives(createBaseVNode("div", _hoisted_74$3, [
                     createBaseVNode("div", {
                       ref_key: "groupsElement",
                       ref: groupsElement,
@@ -27075,7 +27089,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                             "aria-label": "Hires. fix",
                             title: "Hires. fix",
                             onChange: _cache[59] || (_cache[59] = (e) => setParam("hiresFix", e.target.checked))
-                          }, null, 40, _hoisted_74$3)) : createCommentVNode("", true),
+                          }, null, 40, _hoisted_75$3)) : createCommentVNode("", true),
                           createVNode(GroupTabs, {
                             modelValue: groupTab.value,
                             "onUpdate:modelValue": _cache[60] || (_cache[60] = ($event) => groupTab.value = $event),
@@ -27140,7 +27154,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   }, null, 8, ["images", "selected", "active"]), [
                     [vShow, lowerTab.value === "session"]
                   ]),
-                  createBaseVNode("div", _hoisted_75$3, [
+                  createBaseVNode("div", _hoisted_76$2, [
                     createBaseVNode("button", {
                       type: "button",
                       class: "params-toggle",
@@ -27163,7 +27177,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       class: normalizeClass(["lower-tab label-small", { on: lowerTab.value === "params" }]),
                       "aria-selected": lowerTab.value === "params",
                       onClick: _cache[67] || (_cache[67] = ($event) => showLowerTab("params"))
-                    }, "Parameters", 10, _hoisted_76$2),
+                    }, "Parameters", 10, _hoisted_77$2),
                     createBaseVNode("button", {
                       type: "button",
                       role: "tab",
@@ -27173,8 +27187,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       onClick: _cache[68] || (_cache[68] = ($event) => showLowerTab("session"))
                     }, [
                       createTextVNode("Session"),
-                      unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_78$2, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
-                    ], 10, _hoisted_77$2),
+                      unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_79$2, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
+                    ], 10, _hoisted_78$2),
                     lowerTab.value === "session" && unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("button", {
                       key: 0,
                       type: "button",
@@ -27192,13 +27206,13 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 ], 4)
               ], 64))
             ])
-          ], 14, _hoisted_23$5)
+          ], 14, _hoisted_26$4)
         ])
       ], 64);
     };
   }
 };
-const Generate = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-eb21246e"]]);
+const Generate = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-52821f3d"]]);
 const _withScopeId$c = (n) => (pushScopeId("data-v-3e89da36"), n = n(), popScopeId(), n);
 const _hoisted_1$n = { class: "pane-header" };
 const _hoisted_2$n = {
@@ -42818,14 +42832,14 @@ h3[data-v-dd99243e]:not(:first-child) {
   box-shadow: 0 0 0 2px var(--ib-surface);
 }
 
-.prompt-field[data-v-efcd266b] {
+.prompt-field[data-v-95ab2599] {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-height: 0;
 }
-.prompt-label[data-v-efcd266b] {
+.prompt-label[data-v-95ab2599] {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -42833,7 +42847,7 @@ h3[data-v-dd99243e]:not(:first-child) {
   font-size: 11px;
   color: var(--ib-text-2);
 }
-.tokens[data-v-efcd266b] {
+.tokens[data-v-95ab2599] {
   margin-left: auto;
   padding: 0 6px;
   border-radius: 4px;
@@ -42842,18 +42856,7 @@ h3[data-v-dd99243e]:not(:first-child) {
   font-family: var(--ib-mono);
   font-size: 10.5px;
 }
-.overlay[data-v-efcd266b] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-textarea[data-v-efcd266b] {
+textarea[data-v-95ab2599] {
   flex: 1;
   min-height: 0;
   width: 100%;
@@ -42866,7 +42869,7 @@ textarea[data-v-efcd266b] {
   font: inherit;
   line-height: 1.5;
 }
-textarea[data-v-efcd266b]:focus {
+textarea[data-v-95ab2599]:focus {
   outline: none;
   border-color: var(--ib-accent-border);
 }
@@ -44455,7 +44458,7 @@ footer[data-v-fc8704c9] {
   color: var(--ib-warn);
 }
 
-.generate-grid[data-v-eb21246e] {
+.generate-grid[data-v-52821f3d] {
   flex: 1;
   min-height: 0;
   min-width: 0;
@@ -44471,27 +44474,27 @@ footer[data-v-fc8704c9] {
     "lower  side";
   gap: 10px 14px;
 }
-.generate-grid.wide[data-v-eb21246e] {
+.generate-grid.wide[data-v-52821f3d] {
   grid-template-areas:
     "model  header image"
     "prompt side   image"
     "lower  side   image";
 }
-.model-row[data-v-eb21246e] {
+.model-row[data-v-52821f3d] {
   grid-area: model;
 }
-.lora-header[data-v-eb21246e] {
+.lora-header[data-v-52821f3d] {
   grid-area: header;
 }
-.prompt[data-v-eb21246e] {
+.prompt[data-v-52821f3d] {
   grid-area: prompt;
 }
-.lower[data-v-eb21246e] {
+.lower[data-v-52821f3d] {
   grid-area: lower;
 }
 
 /* The side panel, its grip and the image below it */
-.side[data-v-eb21246e] {
+.side[data-v-52821f3d] {
   grid-area: side;
   display: flex;
   flex-direction: column;
@@ -44499,63 +44502,63 @@ footer[data-v-fc8704c9] {
   min-width: 0;
   min-height: 0;
 }
-.side > .side-panel[data-v-eb21246e] {
+.side > .side-panel[data-v-52821f3d] {
   flex: 1;
 }
-.side > .image-cell[data-v-eb21246e] {
+.side > .image-cell[data-v-52821f3d] {
   flex: none;
 }
 
 /* Wide, the side panel and the image are grid items of their own */
-.wide .side[data-v-eb21246e] {
+.wide .side[data-v-52821f3d] {
   display: contents;
 }
-.wide .side-panel[data-v-eb21246e] {
+.wide .side-panel[data-v-52821f3d] {
   grid-area: side;
 }
-.wide .image-cell[data-v-eb21246e] {
+.wide .image-cell[data-v-52821f3d] {
   grid-area: image;
 }
 
 /* ---------- Model row ---------- */
-.model-row[data-v-eb21246e] {
+.model-row[data-v-52821f3d] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
-.checkpoint[data-v-eb21246e] {
+.checkpoint[data-v-52821f3d] {
   flex: 1 1 160px;
 }
 
 /* Close to the dropdown it switches, the gap of the row is too wide */
-.slot-switch[data-v-eb21246e] {
+.slot-switch[data-v-52821f3d] {
   width: 18px;
   margin-right: -4px;
 }
-.size[data-v-eb21246e] {
+.size[data-v-52821f3d] {
   flex: 0 1 190px;
 }
-.inline-field[data-v-eb21246e] {
+.inline-field[data-v-52821f3d] {
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--ib-text-2);
   font-size: 12px;
 }
-.ib.busy[data-v-eb21246e]:disabled {
+.ib.busy[data-v-52821f3d]:disabled {
   opacity: 1;
 }
 
 /* ---------- Prompt history ---------- */
-.history-info[data-v-eb21246e] {
+.history-info[data-v-52821f3d] {
   color: var(--ib-muted);
   font-family: var(--ib-mono);
   font-size: 10px;
   white-space: nowrap;
 }
-.history-btn[data-v-eb21246e] {
+.history-btn[data-v-52821f3d] {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -44568,70 +44571,105 @@ footer[data-v-fc8704c9] {
   font-size: 10px;
   cursor: pointer;
 }
-.history-btn[data-v-eb21246e]:hover {
+.history-btn[data-v-52821f3d]:hover {
   border-color: var(--ib-border-2);
   color: var(--ib-text);
 }
-.history-btn.icon[data-v-eb21246e] {
+.history-btn.icon[data-v-52821f3d] {
   width: 16px;
   padding: 0;
   justify-content: center;
 }
-.history-btn.on[data-v-eb21246e] {
+.history-btn.on[data-v-52821f3d] {
   border-color: var(--ib-accent-border);
   color: var(--ib-accent);
 }
-.history-btn.use[data-v-eb21246e] {
+.history-btn.use[data-v-52821f3d] {
   border-color: var(--ib-accent);
   background: var(--ib-accent);
   color: var(--ib-accent-ink);
   font-weight: 600;
 }
-.history-btn.use[data-v-eb21246e]:hover {
+.history-btn.use[data-v-52821f3d]:hover {
   border-color: var(--ib-accent-hover);
   background: var(--ib-accent-hover);
   color: var(--ib-accent-ink);
 }
 
 /* ---------- UI preset switch ---------- */
-.switching-badge[data-v-eb21246e] {
+
+/* Shrinks before the buttons around it; the status label then ellipsizes, the spinner stays */
+.status-slot[data-v-52821f3d] {
+  flex: 1 1 0;
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
-  border: 1px solid var(--ib-accent-border);
-  border-radius: 10px;
-  background: var(--ib-elev-2);
-  color: var(--ib-accent);
-  font-size: 11px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  justify-content: center;
 }
-.switching-badge .spinner[data-v-eb21246e] {
+.status-pill[data-v-52821f3d] {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  max-width: 100%;
+  height: 22px;
+  padding: 0 10px;
+  border: 1px solid var(--ib-accent-border);
+  border-radius: 11px;
+  background: var(--ib-accent-soft);
+  color: var(--ib-accent);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+.status-pill.waiting[data-v-52821f3d] {
+  border-color: var(--ib-border-2);
+  background: var(--ib-elev-2);
+  color: var(--ib-text-2);
+}
+.status-pill .spinner[data-v-52821f3d] {
+  flex: none;
   width: 10px;
   height: 10px;
 }
-.switching-enter-active[data-v-eb21246e],
-.switching-leave-active[data-v-eb21246e] {
+.status-pill .dot[data-v-52821f3d] {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ib-muted);
+  animation: status-pulse-52821f3d 1.4s ease-in-out infinite;
+}
+@keyframes status-pulse-52821f3d {
+50% {
+    opacity: 0.45;
+}
+}
+.status-text[data-v-52821f3d] {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.status-enter-active[data-v-52821f3d],
+.status-leave-active[data-v-52821f3d] {
   transition: opacity 0.15s;
 }
-.switching-enter-from[data-v-eb21246e],
-.switching-leave-to[data-v-eb21246e] {
+.status-enter-from[data-v-52821f3d],
+.status-leave-to[data-v-52821f3d] {
   opacity: 0;
 }
 
 /* ---------- LoRAs ---------- */
-.lora-header[data-v-eb21246e] {
+.lora-header[data-v-52821f3d] {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
-.side-tabs[data-v-eb21246e] {
+.side-tabs[data-v-52821f3d] {
   display: flex;
   gap: 12px;
 }
-.side-tab[data-v-eb21246e] {
+.side-tab[data-v-52821f3d] {
   height: 26px;
   padding: 0 2px;
   display: inline-flex;
@@ -44642,17 +44680,17 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.side-tab[data-v-eb21246e]:hover {
+.side-tab[data-v-52821f3d]:hover {
   color: var(--ib-text-2);
 }
-.side-tab.on[data-v-eb21246e] {
+.side-tab.on[data-v-52821f3d] {
   border-bottom-color: var(--ib-accent);
   color: var(--ib-text);
 }
-.spacer[data-v-eb21246e] {
+.spacer[data-v-52821f3d] {
   flex: 1;
 }
-.edit-switch[data-v-eb21246e] {
+.edit-switch[data-v-52821f3d] {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -44665,7 +44703,7 @@ footer[data-v-fc8704c9] {
   font-size: 12px;
   cursor: pointer;
 }
-.edit-switch i[data-v-eb21246e] {
+.edit-switch i[data-v-52821f3d] {
   position: relative;
   width: 28px;
   height: 16px;
@@ -44673,7 +44711,7 @@ footer[data-v-fc8704c9] {
   background: var(--ib-elev-2);
   transition: background 0.15s;
 }
-.edit-switch i[data-v-eb21246e]::after {
+.edit-switch i[data-v-52821f3d]::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -44684,14 +44722,14 @@ footer[data-v-fc8704c9] {
   background: var(--ib-text-2);
   transition: left 0.15s;
 }
-.edit-switch[aria-checked="true"] i[data-v-eb21246e] {
+.edit-switch[aria-checked="true"] i[data-v-52821f3d] {
   background: var(--ib-accent);
 }
-.edit-switch[aria-checked="true"] i[data-v-eb21246e]::after {
+.edit-switch[aria-checked="true"] i[data-v-52821f3d]::after {
   left: 14px;
   background: var(--ib-accent-ink);
 }
-.filter[data-v-eb21246e] {
+.filter[data-v-52821f3d] {
   flex: 1;
   min-width: 0;
   height: 26px;
@@ -44702,16 +44740,16 @@ footer[data-v-fc8704c9] {
   color: var(--ib-text);
   font: inherit;
 }
-.filter[data-v-eb21246e]:focus {
+.filter[data-v-52821f3d]:focus {
   outline: none;
   border-color: var(--ib-accent-border);
 }
 
 /* Aligned with the prompt textarea, below its label */
-.side-panel[data-v-eb21246e] {
+.side-panel[data-v-52821f3d] {
   margin-top: 20px;
 }
-.lora-tree[data-v-eb21246e] {
+.lora-tree[data-v-52821f3d] {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -44720,20 +44758,20 @@ footer[data-v-fc8704c9] {
   border-radius: 6px;
   background: var(--ib-surface);
 }
-.empty[data-v-eb21246e] {
+.empty[data-v-52821f3d] {
   margin: auto;
   color: var(--ib-muted);
   font-size: 12px;
 }
 
 /* ---------- Negative prompt and parameters ---------- */
-.lower[data-v-eb21246e] {
+.lower[data-v-52821f3d] {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
 }
-.grip[data-v-eb21246e] {
+.grip[data-v-52821f3d] {
   height: 12px;
   margin: -8px 0 -10px;
   display: flex;
@@ -44743,7 +44781,7 @@ footer[data-v-fc8704c9] {
   cursor: row-resize;
   touch-action: none;
 }
-.grip i[data-v-eb21246e] {
+.grip i[data-v-52821f3d] {
   width: 40px;
   height: 4px;
   border-radius: 2px;
@@ -44751,7 +44789,7 @@ footer[data-v-fc8704c9] {
 }
 
 /* In the gap at the left of its column, over the whole grid height */
-.column-grip[data-v-eb21246e] {
+.column-grip[data-v-52821f3d] {
   grid-row: 1 / -1;
   justify-self: start;
   width: 10px;
@@ -44763,32 +44801,32 @@ footer[data-v-fc8704c9] {
   cursor: col-resize;
   touch-action: none;
 }
-.side-grip[data-v-eb21246e] {
+.side-grip[data-v-52821f3d] {
   grid-column: 2;
 }
-.image-grip[data-v-eb21246e] {
+.image-grip[data-v-52821f3d] {
   grid-column: 3;
 }
-.column-grip i[data-v-eb21246e] {
+.column-grip i[data-v-52821f3d] {
   width: 4px;
   height: 40px;
   border-radius: 2px;
   background: var(--ib-border-2);
 }
-.grip:hover i[data-v-eb21246e],
-.grip:focus-visible i[data-v-eb21246e],
-.grip.active i[data-v-eb21246e],
-.column-grip:hover i[data-v-eb21246e],
-.column-grip:focus-visible i[data-v-eb21246e],
-.column-grip.active i[data-v-eb21246e] {
+.grip:hover i[data-v-52821f3d],
+.grip:focus-visible i[data-v-52821f3d],
+.grip.active i[data-v-52821f3d],
+.column-grip:hover i[data-v-52821f3d],
+.column-grip:focus-visible i[data-v-52821f3d],
+.column-grip.active i[data-v-52821f3d] {
   background: var(--ib-accent);
 }
-.grip[data-v-eb21246e]:focus-visible,
-.column-grip[data-v-eb21246e]:focus-visible {
+.grip[data-v-52821f3d]:focus-visible,
+.column-grip[data-v-52821f3d]:focus-visible {
   outline: none;
   background: var(--ib-accent-soft);
 }
-.groups[data-v-eb21246e] {
+.groups[data-v-52821f3d] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -44796,28 +44834,28 @@ footer[data-v-fc8704c9] {
 }
 
 /* Hires. fix checkbox before the tabs of the ControlNet group, as in the Hires. fix group */
-.group-check[data-v-eb21246e] {
+.group-check[data-v-52821f3d] {
   margin: 0;
 }
 
 /* Parameters or filmstrip, with their tabs at the right edge */
-.lower-area[data-v-eb21246e] {
+.lower-area[data-v-52821f3d] {
   display: flex;
   gap: 8px;
   min-height: 0;
 }
-.lower-pane[data-v-eb21246e] {
+.lower-pane[data-v-52821f3d] {
   flex: 1;
   min-width: 0;
   min-height: 0;
 }
 
 /* Scrolled when the area is resized below the height of the groups */
-.params-pane[data-v-eb21246e] {
+.params-pane[data-v-52821f3d] {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.lower-tabs[data-v-eb21246e] {
+.lower-tabs[data-v-52821f3d] {
   flex: none;
   display: flex;
   flex-direction: column;
@@ -44828,7 +44866,7 @@ footer[data-v-fc8704c9] {
 }
 
 /* Rotated, read from the bottom up */
-.lower-tab[data-v-eb21246e] {
+.lower-tab[data-v-52821f3d] {
   padding: 6px 2px 6px 4px;
   display: inline-flex;
   align-items: center;
@@ -44841,24 +44879,24 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.lower-tab[data-v-eb21246e]:hover,
-.collapsed-tab[data-v-eb21246e]:hover {
+.lower-tab[data-v-52821f3d]:hover,
+.collapsed-tab[data-v-52821f3d]:hover {
   color: var(--ib-text-2);
 }
-.lower-tab.on[data-v-eb21246e] {
+.lower-tab.on[data-v-52821f3d] {
   border-right-color: var(--ib-accent);
   color: var(--ib-text);
 }
 
 /* The collapsed area leaves a header line with its tabs */
-.groups-collapsed[data-v-eb21246e] {
+.groups-collapsed[data-v-52821f3d] {
   display: flex;
   align-items: center;
   gap: 12px;
   padding-bottom: 2px;
   border-bottom: 1px solid var(--ib-border);
 }
-.collapsed-tab[data-v-eb21246e] {
+.collapsed-tab[data-v-52821f3d] {
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -44867,7 +44905,7 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.params-toggle[data-v-eb21246e] {
+.params-toggle[data-v-52821f3d] {
   width: 20px;
   height: 20px;
   padding: 0;
@@ -44880,48 +44918,48 @@ footer[data-v-fc8704c9] {
   color: var(--ib-text-2);
   cursor: pointer;
 }
-.params-toggle[data-v-eb21246e]:hover {
+.params-toggle[data-v-52821f3d]:hover {
   background: var(--ib-elev-2);
   color: var(--ib-text);
 }
 
 /* At the bottom of the tab column */
-.clear-session[data-v-eb21246e] {
+.clear-session[data-v-52821f3d] {
   margin-top: auto;
   margin-bottom: 2px;
 }
-.params-toggle.restore[data-v-eb21246e] svg {
+.params-toggle.restore[data-v-52821f3d] svg {
   transform: rotate(180deg);
 }
-.inline-field[data-v-eb21246e] .stepper {
+.inline-field[data-v-52821f3d] .stepper {
   height: 26px;
 }
-.inline-field[data-v-eb21246e] .stepper input {
+.inline-field[data-v-52821f3d] .stepper input {
   height: 24px;
 }
-.preset-count[data-v-eb21246e] {
+.preset-count[data-v-52821f3d] {
   min-width: 26px;
   padding: 0 6px;
   font-family: var(--ib-mono);
   font-size: 12px;
 }
-.preset-count.on[data-v-eb21246e] {
+.preset-count.on[data-v-52821f3d] {
   background: var(--ib-accent-soft);
   color: var(--ib-accent);
 }
-.toolbar-divider[data-v-eb21246e] {
+.toolbar-divider[data-v-52821f3d] {
   width: 1px;
   height: 20px;
   background: var(--ib-border);
 }
-.modes[data-v-eb21246e] {
+.modes[data-v-52821f3d] {
   flex: none;
 }
-.workflow-select[data-v-eb21246e] {
+.workflow-select[data-v-52821f3d] {
   flex: 0 1 260px;
   min-width: 140px;
 }
-.modes button[data-v-eb21246e] {
+.modes button[data-v-52821f3d] {
   padding: 0 10px;
 }
 

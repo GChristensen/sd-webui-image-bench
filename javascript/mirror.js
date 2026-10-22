@@ -9,6 +9,7 @@
 
 import {SELECTORS} from "./adapters/selectors.js";
 import {createReferences} from "./references.js";
+import {isRestoringUiParams} from "./persistence.js";
 
 const POLL_INTERVAL = 600;
 // The prompts are unlocked when the popup closes, checked also while the Generate tab is not shown
@@ -205,6 +206,7 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
             references: references.captureState(tab.toLowerCase(), params.uiPreset),
             busy: !uiOperations.isReadyToGenerate(),
             switchingUiPreset: uiOperations.isSwitchingUiPreset(),
+            restoringParams: isRestoringUiParams(),
             locked
         };
     }
