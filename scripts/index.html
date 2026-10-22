@@ -11129,7 +11129,7 @@ const useAppConfigStore = defineStore("appConfig", () => {
   });
   const persistGenerationParams = computed({
     get() {
-      return _config.persistGenerationParams ?? false;
+      return _config.persistGenerationParams ?? true;
     },
     set(v) {
       _config.persistGenerationParams = v;

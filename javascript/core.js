@@ -122,7 +122,7 @@ async function saveGenerationParams() {
     const params = uiOperations.captureUiParams();
     appConfig = await loadAppConfig() || appConfig;
 
-    if (appConfig.persistGenerationParams)
+    if (appConfig?.persistGenerationParams ?? true)
         saveUiParams(params);
 }
 
@@ -181,7 +181,7 @@ async function initUI() {
     //window.name = "sd-webui-main-window";
     //console.log(appConfig)
     // Let Gradio finish initializing its components before restoring
-    if (appConfig?.persistGenerationParams)
+    if (appConfig?.persistGenerationParams ?? true)
         scheduleUiParamsRestore(uiOperations, 1500);
 
     if (appConfig?.repositionConfigPresetsDropdown)
