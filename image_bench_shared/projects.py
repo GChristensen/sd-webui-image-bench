@@ -10,7 +10,7 @@ below it. ib_project/ holds:
     trays/<kind>/       the trays in the layout of the tray download, so that any of them, zipped, can be imported into a tray
     controlnet/         control images of the parameter snapshot
     workflow.json       ComfyUI workflow of the parameter snapshot
-    prompt_history.json the prompt history of the Generate tab (not part of the unsaved changes)
+    prompt_history.json the prompt history of the Generate tab and its variants (not part of the unsaved changes)
     thumbs/             thumbnails of the image files of the project directory
     file_info.json      generation parameters of the image files of the project directory (by name, size and time)
 
