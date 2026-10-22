@@ -316,6 +316,16 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
         });
     }
 
+    /**
+     * Parameters of a unit of the shown generation tab
+     * @param {number} unitIndex
+     * @returns {Object|null} As in CONTROLNET_STATE, null if the unit is absent
+     */
+    function readParams(unitIndex) {
+        const tab = getTab();
+        return element(tab, unitIndex, 'enabled') ? readUnit(tab, unitIndex).params : null;
+    }
+
     function setNumber(input, value) {
         if (input)
             adapter.setInputElementValue(input, value);
@@ -786,6 +796,6 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
         adapter.setCheckedIn(get('enabled'), params.enabled ?? true);
     }
 
-    return {subscribe, applyParams, runAction, setUnitImage, setPose, setTab, onEditorImage,
+    return {subscribe, applyParams, readParams, runAction, setUnitImage, setPose, setTab, onEditorImage,
             readEnabledUnits, captureUnits, restoreUnits};
 }

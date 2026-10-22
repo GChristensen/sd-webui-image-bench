@@ -3,9 +3,9 @@ The editor plugins supplied with the extension (editor-extensions/): packaging o
 and telling the installed version. The editor-specific parts are in the installer modules (uxp_install for
 Photoshop, krita_install for Krita, gimp_install for GIMP), which provide get_status(manifest), the
 PACKAGE_EXTENSION of the download, MANIFEST (the path of manifest.json in the plugin folder) and EXCLUDED_FILES
-(development files that are not a part of the plugin). The extension never installs a plugin itself: the Krita and
-GIMP modules also provide install_or_elevate(plugin_dir, files, manifest) for the development scripts
-(editor-extensions/krita/krita.py, gimp/gimp.py deploy); Photoshop plugins are deployed with uxp.ps1
+(development files that are not a part of the plugin). The extension never installs a plugin itself: the plugins
+are installed from the downloads, or in development by the scripts of their folders (editor-extensions/krita/krita.py,
+gimp/gimp.py deploy, photoshop/uxp.ps1), which are not shipped
 """
 import importlib
 import io
@@ -122,17 +122,3 @@ def get_status(plugin=DEFAULT_PLUGIN):
 
     return {**installer.get_status(manifest), "available": manifest["version"],
             "package": installer.PACKAGE_EXTENSION}
-
-
-def install_or_elevate(plugin=DEFAULT_PLUGIN):
-    """
-    Install the plugin where its editor loads it from (Krita and GIMP, for the development scripts)
-
-    Returns:
-        {"result": "installed", "version": ...} or {"result": "elevating"}
-
-    Raises:
-        PluginError: If the plugin could not be installed
-    """
-    installer, plugin_dir, files, manifest = _load(plugin)
-    return installer.install_or_elevate(plugin_dir, files, manifest)

@@ -20,7 +20,8 @@ IMAGE_KINDS = ("image", "mask", "preview")
 # Key of the record in the extra_data of a ComfyUI prompt
 EXTRA_DATA_KEY = "image_bench_controlnet"
 
-MARKER = re.compile(r"^ib:cn(?::(\d+))?$")
+# Markers anywhere in a node title, several per title, as js/workflow.js finds them ("ControlNet Canny ib:cn:0")
+MARKER = re.compile(r"\bib:([a-z]+)(?::(\d+))?\b", re.IGNORECASE)
 MAX_DEPTH = 8
 
 # Hashes of the input files by (path, size, mtime_ns), so that an unchanged file is not read again
@@ -106,6 +107,15 @@ def image_hashes(image: Dict[str, Any]) -> Set[str]:
 
 # ---------- ComfyUI ----------
 
+def marker_index(title, marker: str) -> Optional[int]:
+    """Index of the marker ib:<marker>[:N] in a node title (no index is 0), None if the title lacks it"""
+    for match in MARKER.finditer(str(title or "")):
+        if match.group(1).lower() == marker:
+            return int(match.group(2) or 0)
+
+    return None
+
+
 def find_upstream(graph: PromptGraph, value, types: Dict[str, str]) -> Optional[str]:
     """The nearest node of one of the types up a link, through any inputs (converters, reroutes)"""
     queue = [(value, 0)]
@@ -148,12 +158,13 @@ def record_comfy_prompt(json_data: Dict[str, Any], image_bench_dir: str, config:
     mask_types = config.get("maskTypes") or {}
     loader_types = config.get("loaderTypes") or {}
     preprocessor_types = {name: "" for name in config.get("preprocessorTypes") or []}
+    marker = str(config.get("marker") or "cn").lower()
     units = []
 
     for node_id, node in prompt.items():
-        match = MARKER.match(str(((node or {}).get("_meta") or {}).get("title") or "").strip())
+        index = marker_index(((node or {}).get("_meta") or {}).get("title"), marker)
 
-        if not match or graph.type(node_id) not in node_types:
+        if index is None or graph.type(node_id) not in node_types:
             continue
 
         inputs = graph.inputs(node_id)
@@ -178,7 +189,7 @@ def record_comfy_prompt(json_data: Dict[str, Any], image_bench_dir: str, config:
         image_node = find_upstream(graph, source, image_types)
         mask_node = find_upstream(graph, inputs.get("mask_optional"), mask_types)
 
-        units.append({"index": int(match.group(1) or 0),
+        units.append({"index": index,
                       "params": {key: value for key, value in params.items() if value is not None},
                       "image": stored(image_node, image_types),
                       "mask": stored(mask_node, mask_types),

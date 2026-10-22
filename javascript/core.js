@@ -45,7 +45,7 @@ const strategies = createStrategies(uiOperations, sendPopupMessage);
 
 // Extract strategy instances
 const {exploration: explorationStrategy, batch: batchStrategy, processing: processingStrategy,
-        varying: varyingStrategy} = strategies;
+        varying: varyingStrategy, controlNetSweep: controlNetSweepStrategy} = strategies;
 
 // txt2img parameters mirrored in the Generate tab of the popup
 const mirror = createWebUIMirror(uiOperations, adapter, {sendMessage: sendPopupMessage, isOpen: popupManager.isOpen});
@@ -133,6 +133,7 @@ function getActiveStrategy() {
     const state = getGenerationState();
     
     if (state === "EXPLORE_MODELS") return explorationStrategy;
+    if (state === "CONTROLNET_SWEEP") return controlNetSweepStrategy;
     if (state === "BATCH_GENERATION") return batchStrategy;
     if (state === "HIRES_FIX" || state === "SEQUENTIAL_GENERATION") {
         return processingStrategy.isProcessing() ? processingStrategy : varyingStrategy;
@@ -306,6 +307,8 @@ async function onMessage(msg) {
         setImageParams(payload)
     else if (payload.type === "GENERATE_VARYING_STEPS" || payload.type === "GENERATE_VARYING_MODULES")
         await handleGenerateVaryingSteps(payload)
+    else if (payload.type === "CONTROLNET_SWEEP")
+        await handleControlNetSweep(payload);
     else if (payload.type === "UPSCALE_VARYING_DENOISING")
         await handleUpscaleVaryingDenoising(payload)
     else if (payload.type === "GENERATE_IMAGE")
@@ -556,6 +559,27 @@ async function handleUpscaleVaryingDenoising(options) {
 
     setGenerationState("HIRES_FIX");
     return await varyingStrategy.process(options);
+}
+
+/**
+ * Generate the matrix of ControlNet weights x ending steps of a unit of the shown generation tab
+ * @param {Object} options - {unit, weights, ends, reference: {weight, end}}
+ */
+async function handleControlNetSweep(options) {
+    if (!checkReadyToGenerate())
+        return;
+
+    // Edits the popup sent just before are applied first, so that the values restored after the sweep are theirs
+    await controlNet.applyParams(options.unit, {});
+
+    if (!controlNet.readParams(options.unit)) {
+        sendPopupMessage({type: "GENERATION_FINISHED"});
+        showAlert(`ControlNet unit ${options.unit + 1} is not found.`);
+        return;
+    }
+
+    setGenerationState("CONTROLNET_SWEEP");
+    return await controlNetSweepStrategy.process({...options, controlNet});
 }
 
 function isProcessingActive() {

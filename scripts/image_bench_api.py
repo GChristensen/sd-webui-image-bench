@@ -27,7 +27,6 @@ from image_bench_shared import civitai
 from image_bench_shared import console
 from image_bench_shared import controlnet_inputs
 from image_bench_shared import explore_export
-from image_bench_shared import host_restart
 from image_bench_shared import launcher
 from image_bench_shared import loras
 from image_bench_shared import media
@@ -118,16 +117,15 @@ class ImageBenchApi():
         self.add_api_route("/snippets", self.get_snippets, methods=["GET"])
         self.add_api_route("/snippets", self.write_snippets, methods=["POST"])
         self.add_api_route("/snippets/webui_styles", self.get_webui_styles, methods=["GET"])
+        self.add_api_route("/prompt_history", self.get_prompt_history, methods=["GET"])
+        self.add_api_route("/prompt_history", self.write_prompt_history, methods=["POST"])
+        self.add_api_route("/generation_settings", self.get_generation_settings, methods=["GET"])
+        self.add_api_route("/generation_settings", self.write_generation_settings, methods=["POST"])
         self.add_api_route("/projects/{action}", self.projects_action, methods=["GET", "POST"])
         self.app.add_websocket_route(self.BASE_PATH + "/websocket", self.handle_websocket)
         self.add_api_route("/close_websocket", self.close_websocket, methods=["GET"])
         self.app.add_websocket_route(self.BASE_PATH + "/heartbeat", self.handle_heartbeat)
         self.app.add_websocket_route(self.BASE_PATH + "/console", self.handle_console)
-        self.add_api_route("/host_restart", self.get_host_restart, methods=["GET"])
-        self.add_api_route("/host_restart", self.post_host_restart, methods=["POST"])
-        # Restart of a hung or dead WebUI by the sidecar of shared_backend/host_supervisor.py, if
-        # store/host_restart.json names the start script
-        host_restart.ensure_in_background(self.get_store_dir(), self.get_host_server())
         self.add_api_route("/editor/upload", self.editor_upload, methods=["POST"])
         self.add_api_route("/editor/project", self.editor_project, methods=["POST"])
         self.add_api_route("/editor/send", self.editor_send, methods=["POST"])
@@ -143,36 +141,6 @@ class ImageBenchApi():
 
     def get_path(self, path):
         return f"{self.BASE_PATH}{path}"
-
-    def get_store_dir(self):
-        return persist.get_store_file_path(self.get_file_path("", upper=True), "")
-
-    @staticmethod
-    def get_host_port():
-        port = getattr(shared.cmd_opts, "port", None) or os.environ.get("GRADIO_SERVER_PORT")
-
-        try:
-            return int(port) if port else 7860
-        except ValueError:
-            return 7860
-
-    def get_host_server(self):
-        """Port, network listening and TLS files of WebUI, which the restart sidecar takes over"""
-        opts = shared.cmd_opts
-        server_name = getattr(opts, "server_name", None)
-        network = bool(getattr(opts, "listen", False)) or server_name not in (None, "", "127.0.0.1", "localhost")
-        return host_restart.host_server(self.get_host_port(), network, getattr(opts, "tls_certfile", None),
-                                        getattr(opts, "tls_keyfile", None))
-
-    def get_host_restart(self):
-        """The restart settings and the sidecar address for the Image Bench window"""
-        return JSONResponse(host_restart.info(self.get_store_dir(), self.get_host_server()),
-                            headers={"Cache-Control": "no-store"})
-
-    def post_host_restart(self):
-        """Restart WebUI through the sidecar, for a window that does not reach the sidecar itself"""
-        status, body = host_restart.restart(self.get_store_dir(), self.get_host_server())
-        return JSONResponse(body, status_code=status)
 
     def get_webui_root_dir(self):
         return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -530,6 +498,22 @@ class ImageBenchApi():
     async def write_snippets(self, request: Request):
         base_dir = self.get_file_path("", upper=True)
         await persist.write_store_file_from_request(base_dir, SNIPPETS_FILE, request)
+        return Response("", media_type="application/json")
+
+    def get_prompt_history(self):
+        return self.serve_store_file(persist.PROMPT_HISTORY_FILE)
+
+    async def write_prompt_history(self, request: Request):
+        base_dir = self.get_file_path("", upper=True)
+        await persist.write_store_file_from_request(base_dir, persist.PROMPT_HISTORY_FILE, request)
+        return Response("", media_type="application/json")
+
+    def get_generation_settings(self):
+        return self.serve_store_file(persist.GENERATION_SETTINGS_FILE)
+
+    async def write_generation_settings(self, request: Request):
+        base_dir = self.get_file_path("", upper=True)
+        await persist.write_store_file_from_request(base_dir, persist.GENERATION_SETTINGS_FILE, request)
         return Response("", media_type="application/json")
 
     @staticmethod

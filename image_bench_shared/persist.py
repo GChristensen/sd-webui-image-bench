@@ -126,6 +126,11 @@ def get_store_file_path(base_dir: str, filename: str) -> str:
     return os.path.join(base_dir, "store", filename)
 
 
+# The last prompts generated from the Generate tab, saved with the projects
+PROMPT_HISTORY_FILE = "prompt_history.json"
+# Values of the generation dialogs and toolbars (variation strength, sweep values, config presets), global
+GENERATION_SETTINGS_FILE = "generation_settings.json"
+
 # The snippets of a new install, styles of comfyui-styles-all and Fooocus (see THIRD_PARTY_LICENSES)
 DEFAULT_SNIPPETS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "default_snippets.json")
 

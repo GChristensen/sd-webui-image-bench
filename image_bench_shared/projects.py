@@ -10,6 +10,7 @@ below it. ib_project/ holds:
     trays/<kind>/       the trays in the layout of the tray download, so that any of them, zipped, can be imported into a tray
     controlnet/         control images of the parameter snapshot
     workflow.json       ComfyUI workflow of the parameter snapshot
+    prompt_history.json the prompt history of the Generate tab (not part of the unsaved changes)
     thumbs/             thumbnails of the image files of the project directory
     file_info.json      generation parameters of the image files of the project directory (by name, size and time)
 
@@ -41,7 +42,7 @@ from PIL import Image
 
 from . import media
 from .controlnet_inputs import HASH, image_hashes, input_dir, input_path
-from .persist import read_json_file
+from .persist import PROMPT_HISTORY_FILE, read_json_file
 from .tray import TRAY_FILES, unique_file_path
 
 PROJECT_DIR = "ib_project"
@@ -1209,6 +1210,11 @@ def image_key(image: Dict[str, Any]) -> str:
 
 # ---------- Save and open ----------
 
+def read_prompt_history(store_dir: str) -> Dict[str, Any]:
+    history = read_json(os.path.join(store_dir, PROMPT_HISTORY_FILE))
+    return history if isinstance(history, dict) else {"version": 1, "entries": []}
+
+
 def save_project(root: str, store_dir: str, image_bench_dir: str, platform: str, path: str,
                  snapshot: Dict[str, Any], files: Dict[str, bytes]) -> Dict[str, Any]:
     """
@@ -1275,6 +1281,7 @@ def save_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
                         f"{marked['kind']}:{os.path.basename(marked['path'])}", path=marked["path"])
 
     write_json(os.path.join(data_dir, PROJECT_FILE), data)
+    write_json(os.path.join(data_dir, PROMPT_HISTORY_FILE), read_prompt_history(store_dir))
 
     write_current(store_dir, {"path": relative(root, directory), "trays": hashes})
     return {"project": get_project(root, path), "current": get_current(root, store_dir)}
@@ -1310,6 +1317,12 @@ def open_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
 
     # Merged trays or parameters only leave the workspace with the project it belongs to
     if restore_trays and not merge:
+        # Projects saved before the prompt history keep the history of the workspace
+        history = read_json(os.path.join(data_dir, PROMPT_HISTORY_FILE))
+
+        if history is not None:
+            write_json(os.path.join(store_dir, PROMPT_HISTORY_FILE), history)
+
         write_current(store_dir, {"path": path,
                                   "trays": {kind: read_tray_store(store_dir, kind)[1] for kind in TRAY_KINDS}})
 

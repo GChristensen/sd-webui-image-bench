@@ -900,6 +900,33 @@ export class UIOperations {
         await this.setBatchCount(batchCount);
     }
 
+    /**
+     * Fix the seed of the shown generation tab for the following generations: the given one, else a random one
+     * if it is -1
+     * @param {number|null} value - Seed to use, null keeps the seed of the tab
+     * @returns {Promise<string|number|null>} The seed before, for restoreSeed()
+     */
+    async pinSeed(value = null) {
+        const key = `${this.getTabPrefix()}_SEED`;
+        const seed = this.adapter.getInputValue(key);
+
+        if (value !== null)
+            await this.adapter.setInputValue(key, value);
+        else if (Number(seed) < 0 || seed === '' || seed === null)
+            await this.adapter.setInputValue(key, Math.floor(Math.random() * 2 ** 32));
+
+        return seed;
+    }
+
+    /**
+     * @param {string|number|null} seed - Seed returned by pinSeed()
+     * @returns {Promise<void>}
+     */
+    async restoreSeed(seed) {
+        if (seed !== null && seed !== undefined)
+            await this.adapter.setInputValue(`${this.getTabPrefix()}_SEED`, seed);
+    }
+
     // ==================== LOW-LEVEL UTILITIES ====================
 
     /**

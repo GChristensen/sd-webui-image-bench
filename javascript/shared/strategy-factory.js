@@ -9,6 +9,7 @@ import {ModelExplorationStrategy} from "./strategies/ModelExplorationStrategy.js
 import {BatchGenerationStrategy} from "./strategies/BatchGenerationStrategy.js";
 import {ImageProcessingStrategy} from "./strategies/ImageProcessingStrategy.js";
 import {VaryingParametersStrategy} from "./strategies/VaryingParametersStrategy.js";
+import {ControlNetSweepStrategy} from "./strategies/ControlNetSweepStrategy.js";
 import {messageBus} from "./messaging/MessageBus.js";
 
 /**
@@ -23,7 +24,8 @@ export function createStrategies(uiOperations, popupMessageSender) {
     exploration: new ModelExplorationStrategy(uiOperations, messageBus),
     batch: new BatchGenerationStrategy(uiOperations, messageBus),
     processing: new ImageProcessingStrategy(uiOperations, messageBus),
-    varying: new VaryingParametersStrategy(uiOperations, messageBus)
+    varying: new VaryingParametersStrategy(uiOperations, messageBus),
+    controlNetSweep: new ControlNetSweepStrategy(uiOperations, messageBus)
   };
 
   // Bridge MessageBus events to popup (unified across platforms)

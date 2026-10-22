@@ -19,8 +19,9 @@ export function hookIntoSDWebUI(sendPopupFn, checkWebSocketFn) {
     const img2ImgGenerateButton = getElementById(SELECTORS.IMG2IMG_GENERATE);
     img2ImgGenerateButton.addEventListener("mousedown", onGenerateMousedown);
 
-    const interruptButton = getElementById(SELECTORS.TXT2IMG_INTERRUPT);
-    interruptButton.addEventListener("mousedown", onInterruptMousedown);
+    // Both tabs: stopGeneration() sends mousedown to the shown one
+    for (const id of [SELECTORS.TXT2IMG_INTERRUPT, SELECTORS.IMG2IMG_INTERRUPT])
+        getElementById(id).addEventListener("mousedown", onInterruptMousedown);
     listenInterruptButtonMutations();
 
     // "input" also fires when Image Bench sets the prompts (SDWebuiAdapter.setInputElementValue), "change" does not

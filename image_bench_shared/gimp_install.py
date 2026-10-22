@@ -1,17 +1,13 @@
 """
-Installing the GIMP plugin (editor-extensions/gimp) into the plug-ins folder of the current user's GIMP 3 profile:
-the folder of GIMP3_DIRECTORY if set (GIMP's own override of the profile folder, set by GIMP Portable's launcher),
-else the newest GIMP/3.x folder. GIMP finds new plug-ins when it starts, so it is restarted afterwards; it need not be
-closed meanwhile.
+The GIMP plugin (editor-extensions/gimp): its package and the version installed in the plug-ins folder of the current
+user's GIMP 3 profile: the folder of GIMP3_DIRECTORY if set (GIMP's own override of the profile folder, set by GIMP
+Portable's launcher), else the newest GIMP/3.x folder. It is installed from the downloaded .zip file, or in development
+with editor-extensions/gimp/gimp.py deploy
 """
 import json
 import os
 import re
-import shutil
-import stat
 import sys
-
-from .editor_plugins import PluginError
 
 MANIFEST = os.path.join("image_bench", "manifest.json")
 
@@ -85,34 +81,3 @@ def get_status(manifest):
 
     return status
 
-
-def install_or_elevate(plugin_dir, files, manifest):
-    """
-    Copy the plugin into the plug-ins folder of the GIMP 3 profile (see get_plugins_dir)
-
-    Returns:
-        {"result": "installed", "version": ...}
-
-    Raises:
-        PluginError: On an unsupported platform, or if GIMP 3 has never run
-    """
-    plugins_dir = get_plugins_dir()
-
-    if plugins_dir is None:
-        raise PluginError(f"Installing the plugin is not supported on {sys.platform}")
-
-    if not plugins_dir:
-        raise PluginError("No GIMP 3 settings folder was found: start GIMP 3 once and install again.")
-
-    shutil.rmtree(os.path.join(plugins_dir, PACKAGE_NAME), ignore_errors=True)
-
-    for path in files:
-        target = os.path.join(plugins_dir, path)
-        os.makedirs(os.path.dirname(target), exist_ok=True)
-        shutil.copyfile(os.path.join(plugin_dir, path), target)
-
-    # GIMP runs only executable plug-in files outside Windows
-    main_file = os.path.join(plugins_dir, PACKAGE_NAME, PACKAGE_NAME + ".py")
-    os.chmod(main_file, os.stat(main_file).st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
-
-    return {"result": "installed", "version": manifest["version"]}
