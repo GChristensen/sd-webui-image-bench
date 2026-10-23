@@ -22650,7 +22650,7 @@ const _sfc_main$G = {
     }
   },
   emits: ["change"],
-  setup(__props, { emit: __emit }) {
+  setup(__props, { expose: __expose, emit: __emit }) {
     const props = __props;
     const emit2 = __emit;
     const width = computed(() => parseInt(props.width) || 0);
@@ -22665,8 +22665,16 @@ const _sfc_main$G = {
       }
       emit2("change", which === "width" ? value : width.value, which === "height" ? value : height.value);
     }
+    const root = ref(null);
+    function flash() {
+      var _a;
+      (_a = root.value) == null ? void 0 : _a.querySelectorAll("input").forEach((input) => animateColors(input, 0.7));
+    }
+    __expose({ flash });
     return (_ctx, _cache) => {
       return openBlock(), createElementBlock("div", {
+        ref_key: "root",
+        ref: root,
         class: "resize-to",
         title: __props.label
       }, [
@@ -22710,7 +22718,7 @@ const _sfc_main$G = {
     };
   }
 };
-const ResizeToInput = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["__scopeId", "data-v-c91a1a7f"]]);
+const ResizeToInput = /* @__PURE__ */ _export_sfc(_sfc_main$G, [["__scopeId", "data-v-812392fa"]]);
 const _withScopeId$k = (n) => (pushScopeId("data-v-0eaf74a3"), n = n(), popScopeId(), n);
 const _hoisted_1$F = { class: "size-select" };
 const _hoisted_2$F = ["disabled", "title", "aria-expanded"];
@@ -25826,7 +25834,7 @@ function useControlNetUnit({ unit, tab, has: has2 }) {
     previewStale
   };
 }
-const _withScopeId$d = (n) => (pushScopeId("data-v-1e318216"), n = n(), popScopeId(), n);
+const _withScopeId$d = (n) => (pushScopeId("data-v-3a878898"), n = n(), popScopeId(), n);
 const _hoisted_1$o = { class: "view-container generate" };
 const _hoisted_2$o = { class: "toolbar" };
 const _hoisted_3$n = { class: "toolbar-group" };
@@ -26175,6 +26183,12 @@ const _sfc_main$o = {
     function toggleSizeInputs() {
       sizeInputModes.value = { ...sizeInputModes.value, [mode.value]: !sizeInputs.value };
       storage.setItem(SIZE_INPUT_KEY, JSON.stringify(sizeInputModes.value));
+    }
+    const sizeInput = ref(null);
+    function onCellUseSize(width, height) {
+      var _a;
+      setParams({ width, height });
+      (_a = sizeInput.value) == null ? void 0 : _a.flash();
     }
     const checkpointTitle = computed(() => hasModules.value ? `${checkpointValue.value}
 VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointValue.value);
@@ -27149,6 +27163,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 ], 8, _hoisted_35$3),
                 sizeInputs.value ? (openBlock(), createBlock(ResizeToInput, {
                   key: 0,
+                  ref_key: "sizeInput",
+                  ref: sizeInput,
                   class: "size",
                   width: form.width,
                   height: form.height,
@@ -27392,7 +27408,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                 onUpload: onInputUpload,
                 onShowParams,
                 onSetMarking,
-                onUseSize: _cache[43] || (_cache[43] = (width, height) => setParams({ width, height }))
+                onUseSize: onCellUseSize
               }, null, 8, ["style", "mode", "result-url", "result-media", "live-progress", "result-clickable", "input-image", "input-mask", "inpaint-crop", "action-image"])
             ]),
             createBaseVNode("div", {
@@ -27403,9 +27419,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               "aria-valuenow": sideWidth.size,
               tabindex: "0",
               title: "Drag to resize the column; double-click to restore it",
-              onPointerdown: _cache[44] || (_cache[44] = (...args) => sideWidth.onPointerDown && sideWidth.onPointerDown(...args)),
-              onKeydown: _cache[45] || (_cache[45] = (...args) => sideWidth.onKeydown && sideWidth.onKeydown(...args)),
-              onDblclick: _cache[46] || (_cache[46] = (...args) => sideWidth.reset && sideWidth.reset(...args))
+              onPointerdown: _cache[43] || (_cache[43] = (...args) => sideWidth.onPointerDown && sideWidth.onPointerDown(...args)),
+              onKeydown: _cache[44] || (_cache[44] = (...args) => sideWidth.onKeydown && sideWidth.onKeydown(...args)),
+              onDblclick: _cache[45] || (_cache[45] = (...args) => sideWidth.reset && sideWidth.reset(...args))
             }, _hoisted_60$3, 42, _hoisted_58$3),
             wide.value ? (openBlock(), createElementBlock("div", {
               key: 0,
@@ -27416,9 +27432,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
               "aria-valuenow": imageWidth.size,
               tabindex: "0",
               title: "Drag to resize the image column; double-click to fit it to the image",
-              onPointerdown: _cache[47] || (_cache[47] = (...args) => imageWidth.onPointerDown && imageWidth.onPointerDown(...args)),
-              onKeydown: _cache[48] || (_cache[48] = (...args) => imageWidth.onKeydown && imageWidth.onKeydown(...args)),
-              onDblclick: _cache[49] || (_cache[49] = (...args) => imageWidth.reset && imageWidth.reset(...args))
+              onPointerdown: _cache[46] || (_cache[46] = (...args) => imageWidth.onPointerDown && imageWidth.onPointerDown(...args)),
+              onKeydown: _cache[47] || (_cache[47] = (...args) => imageWidth.onKeydown && imageWidth.onKeydown(...args)),
+              onDblclick: _cache[48] || (_cache[48] = (...args) => imageWidth.reset && imageWidth.reset(...args))
             }, _hoisted_63$3, 42, _hoisted_61$3)) : createCommentVNode("", true),
             createBaseVNode("div", _hoisted_64$3, [
               unref(has2)("negativePrompt") ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
@@ -27432,9 +27448,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   "aria-valuemax": NEGATIVE_HEIGHT.max,
                   tabindex: "0",
                   title: "Drag to resize the negative prompt; double-click to restore it",
-                  onPointerdown: _cache[50] || (_cache[50] = (...args) => negative.onPointerDown && negative.onPointerDown(...args)),
-                  onKeydown: _cache[51] || (_cache[51] = (...args) => negative.onKeydown && negative.onKeydown(...args)),
-                  onDblclick: _cache[52] || (_cache[52] = (...args) => negative.reset && negative.reset(...args))
+                  onPointerdown: _cache[49] || (_cache[49] = (...args) => negative.onPointerDown && negative.onPointerDown(...args)),
+                  onKeydown: _cache[50] || (_cache[50] = (...args) => negative.onKeydown && negative.onKeydown(...args)),
+                  onDblclick: _cache[51] || (_cache[51] = (...args) => negative.reset && negative.reset(...args))
                 }, _hoisted_67$3, 42, _hoisted_65$3),
                 createVNode(PromptField, {
                   ref_key: "negativeField",
@@ -27444,8 +27460,8 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   tokens: unref(has2)("tokens") ? (_b = unref(sdWebUI).tokens) == null ? void 0 : _b.negativePrompt : null,
                   style: normalizeStyle({ height: `${negative.size + 20}px` }),
                   "model-value": form.negativePrompt ?? "",
-                  "onUpdate:modelValue": _cache[53] || (_cache[53] = (v) => setParam("negativePrompt", v)),
-                  onFocusin: _cache[54] || (_cache[54] = ($event) => snippetTarget.value = "negativePrompt")
+                  "onUpdate:modelValue": _cache[52] || (_cache[52] = (v) => setParam("negativePrompt", v)),
+                  onFocusin: _cache[53] || (_cache[53] = ($event) => snippetTarget.value = "negativePrompt")
                 }, createSlots({ _: 2 }, [
                   historyEntry.value ? {
                     name: "view",
@@ -27465,13 +27481,13 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   type: "button",
                   class: "collapsed-tab label-small",
                   title: "Show the generation parameters",
-                  onClick: _cache[55] || (_cache[55] = ($event) => showLowerTab("params"))
+                  onClick: _cache[54] || (_cache[54] = ($event) => showLowerTab("params"))
                 }, "Parameters"),
                 createBaseVNode("button", {
                   type: "button",
                   class: "collapsed-tab label-small",
                   title: "Show the images generated in this session",
-                  onClick: _cache[56] || (_cache[56] = ($event) => showLowerTab("session"))
+                  onClick: _cache[55] || (_cache[55] = ($event) => showLowerTab("session"))
                 }, [
                   createTextVNode("Session "),
                   unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_69$3, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
@@ -27483,7 +27499,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   title: "Show the generation parameters",
                   "aria-label": "Show the generation parameters",
                   "aria-expanded": false,
-                  onClick: _cache[57] || (_cache[57] = ($event) => showLowerTab(lowerTab.value))
+                  onClick: _cache[56] || (_cache[56] = ($event) => showLowerTab(lowerTab.value))
                 }, [
                   createVNode(AppIcon, {
                     name: "chevron",
@@ -27499,9 +27515,9 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                   "aria-valuenow": lowerHeight.size,
                   tabindex: "0",
                   title: "Drag to resize the parameters and the filmstrip; double-click to fit the parameters",
-                  onPointerdown: _cache[58] || (_cache[58] = (...args) => lowerHeight.onPointerDown && lowerHeight.onPointerDown(...args)),
-                  onKeydown: _cache[59] || (_cache[59] = (...args) => lowerHeight.onKeydown && lowerHeight.onKeydown(...args)),
-                  onDblclick: _cache[60] || (_cache[60] = (...args) => lowerHeight.reset && lowerHeight.reset(...args))
+                  onPointerdown: _cache[57] || (_cache[57] = (...args) => lowerHeight.onPointerDown && lowerHeight.onPointerDown(...args)),
+                  onKeydown: _cache[58] || (_cache[58] = (...args) => lowerHeight.onKeydown && lowerHeight.onKeydown(...args)),
+                  onDblclick: _cache[59] || (_cache[59] = (...args) => lowerHeight.reset && lowerHeight.reset(...args))
                 }, _hoisted_73$3, 42, _hoisted_71$3),
                 createBaseVNode("div", {
                   class: "lower-area",
@@ -27541,7 +27557,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                         onSet: unref(controlNet).setParam,
                         onGuidance: unref(controlNet).setGuidance,
                         onSelectUnit: selectControlNetUnit,
-                        onOpen: _cache[63] || (_cache[63] = ($event) => unref(router2).push("/controlnet"))
+                        onOpen: _cache[62] || (_cache[62] = ($event) => unref(router2).push("/controlnet"))
                       }, {
                         tabs: withCtx(() => [
                           isTxt2Img.value && unref(has2)("hires") && unref(has2)("hiresFix") ? (openBlock(), createElementBlock("input", {
@@ -27551,11 +27567,11 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                             checked: !!form.hiresFix,
                             "aria-label": "Hires. fix",
                             title: "Hires. fix",
-                            onChange: _cache[61] || (_cache[61] = (e) => setParam("hiresFix", e.target.checked))
+                            onChange: _cache[60] || (_cache[60] = (e) => setParam("hiresFix", e.target.checked))
                           }, null, 40, _hoisted_75$3)) : createCommentVNode("", true),
                           createVNode(GroupTabs, {
                             modelValue: groupTab.value,
-                            "onUpdate:modelValue": _cache[62] || (_cache[62] = ($event) => groupTab.value = $event),
+                            "onUpdate:modelValue": _cache[61] || (_cache[61] = ($event) => groupTab.value = $event),
                             tabs: groupTabs.value
                           }, null, 8, ["modelValue", "tabs"])
                         ]),
@@ -27572,7 +27588,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                           fn: withCtx(() => [
                             createVNode(GroupTabs, {
                               modelValue: groupTab.value,
-                              "onUpdate:modelValue": _cache[64] || (_cache[64] = ($event) => groupTab.value = $event),
+                              "onUpdate:modelValue": _cache[63] || (_cache[63] = ($event) => groupTab.value = $event),
                               tabs: groupTabs.value
                             }, null, 8, ["modelValue", "tabs"])
                           ]),
@@ -27592,7 +27608,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                           fn: withCtx(() => [
                             createVNode(GroupTabs, {
                               modelValue: groupTab.value,
-                              "onUpdate:modelValue": _cache[65] || (_cache[65] = ($event) => groupTab.value = $event),
+                              "onUpdate:modelValue": _cache[64] || (_cache[64] = ($event) => groupTab.value = $event),
                               tabs: groupTabs.value
                             }, null, 8, ["modelValue", "tabs"])
                           ]),
@@ -27608,11 +27624,11 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                     images: unref(sessionImagesStore).images,
                     selected: selectedImage.value,
                     active: lowerTab.value === "session",
-                    onSelect: _cache[66] || (_cache[66] = (image) => selectedImage.value = image),
+                    onSelect: _cache[65] || (_cache[65] = (image) => selectedImage.value = image),
                     onOpen: openImageOverlay,
                     onShowParams,
                     onInteract: keepStrip,
-                    onMouseenter: _cache[67] || (_cache[67] = ($event) => stripHovered.value = true),
+                    onMouseenter: _cache[66] || (_cache[66] = ($event) => stripHovered.value = true),
                     onMouseleave: onStripLeave
                   }, null, 8, ["images", "selected", "active"]), [
                     [vShow, lowerTab.value === "session"]
@@ -27624,7 +27640,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       title: "Hide the generation parameters",
                       "aria-label": "Hide the generation parameters",
                       "aria-expanded": true,
-                      onClick: _cache[68] || (_cache[68] = ($event) => {
+                      onClick: _cache[67] || (_cache[67] = ($event) => {
                         paramsCollapsed.value = true;
                         stripAutoShown.value = false;
                       })
@@ -27639,7 +27655,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       role: "tab",
                       class: normalizeClass(["lower-tab label-small", { on: lowerTab.value === "params" }]),
                       "aria-selected": lowerTab.value === "params",
-                      onClick: _cache[69] || (_cache[69] = ($event) => showLowerTab("params"))
+                      onClick: _cache[68] || (_cache[68] = ($event) => showLowerTab("params"))
                     }, "Parameters", 10, _hoisted_77$2),
                     createBaseVNode("button", {
                       type: "button",
@@ -27647,7 +27663,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       class: normalizeClass(["lower-tab label-small", { on: lowerTab.value === "session" }]),
                       "aria-selected": lowerTab.value === "session",
                       title: "Images generated in this session",
-                      onClick: _cache[70] || (_cache[70] = ($event) => showLowerTab("session"))
+                      onClick: _cache[69] || (_cache[69] = ($event) => showLowerTab("session"))
                     }, [
                       createTextVNode("Session"),
                       unref(sessionImagesStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_79$2, toDisplayString(unref(sessionImagesStore).images.length), 1)) : createCommentVNode("", true)
@@ -27658,7 +27674,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
                       class: "params-toggle clear-session",
                       title: "Clear the filmstrip",
                       "aria-label": "Clear the filmstrip",
-                      onClick: _cache[71] || (_cache[71] = ($event) => unref(sessionImagesStore).clear())
+                      onClick: _cache[70] || (_cache[70] = ($event) => unref(sessionImagesStore).clear())
                     }, [
                       createVNode(AppIcon, {
                         name: "trash",
@@ -27675,7 +27691,7 @@ VAE / Text Encoder: ${modulesSummary(form.modules) || "built-in"}` : checkpointV
     };
   }
 };
-const Generate = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-1e318216"]]);
+const Generate = /* @__PURE__ */ _export_sfc(_sfc_main$o, [["__scopeId", "data-v-3a878898"]]);
 const _withScopeId$c = (n) => (pushScopeId("data-v-3e89da36"), n = n(), popScopeId(), n);
 const _hoisted_1$n = { class: "pane-header" };
 const _hoisted_2$n = {
@@ -34698,6 +34714,27 @@ const _sfc_main$8 = {
   }
 };
 const ManualBrowser = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["__scopeId", "data-v-35e71dd0"]]);
+const canny = {
+  version: "1.0.0",
+  file: "image-bench.canny_1.0.0.ccx"
+};
+const krita = {
+  version: "1.1.0",
+  file: "image_bench_1.1.0.zip"
+};
+const gimp = {
+  version: "1.1.0",
+  file: "image_bench_gimp_1.1.0.zip"
+};
+const PLUGINS = {
+  "image-bench": {
+    version: "1.3.0",
+    file: "image-bench.photoshop_1.3.0.ccx"
+  },
+  canny,
+  krita,
+  gimp
+};
 const _hoisted_1$7 = { class: "plugin-card" };
 const _hoisted_2$7 = { class: "plugin-card-header" };
 const _hoisted_3$7 = { class: "ps-badge" };
@@ -34709,11 +34746,12 @@ const _hoisted_8$3 = {
   key: 0,
   class: "plugin-notes"
 };
-const PLUGIN_URL = "/image-bench/editor/plugin";
+const RELEASE_URL = "https://github.com/GChristensen/image-bench/releases/tag/editor-plugins";
+const DOWNLOAD_URL = "https://github.com/GChristensen/image-bench/releases/download/editor-plugins/";
 const _sfc_main$7 = {
   __name: "PluginCard",
   props: {
-    // Plugin name of the backend (shared_backend/editor_plugins.py: PLUGINS)
+    // Plugin name of editor-plugins.json (editor-extensions/plugin_tools/editor_plugins.py: PLUGINS)
     plugin: { type: String, required: true },
     title: { type: String, required: true },
     // Short name of the editor on the badge
@@ -34721,52 +34759,37 @@ const _sfc_main$7 = {
   },
   setup(__props) {
     const props = __props;
-    const query = computed(() => `?plugin=${encodeURIComponent(props.plugin)}`);
-    const status = ref(null);
-    const isRemoteHost = !["localhost", "127.0.0.1", "[::1]", "::1"].includes(location.hostname);
-    const state = computed(() => {
-      const value = status.value;
-      if (!value)
-        return "";
-      if (!value.available)
-        return "The plugin files are missing from the extension.";
-      if (!value.installed)
-        return `Version ${value.available} is supplied; not installed${isRemoteHost ? " on the server computer" : ""}.`;
-      if (value.installed !== value.available)
-        return `Version ${value.installed} is installed, ${value.available} is supplied: download it to update.`;
-      return `Version ${value.installed} is installed${isRemoteHost ? " on the server computer" : ""}.`;
+    const info = computed(() => PLUGINS[props.plugin]);
+    const extension = computed(() => {
+      var _a;
+      return ((_a = info.value) == null ? void 0 : _a.file.slice(info.value.file.lastIndexOf("."))) ?? "";
     });
-    async function loadStatus() {
-      try {
-        const response = await fetch(PLUGIN_URL + query.value);
-        status.value = response.ok ? await response.json() : null;
-      } catch (e) {
-        status.value = null;
-      }
-    }
-    onMounted(loadStatus);
     return (_ctx, _cache) => {
-      var _a, _b;
       return openBlock(), createElementBlock("div", _hoisted_1$7, [
         createBaseVNode("div", _hoisted_2$7, [
           createBaseVNode("span", _hoisted_3$7, toDisplayString(__props.badge), 1),
           createBaseVNode("div", null, [
             createBaseVNode("div", _hoisted_4$6, toDisplayString(__props.title), 1),
-            createBaseVNode("div", _hoisted_5$6, toDisplayString(state.value || "Checking the plugin…"), 1)
+            createBaseVNode("div", _hoisted_5$6, toDisplayString(info.value ? `Version ${info.value.version}` : "Not published yet."), 1)
           ])
         ]),
         createBaseVNode("div", _hoisted_6$6, [
           createBaseVNode("a", {
-            class: normalizeClass(["btn primary", { disabled: !((_a = status.value) == null ? void 0 : _a.available) }]),
-            href: `${PLUGIN_URL}/package${query.value}`,
-            download: ""
+            class: normalizeClass(["btn primary", { disabled: !info.value }]),
+            href: info.value ? DOWNLOAD_URL + info.value.file : void 0
           }, [
             createVNode(AppIcon, {
               name: "save",
               size: 14
             }),
-            createTextVNode("Download " + toDisplayString(((_b = status.value) == null ? void 0 : _b.package) ?? ""), 1)
-          ], 10, _hoisted_7$6)
+            createTextVNode("Download " + toDisplayString(extension.value), 1)
+          ], 10, _hoisted_7$6),
+          createBaseVNode("a", {
+            class: "btn",
+            href: RELEASE_URL,
+            target: "_blank",
+            rel: "noopener"
+          }, "Release page")
         ]),
         _ctx.$slots.default ? (openBlock(), createElementBlock("ul", _hoisted_8$3, [
           renderSlot(_ctx.$slots, "default", {}, void 0)
@@ -34775,7 +34798,7 @@ const _sfc_main$7 = {
     };
   }
 };
-const PluginCard = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-697b90bd"]]);
+const PluginCard = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-1fe5c9db"]]);
 const _withScopeId$4 = (n) => (pushScopeId("data-v-8a38b273"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "manual" };
 const _hoisted_2$6 = { id: "manual-overview" };
@@ -37704,7 +37727,7 @@ const _sfc_main$5 = {
   }
 };
 const Library = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__scopeId", "data-v-d474331a"]]);
-const _withScopeId$2 = (n) => (pushScopeId("data-v-7711ecee"), n = n(), popScopeId(), n);
+const _withScopeId$2 = (n) => (pushScopeId("data-v-504f1441"), n = n(), popScopeId(), n);
 const _hoisted_1$4 = { class: "projects-browser" };
 const _hoisted_2$4 = {
   key: 0,
@@ -37781,6 +37804,7 @@ const _sfc_main$4 = {
     const selectedKey = ref(store.selectedPath);
     const showAllTags = ref(false);
     const isLocal = ["localhost", "127.0.0.1", "[::1]", "::1"].includes(location.hostname);
+    const canReveal = isLocal && navigator.userAgent.includes("Windows");
     const toNodes = (entries2) => entries2.map((entry) => entry.type === "folder" ? { key: entry.path, name: entry.name, children: toNodes(entry.children), entry } : { key: entry.path, name: entry.name, entry });
     const nodes = computed(() => {
       var _a;
@@ -37952,7 +37976,7 @@ ${project.prompt ?? ""}`.toLowerCase();
       items.push({ icon: "swap", label: "Move to…", run: () => moveTo(entry) });
       items.push({ separator: true });
       items.push({ icon: "copy", label: "Copy path", run: () => copyPath(entry.path) });
-      if (isLocal)
+      if (canReveal)
         items.push({ icon: "external", label: "Show in Explorer", run: () => store.reveal(entry.path) });
       items.push({ separator: true });
       items.push({ icon: "trash", label: "Delete…", hint: "Del", danger: true, run: () => store.remove(entry) });
@@ -38198,7 +38222,7 @@ ${project.prompt ?? ""}`.toLowerCase();
     };
   }
 };
-const ProjectsBrowser = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-7711ecee"]]);
+const ProjectsBrowser = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-504f1441"]]);
 const _hoisted_1$3 = ["src", "alt"];
 const _hoisted_2$3 = { class: "bar" };
 const _hoisted_3$3 = ["disabled"];
@@ -43608,13 +43632,13 @@ textarea[data-v-95ab2599]:focus {
   padding: 6px;
 }
 
-.resize-to[data-v-c91a1a7f] {
+.resize-to[data-v-812392fa] {
   display: flex;
   align-items: center;
   gap: 4px;
   min-width: 0;
 }
-.resize-to input[data-v-c91a1a7f] {
+.resize-to input[data-v-812392fa] {
   flex: 1;
   width: 0;
   min-width: 0;
@@ -43630,37 +43654,37 @@ textarea[data-v-95ab2599]:focus {
   text-align: center;
   -moz-appearance: textfield;
 }
-.resize-to input[data-v-c91a1a7f]::-webkit-inner-spin-button,
-.resize-to input[data-v-c91a1a7f]::-webkit-outer-spin-button {
+.resize-to input[data-v-812392fa]::-webkit-inner-spin-button,
+.resize-to input[data-v-812392fa]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-.resize-to input[data-v-c91a1a7f]:focus {
+.resize-to input[data-v-812392fa]:focus {
   outline: none;
   border-color: var(--ib-accent-border);
 }
-.resize-to input.unaligned[data-v-c91a1a7f] {
+.resize-to input.unaligned[data-v-812392fa] {
   border-color: var(--ib-warn);
   color: var(--ib-warn);
 }
-.times[data-v-c91a1a7f] {
+.times[data-v-812392fa] {
   flex-shrink: 0;
   color: var(--ib-muted);
   font-size: 12px;
   cursor: pointer;
 }
-.times[data-v-c91a1a7f]:hover {
+.times[data-v-812392fa]:hover {
   color: var(--ib-text);
 }
-.times.disabled[data-v-c91a1a7f] {
+.times.disabled[data-v-812392fa] {
   cursor: default;
   pointer-events: none;
 }
-.round[data-v-c91a1a7f] {
+.round[data-v-812392fa] {
   font-family: var(--ib-mono);
   font-size: 10.5px;
 }
-.round.on[data-v-c91a1a7f] {
+.round.on[data-v-812392fa] {
   background: var(--ib-accent-soft);
   border-color: var(--ib-accent-border);
   color: var(--ib-accent);
@@ -45051,7 +45075,7 @@ footer[data-v-fc8704c9] {
   color: var(--ib-warn);
 }
 
-.generate-grid[data-v-1e318216] {
+.generate-grid[data-v-3a878898] {
   flex: 1;
   min-height: 0;
   min-width: 0;
@@ -45067,27 +45091,27 @@ footer[data-v-fc8704c9] {
     "lower  side";
   gap: 10px 14px;
 }
-.generate-grid.wide[data-v-1e318216] {
+.generate-grid.wide[data-v-3a878898] {
   grid-template-areas:
     "model  header image"
     "prompt side   image"
     "lower  side   image";
 }
-.model-row[data-v-1e318216] {
+.model-row[data-v-3a878898] {
   grid-area: model;
 }
-.lora-header[data-v-1e318216] {
+.lora-header[data-v-3a878898] {
   grid-area: header;
 }
-.prompt[data-v-1e318216] {
+.prompt[data-v-3a878898] {
   grid-area: prompt;
 }
-.lower[data-v-1e318216] {
+.lower[data-v-3a878898] {
   grid-area: lower;
 }
 
 /* The side panel, its grip and the image below it */
-.side[data-v-1e318216] {
+.side[data-v-3a878898] {
   grid-area: side;
   display: flex;
   flex-direction: column;
@@ -45095,63 +45119,63 @@ footer[data-v-fc8704c9] {
   min-width: 0;
   min-height: 0;
 }
-.side > .side-panel[data-v-1e318216] {
+.side > .side-panel[data-v-3a878898] {
   flex: 1;
 }
-.side > .image-cell[data-v-1e318216] {
+.side > .image-cell[data-v-3a878898] {
   flex: none;
 }
 
 /* Wide, the side panel and the image are grid items of their own */
-.wide .side[data-v-1e318216] {
+.wide .side[data-v-3a878898] {
   display: contents;
 }
-.wide .side-panel[data-v-1e318216] {
+.wide .side-panel[data-v-3a878898] {
   grid-area: side;
 }
-.wide .image-cell[data-v-1e318216] {
+.wide .image-cell[data-v-3a878898] {
   grid-area: image;
 }
 
 /* ---------- Model row ---------- */
-.model-row[data-v-1e318216] {
+.model-row[data-v-3a878898] {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
-.checkpoint[data-v-1e318216] {
+.checkpoint[data-v-3a878898] {
   flex: 1 1 160px;
 }
 
 /* Close to the dropdown it switches, the gap of the row is too wide */
-.slot-switch[data-v-1e318216] {
+.slot-switch[data-v-3a878898] {
   width: 18px;
   margin-right: -4px;
 }
-.size[data-v-1e318216] {
+.size[data-v-3a878898] {
   flex: 0 1 190px;
 }
-.inline-field[data-v-1e318216] {
+.inline-field[data-v-3a878898] {
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--ib-text-2);
   font-size: 12px;
 }
-.ib.busy[data-v-1e318216]:disabled {
+.ib.busy[data-v-3a878898]:disabled {
   opacity: 1;
 }
 
 /* ---------- Prompt history ---------- */
-.history-info[data-v-1e318216] {
+.history-info[data-v-3a878898] {
   color: var(--ib-muted);
   font-family: var(--ib-mono);
   font-size: 10px;
   white-space: nowrap;
 }
-.history-btn[data-v-1e318216] {
+.history-btn[data-v-3a878898] {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -45164,26 +45188,26 @@ footer[data-v-fc8704c9] {
   font-size: 10px;
   cursor: pointer;
 }
-.history-btn[data-v-1e318216]:hover {
+.history-btn[data-v-3a878898]:hover {
   border-color: var(--ib-border-2);
   color: var(--ib-text);
 }
-.history-btn.icon[data-v-1e318216] {
+.history-btn.icon[data-v-3a878898] {
   width: 16px;
   padding: 0;
   justify-content: center;
 }
-.history-btn.on[data-v-1e318216] {
+.history-btn.on[data-v-3a878898] {
   border-color: var(--ib-accent-border);
   color: var(--ib-accent);
 }
-.history-btn.use[data-v-1e318216] {
+.history-btn.use[data-v-3a878898] {
   border-color: var(--ib-accent);
   background: var(--ib-accent);
   color: var(--ib-accent-ink);
   font-weight: 600;
 }
-.history-btn.use[data-v-1e318216]:hover {
+.history-btn.use[data-v-3a878898]:hover {
   border-color: var(--ib-accent-hover);
   background: var(--ib-accent-hover);
   color: var(--ib-accent-ink);
@@ -45192,14 +45216,14 @@ footer[data-v-fc8704c9] {
 /* ---------- UI preset switch ---------- */
 
 /* Shrinks before the buttons around it; the status label then ellipsizes, the spinner stays */
-.status-slot[data-v-1e318216] {
+.status-slot[data-v-3a878898] {
   flex: 1 1 0;
   min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.status-pill[data-v-1e318216] {
+.status-pill[data-v-3a878898] {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -45214,55 +45238,55 @@ footer[data-v-fc8704c9] {
   font-size: 11.5px;
   white-space: nowrap;
 }
-.status-pill.waiting[data-v-1e318216] {
+.status-pill.waiting[data-v-3a878898] {
   border-color: var(--ib-border-2);
   background: var(--ib-elev-2);
   color: var(--ib-text-2);
 }
-.status-pill .spinner[data-v-1e318216] {
+.status-pill .spinner[data-v-3a878898] {
   flex: none;
   width: 10px;
   height: 10px;
 }
-.status-pill .dot[data-v-1e318216] {
+.status-pill .dot[data-v-3a878898] {
   flex: none;
   width: 7px;
   height: 7px;
   border-radius: 50%;
   background: var(--ib-muted);
-  animation: status-pulse-1e318216 1.4s ease-in-out infinite;
+  animation: status-pulse-3a878898 1.4s ease-in-out infinite;
 }
-@keyframes status-pulse-1e318216 {
+@keyframes status-pulse-3a878898 {
 50% {
     opacity: 0.45;
 }
 }
-.status-text[data-v-1e318216] {
+.status-text[data-v-3a878898] {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.status-enter-active[data-v-1e318216],
-.status-leave-active[data-v-1e318216] {
+.status-enter-active[data-v-3a878898],
+.status-leave-active[data-v-3a878898] {
   transition: opacity 0.15s;
 }
-.status-enter-from[data-v-1e318216],
-.status-leave-to[data-v-1e318216] {
+.status-enter-from[data-v-3a878898],
+.status-leave-to[data-v-3a878898] {
   opacity: 0;
 }
 
 /* ---------- LoRAs ---------- */
-.lora-header[data-v-1e318216] {
+.lora-header[data-v-3a878898] {
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
 }
-.side-tabs[data-v-1e318216] {
+.side-tabs[data-v-3a878898] {
   display: flex;
   gap: 12px;
 }
-.side-tab[data-v-1e318216] {
+.side-tab[data-v-3a878898] {
   height: 26px;
   padding: 0 2px;
   display: inline-flex;
@@ -45273,17 +45297,17 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.side-tab[data-v-1e318216]:hover {
+.side-tab[data-v-3a878898]:hover {
   color: var(--ib-text-2);
 }
-.side-tab.on[data-v-1e318216] {
+.side-tab.on[data-v-3a878898] {
   border-bottom-color: var(--ib-accent);
   color: var(--ib-text);
 }
-.spacer[data-v-1e318216] {
+.spacer[data-v-3a878898] {
   flex: 1;
 }
-.edit-switch[data-v-1e318216] {
+.edit-switch[data-v-3a878898] {
   display: inline-flex;
   align-items: center;
   gap: 7px;
@@ -45296,7 +45320,7 @@ footer[data-v-fc8704c9] {
   font-size: 12px;
   cursor: pointer;
 }
-.edit-switch i[data-v-1e318216] {
+.edit-switch i[data-v-3a878898] {
   position: relative;
   width: 28px;
   height: 16px;
@@ -45304,7 +45328,7 @@ footer[data-v-fc8704c9] {
   background: var(--ib-elev-2);
   transition: background 0.15s;
 }
-.edit-switch i[data-v-1e318216]::after {
+.edit-switch i[data-v-3a878898]::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -45315,14 +45339,14 @@ footer[data-v-fc8704c9] {
   background: var(--ib-text-2);
   transition: left 0.15s;
 }
-.edit-switch[aria-checked="true"] i[data-v-1e318216] {
+.edit-switch[aria-checked="true"] i[data-v-3a878898] {
   background: var(--ib-accent);
 }
-.edit-switch[aria-checked="true"] i[data-v-1e318216]::after {
+.edit-switch[aria-checked="true"] i[data-v-3a878898]::after {
   left: 14px;
   background: var(--ib-accent-ink);
 }
-.filter[data-v-1e318216] {
+.filter[data-v-3a878898] {
   flex: 1;
   min-width: 0;
   height: 26px;
@@ -45333,16 +45357,16 @@ footer[data-v-fc8704c9] {
   color: var(--ib-text);
   font: inherit;
 }
-.filter[data-v-1e318216]:focus {
+.filter[data-v-3a878898]:focus {
   outline: none;
   border-color: var(--ib-accent-border);
 }
 
 /* Aligned with the prompt textarea, below its label */
-.side-panel[data-v-1e318216] {
+.side-panel[data-v-3a878898] {
   margin-top: 20px;
 }
-.lora-tree[data-v-1e318216] {
+.lora-tree[data-v-3a878898] {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -45351,20 +45375,20 @@ footer[data-v-fc8704c9] {
   border-radius: 6px;
   background: var(--ib-surface);
 }
-.empty[data-v-1e318216] {
+.empty[data-v-3a878898] {
   margin: auto;
   color: var(--ib-muted);
   font-size: 12px;
 }
 
 /* ---------- Negative prompt and parameters ---------- */
-.lower[data-v-1e318216] {
+.lower[data-v-3a878898] {
   display: flex;
   flex-direction: column;
   gap: 10px;
   min-width: 0;
 }
-.grip[data-v-1e318216] {
+.grip[data-v-3a878898] {
   height: 12px;
   margin: -8px 0 -10px;
   display: flex;
@@ -45374,7 +45398,7 @@ footer[data-v-fc8704c9] {
   cursor: row-resize;
   touch-action: none;
 }
-.grip i[data-v-1e318216] {
+.grip i[data-v-3a878898] {
   width: 40px;
   height: 4px;
   border-radius: 2px;
@@ -45382,7 +45406,7 @@ footer[data-v-fc8704c9] {
 }
 
 /* In the gap at the left of its column, over the whole grid height */
-.column-grip[data-v-1e318216] {
+.column-grip[data-v-3a878898] {
   grid-row: 1 / -1;
   justify-self: start;
   width: 10px;
@@ -45394,32 +45418,32 @@ footer[data-v-fc8704c9] {
   cursor: col-resize;
   touch-action: none;
 }
-.side-grip[data-v-1e318216] {
+.side-grip[data-v-3a878898] {
   grid-column: 2;
 }
-.image-grip[data-v-1e318216] {
+.image-grip[data-v-3a878898] {
   grid-column: 3;
 }
-.column-grip i[data-v-1e318216] {
+.column-grip i[data-v-3a878898] {
   width: 4px;
   height: 40px;
   border-radius: 2px;
   background: var(--ib-border-2);
 }
-.grip:hover i[data-v-1e318216],
-.grip:focus-visible i[data-v-1e318216],
-.grip.active i[data-v-1e318216],
-.column-grip:hover i[data-v-1e318216],
-.column-grip:focus-visible i[data-v-1e318216],
-.column-grip.active i[data-v-1e318216] {
+.grip:hover i[data-v-3a878898],
+.grip:focus-visible i[data-v-3a878898],
+.grip.active i[data-v-3a878898],
+.column-grip:hover i[data-v-3a878898],
+.column-grip:focus-visible i[data-v-3a878898],
+.column-grip.active i[data-v-3a878898] {
   background: var(--ib-accent);
 }
-.grip[data-v-1e318216]:focus-visible,
-.column-grip[data-v-1e318216]:focus-visible {
+.grip[data-v-3a878898]:focus-visible,
+.column-grip[data-v-3a878898]:focus-visible {
   outline: none;
   background: var(--ib-accent-soft);
 }
-.groups[data-v-1e318216] {
+.groups[data-v-3a878898] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -45427,28 +45451,28 @@ footer[data-v-fc8704c9] {
 }
 
 /* Hires. fix checkbox before the tabs of the ControlNet group, as in the Hires. fix group */
-.group-check[data-v-1e318216] {
+.group-check[data-v-3a878898] {
   margin: 0;
 }
 
 /* Parameters or filmstrip, with their tabs at the right edge */
-.lower-area[data-v-1e318216] {
+.lower-area[data-v-3a878898] {
   display: flex;
   gap: 8px;
   min-height: 0;
 }
-.lower-pane[data-v-1e318216] {
+.lower-pane[data-v-3a878898] {
   flex: 1;
   min-width: 0;
   min-height: 0;
 }
 
 /* Scrolled when the area is resized below the height of the groups */
-.params-pane[data-v-1e318216] {
+.params-pane[data-v-3a878898] {
   overflow-y: auto;
   overflow-x: hidden;
 }
-.lower-tabs[data-v-1e318216] {
+.lower-tabs[data-v-3a878898] {
   flex: none;
   display: flex;
   flex-direction: column;
@@ -45459,7 +45483,7 @@ footer[data-v-fc8704c9] {
 }
 
 /* Rotated, read from the bottom up */
-.lower-tab[data-v-1e318216] {
+.lower-tab[data-v-3a878898] {
   padding: 6px 2px 6px 4px;
   display: inline-flex;
   align-items: center;
@@ -45472,24 +45496,24 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.lower-tab[data-v-1e318216]:hover,
-.collapsed-tab[data-v-1e318216]:hover {
+.lower-tab[data-v-3a878898]:hover,
+.collapsed-tab[data-v-3a878898]:hover {
   color: var(--ib-text-2);
 }
-.lower-tab.on[data-v-1e318216] {
+.lower-tab.on[data-v-3a878898] {
   border-right-color: var(--ib-accent);
   color: var(--ib-text);
 }
 
 /* The collapsed area leaves a header line with its tabs */
-.groups-collapsed[data-v-1e318216] {
+.groups-collapsed[data-v-3a878898] {
   display: flex;
   align-items: center;
   gap: 12px;
   padding-bottom: 2px;
   border-bottom: 1px solid var(--ib-border);
 }
-.collapsed-tab[data-v-1e318216] {
+.collapsed-tab[data-v-3a878898] {
   padding: 0;
   display: inline-flex;
   align-items: center;
@@ -45498,7 +45522,7 @@ footer[data-v-fc8704c9] {
   background: none;
   cursor: pointer;
 }
-.params-toggle[data-v-1e318216] {
+.params-toggle[data-v-3a878898] {
   width: 20px;
   height: 20px;
   padding: 0;
@@ -45511,48 +45535,48 @@ footer[data-v-fc8704c9] {
   color: var(--ib-text-2);
   cursor: pointer;
 }
-.params-toggle[data-v-1e318216]:hover {
+.params-toggle[data-v-3a878898]:hover {
   background: var(--ib-elev-2);
   color: var(--ib-text);
 }
 
 /* At the bottom of the tab column */
-.clear-session[data-v-1e318216] {
+.clear-session[data-v-3a878898] {
   margin-top: auto;
   margin-bottom: 2px;
 }
-.params-toggle.restore[data-v-1e318216] svg {
+.params-toggle.restore[data-v-3a878898] svg {
   transform: rotate(180deg);
 }
-.inline-field[data-v-1e318216] .stepper {
+.inline-field[data-v-3a878898] .stepper {
   height: 26px;
 }
-.inline-field[data-v-1e318216] .stepper input {
+.inline-field[data-v-3a878898] .stepper input {
   height: 24px;
 }
-.preset-count[data-v-1e318216] {
+.preset-count[data-v-3a878898] {
   min-width: 26px;
   padding: 0 6px;
   font-family: var(--ib-mono);
   font-size: 12px;
 }
-.preset-count.on[data-v-1e318216] {
+.preset-count.on[data-v-3a878898] {
   background: var(--ib-accent-soft);
   color: var(--ib-accent);
 }
-.toolbar-divider[data-v-1e318216] {
+.toolbar-divider[data-v-3a878898] {
   width: 1px;
   height: 20px;
   background: var(--ib-border);
 }
-.modes[data-v-1e318216] {
+.modes[data-v-3a878898] {
   flex: none;
 }
-.workflow-select[data-v-1e318216] {
+.workflow-select[data-v-3a878898] {
   flex: 0 1 260px;
   min-width: 140px;
 }
-.modes button[data-v-1e318216] {
+.modes button[data-v-3a878898] {
   padding: 0 10px;
 }
 
@@ -47066,19 +47090,19 @@ mark[data-v-6a99e282] {
   text-overflow: ellipsis;
 }
 
-.plugin-card[data-v-697b90bd] {
+.plugin-card[data-v-1fe5c9db] {
   padding: 14px 16px 6px;
   margin: 12px 0 6px;
   border: 1px solid var(--ib-border-2);
   border-radius: 8px;
   background: var(--ib-surface);
 }
-.plugin-card-header[data-v-697b90bd] {
+.plugin-card-header[data-v-1fe5c9db] {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-.ps-badge[data-v-697b90bd] {
+.ps-badge[data-v-1fe5c9db] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -47090,25 +47114,25 @@ mark[data-v-6a99e282] {
   color: #31a8ff;
   font-weight: 700;
 }
-.plugin-title[data-v-697b90bd] {
+.plugin-title[data-v-1fe5c9db] {
   font-weight: 600;
 }
-.plugin-status[data-v-697b90bd] {
+.plugin-status[data-v-1fe5c9db] {
   color: var(--ib-text-2);
 }
-.plugin-actions[data-v-697b90bd] {
+.plugin-actions[data-v-1fe5c9db] {
   display: flex;
   gap: 8px;
   margin: 12px 0;
 }
-.plugin-actions a.btn[data-v-697b90bd] {
+.plugin-actions a.btn[data-v-1fe5c9db] {
   text-decoration: none;
 }
-.plugin-actions a.disabled[data-v-697b90bd] {
+.plugin-actions a.disabled[data-v-1fe5c9db] {
   opacity: 0.5;
   pointer-events: none;
 }
-.plugin-notes[data-v-697b90bd] {
+.plugin-notes[data-v-1fe5c9db] {
   color: var(--ib-text-2);
   font-size: 12.5px;
 }
@@ -47355,14 +47379,14 @@ dd[data-v-8a38b273] {
   overflow-y: auto;
 }
 
-.projects-browser[data-v-7711ecee] {
+.projects-browser[data-v-504f1441] {
   display: flex;
   flex-direction: column;
   gap: 8px;
   min-height: 0;
   flex: 1;
 }
-.no-root[data-v-7711ecee] {
+.no-root[data-v-504f1441] {
   margin: 40px 12px;
   display: flex;
   flex-direction: column;
@@ -47371,15 +47395,15 @@ dd[data-v-8a38b273] {
   color: var(--ib-text-2);
   text-align: center;
 }
-.no-root p[data-v-7711ecee] {
+.no-root p[data-v-504f1441] {
   margin: 0;
 }
-.root-line[data-v-7711ecee] {
+.root-line[data-v-504f1441] {
   display: flex;
   align-items: center;
   gap: 2px;
 }
-.root-path[data-v-7711ecee] {
+.root-path[data-v-504f1441] {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -47393,7 +47417,7 @@ dd[data-v-8a38b273] {
   font-size: 11px;
   color: var(--ib-muted);
 }
-.search[data-v-7711ecee] {
+.search[data-v-504f1441] {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -47404,11 +47428,11 @@ dd[data-v-8a38b273] {
   background: var(--ib-bg);
   color: var(--ib-muted);
 }
-.search.active[data-v-7711ecee],
-.search[data-v-7711ecee]:focus-within {
+.search.active[data-v-504f1441],
+.search[data-v-504f1441]:focus-within {
   border-color: var(--ib-accent-border);
 }
-.search input[data-v-7711ecee] {
+.search input[data-v-504f1441] {
   flex: 1;
   min-width: 0;
   border: 0;
@@ -47418,7 +47442,7 @@ dd[data-v-8a38b273] {
   font: inherit;
   font-size: 12.5px;
 }
-.clear[data-v-7711ecee] {
+.clear[data-v-504f1441] {
   width: 20px;
   height: 20px;
   display: flex;
@@ -47431,16 +47455,16 @@ dd[data-v-8a38b273] {
   color: var(--ib-muted);
   cursor: pointer;
 }
-.clear[data-v-7711ecee]:hover {
+.clear[data-v-504f1441]:hover {
   background: var(--ib-hover);
   color: var(--ib-text);
 }
-.tags[data-v-7711ecee] {
+.tags[data-v-504f1441] {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
-.tag[data-v-7711ecee] {
+.tag[data-v-504f1441] {
   height: 20px;
   padding: 0 7px;
   display: inline-flex;
@@ -47454,33 +47478,33 @@ dd[data-v-8a38b273] {
   font-size: 11.5px;
   cursor: pointer;
 }
-.tag span[data-v-7711ecee] {
+.tag span[data-v-504f1441] {
   color: var(--ib-muted);
 }
-.tag[data-v-7711ecee]:hover {
+.tag[data-v-504f1441]:hover {
   color: var(--ib-text);
 }
-.tag.on[data-v-7711ecee] {
+.tag.on[data-v-504f1441] {
   border-color: var(--ib-accent-border);
   background: var(--ib-accent-soft);
   color: var(--ib-accent);
 }
-.tag.on span[data-v-7711ecee] {
+.tag.on span[data-v-504f1441] {
   color: inherit;
   opacity: 0.75;
 }
-.tag.more[data-v-7711ecee] {
+.tag.more[data-v-504f1441] {
   color: var(--ib-muted);
 }
-.message[data-v-7711ecee] {
+.message[data-v-504f1441] {
   padding: 8px;
   color: var(--ib-muted);
   font-size: 12px;
 }
-.message.error[data-v-7711ecee] {
+.message.error[data-v-504f1441] {
   color: var(--ib-danger-text);
 }
-.list[data-v-7711ecee] {
+.list[data-v-504f1441] {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -47488,42 +47512,42 @@ dd[data-v-8a38b273] {
   margin: 0 -4px;
   padding: 0 4px;
 }
-.row-icon[data-v-7711ecee] {
+.row-icon[data-v-504f1441] {
   color: var(--ib-muted);
 }
-.row-icon.current[data-v-7711ecee],
-.result-name .current[data-v-7711ecee] {
+.row-icon.current[data-v-504f1441],
+.result-name .current[data-v-504f1441] {
   color: var(--ib-accent);
 }
-.name[data-v-7711ecee] {
+.name[data-v-504f1441] {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.name.empty[data-v-7711ecee] {
+.name.empty[data-v-504f1441] {
   color: var(--ib-muted);
   font-style: italic;
 }
-.name.current[data-v-7711ecee] {
+.name.current[data-v-504f1441] {
   font-weight: 600;
 }
-.row-count[data-v-7711ecee] {
+.row-count[data-v-504f1441] {
   color: var(--ib-muted);
   font-size: 11px;
 }
-.name-warning[data-v-7711ecee] {
+.name-warning[data-v-504f1441] {
   flex-shrink: 0;
   color: var(--ib-warn);
 }
-.unsaved-dot[data-v-7711ecee] {
+.unsaved-dot[data-v-504f1441] {
   width: 6px;
   height: 6px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--ib-warn);
 }
-.host[data-v-7711ecee] {
+.host[data-v-504f1441] {
   flex-shrink: 0;
   padding: 0 4px;
   border: 1px solid rgba(90, 169, 255, 0.45);
@@ -47533,16 +47557,16 @@ dd[data-v-8a38b273] {
   font-weight: 700;
   line-height: 14px;
 }
-.host.comfy[data-v-7711ecee] {
+.host.comfy[data-v-504f1441] {
   border-color: rgba(196, 166, 255, 0.45);
   color: #c4a6ff;
 }
-.results-count[data-v-7711ecee] {
+.results-count[data-v-504f1441] {
   padding: 2px 4px 6px;
   color: var(--ib-muted);
   font-size: 11px;
 }
-.result[data-v-7711ecee] {
+.result[data-v-504f1441] {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -47557,34 +47581,34 @@ dd[data-v-8a38b273] {
   text-align: left;
   cursor: pointer;
 }
-.result[data-v-7711ecee]:hover {
+.result[data-v-504f1441]:hover {
   background: var(--ib-hover);
 }
-.result.selected[data-v-7711ecee] {
+.result.selected[data-v-504f1441] {
   border-color: var(--ib-accent-border);
   background: var(--ib-accent-soft);
   color: var(--ib-text);
 }
-.result-name[data-v-7711ecee] {
+.result-name[data-v-504f1441] {
   display: flex;
   align-items: center;
   gap: 6px;
   font-weight: 600;
   color: var(--ib-text);
 }
-.result-path[data-v-7711ecee] {
+.result-path[data-v-504f1441] {
   padding-left: 19px;
   color: var(--ib-muted);
   font-size: 11px;
 }
-.result-prompt[data-v-7711ecee] {
+.result-prompt[data-v-504f1441] {
   padding-left: 19px;
   font-size: 11.5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-mark[data-v-7711ecee] {
+mark[data-v-504f1441] {
   border-radius: 2px;
   background: var(--ib-warn);
   color: #1a0b00;

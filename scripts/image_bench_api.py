@@ -31,7 +31,6 @@ from image_bench_shared import launcher
 from image_bench_shared import loras
 from image_bench_shared import media
 from image_bench_shared import editor
-from image_bench_shared import editor_plugins
 from image_bench_shared import pnginfo
 from image_bench_shared import projects
 from image_bench_shared import tray
@@ -131,8 +130,6 @@ class ImageBenchApi():
         self.add_api_route("/editor/send", self.editor_send, methods=["POST"])
         self.add_api_route("/editor/image", self.get_editor_image, methods=["GET"])
         self.add_api_route("/editor/status", self.get_editor_status, methods=["GET"])
-        self.add_api_route("/editor/plugin", self.get_editor_plugin_status, methods=["GET"])
-        self.add_api_route("/editor/plugin/package", self.download_editor_plugin, methods=["GET"])
         self.app.add_websocket_route(self.BASE_PATH + "/editor/host-websocket", self.handle_editor_host_websocket)
         self.app.add_websocket_route(self.BASE_PATH + "/editor/websocket", self.handle_editor_websocket)
         # The routes of the Photoshop plugins installed before the editor bridge
@@ -447,24 +444,6 @@ class ImageBenchApi():
 
         content, media_type = image
         return Response(content, media_type=media_type, headers={"Cache-Control": "no-store"})
-
-    @staticmethod
-    def get_editor_plugin_status(plugin: str = editor_plugins.DEFAULT_PLUGIN):
-        """Version of a supplied editor plugin (editor_plugins.PLUGINS) and of the one installed on the server computer"""
-        try:
-            return JSONResponse(editor_plugins.get_status(plugin))
-        except editor_plugins.PluginError as e:
-            raise HTTPException(status_code=404, detail=str(e))
-
-    @staticmethod
-    def download_editor_plugin(plugin: str = editor_plugins.DEFAULT_PLUGIN):
-        try:
-            name, content = editor_plugins.package(plugin)
-        except editor_plugins.PluginError as e:
-            raise HTTPException(status_code=404, detail=str(e))
-
-        return Response(content, media_type="application/octet-stream",
-                        headers={"Content-Disposition": f'attachment; filename="{name}"'})
 
     @staticmethod
     def get_controlnet_choices(type: str = "All", all_models: bool = False):

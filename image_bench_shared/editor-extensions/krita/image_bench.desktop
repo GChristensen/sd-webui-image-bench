@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Service
-ServiceTypes=Krita/PythonPlugin
-X-KDE-Library=image_bench
-X-Python-2-Compatible=false
-Name=Image Bench
-Comment=Exchanges images with SD WebUI or ComfyUI with the Image Bench extension

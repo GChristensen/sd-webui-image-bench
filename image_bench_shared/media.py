@@ -2,9 +2,8 @@
 Video and audio files among the generated images: their kinds, a frame of a video for its thumbnail and the
 generation parameters kept in the container metadata.
 
-Frames and metadata are read with PyAV where it is installed (ComfyUI ships it), else with the ffmpeg / ffprobe
-binaries (on PATH, as Forge Neo calls them, or of imageio-ffmpeg). Without either a video has no thumbnail and the
-popup shows the video itself.
+Frames and metadata are read with PyAV, which ComfyUI and Forge Neo require. Without it a video has no thumbnail and
+the popup shows the video itself.
 
 Forge Neo writes the infotext into the "description" tag; ComfyUI's SaveVideo writes the executed prompt into
 "prompt" and VideoHelperSuite its metadata as JSON into "comment".
@@ -14,8 +13,6 @@ import hashlib
 import io
 import json
 import os
-import shutil
-import subprocess
 from typing import Any, Callable, Dict, Optional
 
 from PIL import Image
@@ -30,7 +27,6 @@ MEDIA_TYPES = {".mp4": "video/mp4", ".webm": "video/webm", ".mov": "video/quickt
 
 THUMBS_DIR = "thumbs"
 CARD_THUMB_SIZE = 640
-TIMEOUT = 20
 
 # The frame of the thumbnail: at a tenth of the video, at most a second in
 FRAME_POSITION = 0.1
@@ -51,29 +47,6 @@ def media_type(name: str) -> Optional[str]:
     return MEDIA_TYPES.get(os.path.splitext(name or "")[1].lower())
 
 
-def find_binary(name: str) -> Optional[str]:
-    path = shutil.which(name)
-
-    if path or name != "ffmpeg":
-        return path
-
-    try:
-        import imageio_ffmpeg
-        return imageio_ffmpeg.get_ffmpeg_exe()
-    except Exception:
-        return None
-
-
-def run(command, timeout: int = TIMEOUT) -> bytes:
-    flags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-    result = subprocess.run(command, capture_output=True, timeout=timeout, creationflags=flags)
-
-    if result.returncode != 0:
-        raise MediaError(result.stderr.decode("utf8", errors="ignore").strip() or "ffmpeg failed")
-
-    return result.stdout
-
-
 def video_frame(path: str) -> Image.Image:
     """A frame near the start of a video, as an RGB image"""
     try:
@@ -81,32 +54,22 @@ def video_frame(path: str) -> Image.Image:
     except ImportError:
         av = None
 
-    if av is not None:
-        try:
-            with av.open(path) as container:
-                stream = container.streams.video[0]
-                duration = container.duration / av.time_base if container.duration else 0
-                position = min(MAX_FRAME_TIME, duration * FRAME_POSITION)
+    if av is None:
+        raise MediaError("PyAV is not available")
 
-                if position > 0:
-                    container.seek(int(position * av.time_base), any_frame=False)
+    try:
+        with av.open(path) as container:
+            stream = container.streams.video[0]
+            duration = container.duration / av.time_base if container.duration else 0
+            position = min(MAX_FRAME_TIME, duration * FRAME_POSITION)
 
-                for frame in container.decode(stream):
-                    return frame.to_image().convert("RGB")
-        except Exception as e:
-            print(f"[Image Bench] PyAV could not read a frame of {path}: {e}")
+            if position > 0:
+                container.seek(int(position * av.time_base), any_frame=False)
 
-    ffmpeg = find_binary("ffmpeg")
-
-    if not ffmpeg:
-        raise MediaError("Neither PyAV nor ffmpeg is available")
-
-    for position in (0.5, 0):
-        content = run([ffmpeg, "-v", "error", "-ss", str(position), "-i", path, "-frames:v", "1",
-                       "-f", "image2pipe", "-vcodec", "png", "-"])
-
-        if content:
-            return Image.open(io.BytesIO(content)).convert("RGB")
+            for frame in container.decode(stream):
+                return frame.to_image().convert("RGB")
+    except Exception as e:
+        raise MediaError(f"PyAV could not read a frame: {e}") from e
 
     raise MediaError("The video has no frames")
 
@@ -118,20 +81,6 @@ def metadata_tags(path: str) -> Dict[str, str]:
 
         with av.open(path) as container:
             return {key.lower(): value for key, value in (container.metadata or {}).items()}
-    except ImportError:
-        pass
-    except Exception:
-        return {}
-
-    ffprobe = find_binary("ffprobe")
-
-    if not ffprobe:
-        return {}
-
-    try:
-        output = run([ffprobe, "-v", "error", "-show_entries", "format_tags", "-of", "json", path])
-        tags = (json.loads(output).get("format") or {}).get("tags") or {}
-        return {key.lower(): value for key, value in tags.items()}
     except Exception:
         return {}
 

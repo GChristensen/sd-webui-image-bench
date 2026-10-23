@@ -12,7 +12,7 @@ import html
 import json
 import os
 import time
-from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional
+from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Tuple
 
 IMAGE_MEDIA_TYPES = {
     ".png": "image/png",
@@ -23,6 +23,12 @@ IMAGE_MEDIA_TYPES = {
 
 # A multiple of 3, so that base64 chunks concatenate without padding in between
 READ_CHUNK_SIZE = 3 * 64 * 1024
+
+# The page with its style and lightbox script; the images go in place of the marker, {{title}} is the page title
+PAGE_TEMPLATE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "explore_export.html")
+IMAGES_MARKER = "<!-- images -->\n"
+
+_page_template: Optional[str] = None
 
 
 def is_allowed_image(path: Optional[str], roots: Iterable[str]) -> bool:
@@ -84,14 +90,15 @@ def generate_explore_html(
         matrix: {columns: [label], rows: [{name, images: [image | None]}]} of a matrix exploration,
                 laid out as a grid instead of the groups
     """
-    yield _page_head(title).encode("utf-8")
+    head, tail = _page_parts(title)
+    yield head.encode("utf-8")
 
     if matrix:
         yield from _matrix_html(matrix, resolve_path)
     else:
         yield from _groups_html(groups, resolve_path)
 
-    yield _PAGE_TAIL.encode("utf-8")
+    yield tail.encode("utf-8")
 
 
 def _groups_html(groups: List[Dict[str, Any]],
@@ -171,193 +178,13 @@ def _image_html(image: Dict[str, Any],
     yield b'"></figure>'
 
 
-def _page_head(title: str) -> str:
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="Image Bench">
-<title>{_escape(title)}</title>
-<style>{_PAGE_STYLE}</style>
-</head>
-<body>
-<header class="page-header"><h1>{_escape(title)}</h1></header>
-<main class="generated-images">
-"""
+def _page_parts(title: str) -> Tuple[str, str]:
+    """The page around the images: the template explore_export.html split at its images marker"""
+    global _page_template
 
+    if _page_template is None:
+        with open(PAGE_TEMPLATE, encoding="utf-8") as file:
+            _page_template = file.read()
 
-_PAGE_STYLE = """
-:root {
-  --ib-bg: #111317;
-  --ib-surface: #16191d;
-  --ib-elev-2: #252930;
-  --ib-border: #2a2e35;
-  --ib-border-2: #3a3f48;
-  --ib-text: #e3e6ea;
-  --ib-text-2: #a7aeb8;
-  --ib-muted: #7d8590;
-  --ib-accent: #2cbf8a;
-  color-scheme: dark;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: var(--ib-bg);
-  color: var(--ib-text);
-  font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
-  font-size: 14px;
-  line-height: 1.4;
-}
-.page-header { padding: 12px 16px 0; }
-.page-header h1 { margin: 0; font-size: 15px; font-weight: 600; color: var(--ib-text-2); }
-.generated-images { padding: 12px 16px; display: flex; flex-direction: column; gap: 12px; }
-.model-group {
-  display: flex; flex-direction: column; gap: 8px;
-  padding: 8px 10px 10px;
-  background: var(--ib-surface);
-  border: 1px solid var(--ib-border);
-  border-radius: 6px;
-}
-.model-group-header { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.model-name {
-  margin: 0; font-size: 13.5px; font-weight: 600; color: var(--ib-text);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.model-group-count { font-size: 12px; color: var(--ib-muted); white-space: nowrap; }
-.model-images { display: flex; flex-wrap: wrap; gap: 10px; }
-.image-frame {
-  position: relative; margin: 0; max-width: min(30%, 27vw);
-  line-height: 0; border-radius: 4px; overflow: hidden;
-}
-.image-frame img { display: block; max-width: 100%; max-height: 70vh; cursor: pointer; }
-.image-frame.missing {
-  display: flex; align-items: center; justify-content: center;
-  width: 160px; height: 160px; line-height: normal;
-  border: 1px dashed var(--ib-border-2); color: var(--ib-muted); font-size: 12px;
-}
-.matrix {
-  display: grid; gap: 10px; align-items: start;
-  grid-template-columns: minmax(120px, 200px) repeat(var(--columns), minmax(200px, 1fr));
-}
-.matrix-corner, .matrix-column-header, .matrix-row-header {
-  min-width: 0; font-size: 13px; font-weight: 600; color: var(--ib-text);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: var(--ib-bg);
-}
-.matrix-corner, .matrix-column-header { position: sticky; top: 0; z-index: 2; padding: 4px 2px; }
-.matrix-row-header { padding: 8px 8px 0 2px; }
-.matrix-cell { min-width: 0; }
-.matrix-cell .image-frame { max-width: 100%; }
-.matrix-empty { aspect-ratio: 1; border: 1px dashed var(--ib-border); border-radius: 6px; }
-.params-btn, .lightbox button {
-  font: 600 13px/1 Georgia, serif; color: var(--ib-text); cursor: pointer;
-  background: rgba(17, 19, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 4px;
-}
-.params-btn { position: absolute; top: 6px; left: 6px; width: 24px; height: 24px; opacity: 0; transition: opacity 0.15s; }
-.image-frame:hover .params-btn { opacity: 1; }
-.params-btn:hover, .lightbox button:hover { background: var(--ib-elev-2); border-color: var(--ib-border-2); }
-.lightbox {
-  position: fixed; inset: 0; z-index: 10; display: none;
-  align-items: center; justify-content: center; gap: 12px; padding: 16px;
-  background: rgba(0, 0, 0, 0.88);
-}
-.lightbox.open { display: flex; }
-.lightbox img { max-width: 100%; max-height: 100%; object-fit: contain; min-width: 0; }
-.lightbox.with-params img { max-width: calc(100% - 432px); }
-.lightbox pre {
-  display: none; flex: 0 0 420px; max-height: 100%; overflow: auto; margin: 0; padding: 12px;
-  white-space: pre-wrap; word-break: break-word; font: 12.5px/1.45 Consolas, monospace;
-  background: var(--ib-surface); border: 1px solid var(--ib-border); border-radius: 6px;
-}
-.lightbox.with-params pre { display: block; }
-.lightbox .lb-controls { position: fixed; top: 12px; right: 16px; display: flex; gap: 6px; }
-.lightbox .lb-controls button { height: 28px; min-width: 28px; padding: 0 8px; font-family: inherit; font-weight: 400; }
-.lightbox .lb-counter { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); color: var(--ib-muted); font-size: 12px; }
-"""
-
-
-_PAGE_TAIL = """</main>
-<div class="lightbox" id="lightbox">
-  <img alt="">
-  <pre></pre>
-  <div class="lb-controls">
-    <button data-act="prev" title="Previous (←)">←</button>
-    <button data-act="next" title="Next (→)">→</button>
-    <button data-act="params" title="Generation parameters (P)">Params</button>
-    <button data-act="close" title="Close (Esc)">✕</button>
-  </div>
-  <span class="lb-counter"></span>
-</div>
-<script>
-(() => {
-  const frames = [...document.querySelectorAll(".image-frame:not(.missing)")];
-  const box = document.getElementById("lightbox");
-  const boxImage = box.querySelector("img");
-  const boxParams = box.querySelector("pre");
-  const counter = box.querySelector(".lb-counter");
-  let index = -1;
-
-  const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-
-  // Mirrors createImageGenerationParams() of the Image Bench app
-  function formatParams(params) {
-    let text = `Prompt:\\n${params["prompt"] ?? ""}\\n\\nNegative prompt:\\n${params["negative prompt"] ?? ""}\\n\\n`;
-
-    for (const [key, value] of Object.entries(params)) {
-      if (key === "prompt" || key === "negative prompt")
-        continue;
-
-      if (value && typeof value === "object") {
-        text += capitalize(key) + ":\\n";
-        for (const [subKey, subValue] of Object.entries(value))
-          text += "  " + capitalize(subKey) + ": " + subValue + "\\n";
-      }
-      else
-        text += capitalize(key) + ": " + value + "\\n";
-    }
-
-    return text;
-  }
-
-  function show(i, withParams) {
-    index = (i + frames.length) % frames.length;
-    const frame = frames[index];
-    boxImage.src = frame.querySelector("img").src;
-    boxParams.textContent = formatParams(JSON.parse(frame.dataset.params || "{}"));
-    counter.textContent = `${index + 1} / ${frames.length}`;
-    if (withParams !== undefined)
-      box.classList.toggle("with-params", withParams);
-    box.classList.add("open");
-  }
-
-  function close() {
-    box.classList.remove("open");
-    boxImage.removeAttribute("src");
-    index = -1;
-  }
-
-  frames.forEach((frame, i) => {
-    frame.querySelector("img").addEventListener("click", () => show(i, false));
-    frame.querySelector(".params-btn").addEventListener("click", () => show(i, true));
-  });
-
-  box.addEventListener("click", e => {
-    const act = e.target.dataset.act;
-    if (act === "prev") show(index - 1);
-    else if (act === "next") show(index + 1);
-    else if (act === "params") box.classList.toggle("with-params");
-    else if (act === "close" || e.target === box) close();
-  });
-
-  document.addEventListener("keydown", e => {
-    if (index < 0) return;
-    if (e.key === "Escape") close();
-    else if (e.key === "ArrowLeft") show(index - 1);
-    else if (e.key === "ArrowRight") show(index + 1);
-    else if (e.key === "p" || e.key === "P") box.classList.toggle("with-params");
-  });
-})();
-</script>
-</body>
-</html>
-"""
+    head, tail = _page_template.split(IMAGES_MARKER, 1)
+    return head.replace("{{title}}", _escape(title)), tail

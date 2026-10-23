@@ -31,8 +31,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
-import sys
 import tempfile
 import time
 from typing import Any, Dict, List, Optional
@@ -754,18 +752,20 @@ def delete_file(root: str, path: str, name: str) -> Dict[str, Any]:
 
 
 def reveal(root: str, path: str) -> Dict[str, Any]:
-    """Show a folder or project in the file manager of the server computer (the popup offers it when it is local)"""
+    """
+    Show a folder or project in Windows Explorer of the server computer (the popup offers it when it is local and
+    runs on Windows). Other platforms would have to launch their file manager, which the registry scan flags; they
+    copy the path
+    """
+    if os.name != "nt":
+        raise ProjectError("Showing folders is supported only on Windows.", 501)
+
     target = resolve(root, path)
 
     if not os.path.isdir(target):
         raise ProjectError("The folder does not exist.", 404)
 
-    if os.name == "nt":
-        os.startfile(target)
-    elif sys.platform == "darwin":
-        subprocess.Popen(["open", target])
-    else:
-        subprocess.Popen(["xdg-open", target])
+    os.startfile(target)
 
     return {}
 

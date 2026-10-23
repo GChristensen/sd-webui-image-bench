@@ -6,7 +6,7 @@
 - VAE: `qwen_image_vae.safetensors`
 
 ## Recommended Defaults (Anima-Base v1.0)
-    steps           : 40
+    steps           : 32 (drafts) / 40 (finals)
     cfg             : 4.5
     sampler         : er_sde
     scheduler       : normal
