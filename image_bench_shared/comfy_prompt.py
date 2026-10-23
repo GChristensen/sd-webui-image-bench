@@ -6,7 +6,8 @@ The prompt is turned into an infotext as WebUI writes it ("prompt\nNegative prom
 so that it is parsed and mapped like any other: the first-pass sampler gives seed, steps, CFG, sampler and scheduler,
 its conditioning the prompts (followed back through ControlNet and guidance nodes to the text), its model path the
 checkpoint, LoRAs and shift, its latent the size; a sampler working on the output of another one is the Hires. fix
-pass (steps and denoising strength).
+pass (steps and denoising strength). An encoded latent gives the denoising strength of the first pass, an Inpaint Crop
+on its path the inpaint options (mask blur, mask mode, inpaint area, padding).
 
 The graph is walked by input names, without node definitions, so that it works on either host and with node types
 it does not know.
@@ -28,6 +29,9 @@ MODEL_INPUTS = ("model", "unet")
 LATENT_INPUTS = ("latent_image", "latent", "samples")
 # Loaders of the checkpoint (or diffusion model), by the input of the file name
 MODEL_NAME_INPUTS = ("ckpt_name", "unet_name", "model_name", "model_path")
+
+# The crop node of ComfyUI-Inpaint-CropAndStitch
+INPAINT_CROP_TYPE = "InpaintCropImproved"
 
 MODEL_EXTENSIONS = re.compile(r"\.(safetensors|sft|gguf|ckpt|pt|pth|bin)$", re.IGNORECASE)
 MAX_DEPTH = 64
@@ -257,6 +261,13 @@ def latent_size(graph: PromptGraph, latent_link) -> Optional[Tuple[int, int]]:
     for node_id in graph.upstream(latent_link, LATENT_INPUTS + ("pixels", "image")):
         inputs = graph.inputs(node_id)
 
+        # Inpaint Crop scales the crop to its target size (WebUI's "Resize to" of inpaint)
+        if graph.type(node_id) == INPAINT_CROP_TYPE:
+            if not graph.value(inputs.get("output_resize_to_target_size")):
+                return None
+
+            inputs = {"width": inputs.get("output_target_width"), "height": inputs.get("output_target_height")}
+
         if "width" in inputs and "height" in inputs:
             width, height = graph.value(inputs["width"]), graph.value(inputs["height"])
 
@@ -264,6 +275,52 @@ def latent_size(graph: PromptGraph, latent_link) -> Optional[Tuple[int, int]]:
                 return int(width), int(height)
 
     return None
+
+
+def is_img2img(graph: PromptGraph, latent_link) -> bool:
+    """Whether the latent of a sampler is an encoded image"""
+    return any("pixels" in graph.inputs(node_id) for node_id in graph.upstream(latent_link, LATENT_INPUTS))
+
+
+def inpaint_options(graph: PromptGraph, latent_link) -> List[Tuple[str, Any]]:
+    """
+    Infotext entries of the Inpaint Crop node (ComfyUI-Inpaint-CropAndStitch) the latent of a sampler comes from, as
+    WebUI writes its inpaint options: the mask blur, the mask mode and the area only if they are not the defaults.
+    The bundled inpaint workflows feed its context mask from a GrowMask (padding) and a SolidMask (1: whole picture)
+    """
+    crop = next((node_id for node_id in graph.upstream(latent_link, LATENT_INPUTS + ("pixels", "image"))
+                 if graph.type(node_id) == INPAINT_CROP_TYPE), None)
+
+    if crop is None:
+        return []
+
+    inputs = graph.inputs(crop)
+    entries = [("Mask blur", graph.value(inputs.get("mask_blend_pixels")))]
+
+    if graph.value(inputs.get("mask_invert")):
+        entries.append(("Mask mode", "Inpaint not masked"))
+
+    # The nodes of the context mask
+    context = {}
+    pending = [inputs.get("optional_context_mask")]
+
+    while pending and len(context) < 50:
+        link = graph.source(pending.pop())
+
+        if link and link[0] not in context:
+            context[link[0]] = graph.type(link[0])
+            pending.extend(value for value in graph.inputs(link[0]).values() if graph.source(value))
+
+    whole = any(node_type == "SolidMask" and (graph.value(graph.inputs(node_id).get("value")) or 0) >= 0.5
+                for node_id, node_type in context.items())
+
+    if not whole:
+        entries.append(("Inpaint area", "Only masked"))
+        padding = next((graph.value(graph.inputs(node_id).get("expand")) for node_id, node_type in context.items()
+                        if node_type == "GrowMask"), None)
+        entries.append(("Masked area padding", padding))
+
+    return entries
 
 
 def guidance(graph: PromptGraph, positive_link) -> Optional[float]:
@@ -341,6 +398,11 @@ def prompt_to_infotext(prompt: Dict[str, Any]) -> Optional[str]:
         hires_parts = sampler_parts(graph, hires)
         add("Denoising strength", hires_parts["denoise"])
         add("Hires steps", hires_parts["steps"])
+    elif is_img2img(graph, parts["latent"]):
+        add("Denoising strength", parts["denoise"])
+
+    for key, value in inpaint_options(graph, parts["latent"]):
+        add(key, value)
 
     lines = [positive]
 

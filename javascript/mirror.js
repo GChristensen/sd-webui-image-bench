@@ -55,6 +55,12 @@ const IMG2IMG_RADIO_PARAMS = {
     maskedContent: 'IMG2IMG_MASKED_CONTENT_ID'
 };
 
+// Sliders of img2img inpaint: name -> selector key
+const IMG2IMG_INPUT_PARAMS = {
+    maskBlur: 'IMG2IMG_MASK_BLUR',
+    inpaintPadding: 'IMG2IMG_INPAINT_PADDING'
+};
+
 // Applied before the others: UI preset, checkpoint and VAE / Text Encoder
 const MODEL_PARAMS = ['uiPreset', 'checkpoint', 'modules'];
 
@@ -176,6 +182,9 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         else {
             for (const [name, key] of Object.entries(IMG2IMG_RADIO_PARAMS))
                 params[name] = adapter.getRadioValue(key);
+
+            for (const [name, key] of Object.entries(IMG2IMG_INPUT_PARAMS))
+                params[name] = adapter.getInputValue(key);
         }
 
         // Forge relabels the distilled CFG slider as Shift for flow models, or hides it
@@ -311,6 +320,10 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
             else if (name in IMG2IMG_RADIO_PARAMS) {
                 if (tab === 'IMG2IMG')
                     adapter.setRadioValue(IMG2IMG_RADIO_PARAMS[name], value);
+            }
+            else if (name in IMG2IMG_INPUT_PARAMS) {
+                if (tab === 'IMG2IMG')
+                    adapter.setInputValue(IMG2IMG_INPUT_PARAMS[name], value);
             }
             else if (name === 'shift') {
                 if (uiOperations.getDistilledCfgSliderKind(tab))

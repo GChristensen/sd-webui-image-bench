@@ -87,6 +87,8 @@ export const SELECTORS = {
     IMG2IMG_MASK_MODE_ID: 'img2img_mask_mode',
     IMG2IMG_INPAINT_AREA_ID: 'img2img_inpaint_full_res',
     IMG2IMG_MASKED_CONTENT_ID: 'img2img_inpainting_fill',
+    IMG2IMG_MASK_BLUR: '#img2img_mask_blur input',
+    IMG2IMG_INPAINT_PADDING: '#img2img_inpaint_full_res_padding input',
     // "Resize to" / "Resize by" tabs of the img2img size: the width and height apply only with "Resize to"
     IMG2IMG_RESIZE_TABS: 'img2img_tabs_resize',
     IMG2IMG_PROMPT_ID: 'img2img_prompt',

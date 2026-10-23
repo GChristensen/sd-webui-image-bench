@@ -1212,7 +1212,7 @@ def image_key(image: Dict[str, Any]) -> str:
 
 def read_prompt_history(store_dir: str) -> Dict[str, Any]:
     history = read_json(os.path.join(store_dir, PROMPT_HISTORY_FILE))
-    return history if isinstance(history, dict) else {"version": 1, "entries": []}
+    return history if isinstance(history, dict) else {"version": 2}
 
 
 def save_project(root: str, store_dir: str, image_bench_dir: str, platform: str, path: str,
