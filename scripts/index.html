@@ -11125,6 +11125,15 @@ const useAppConfigStore = defineStore("appConfig", () => {
       return persist();
     }
   });
+  const projectReminder = computed({
+    get() {
+      return _config.projectReminder ?? true;
+    },
+    set(v) {
+      _config.projectReminder = v;
+      return persist();
+    }
+  });
   const commonSizesOnly = computed({
     get() {
       return _config.commonSizesOnly ?? true;
@@ -11257,6 +11266,7 @@ const useAppConfigStore = defineStore("appConfig", () => {
     exploreLoraFreeImages,
     flashGeneratedTab,
     keepSessionStrip,
+    projectReminder,
     commonSizesOnly,
     rimOnHover,
     persistGenerationParams,
@@ -14133,7 +14143,7 @@ const reminder = reactive({
 const SESSION_KEY = "imageBench_reminderSession";
 function armReminder(reason) {
   const projects = useProjectsStore();
-  if (!projects.hasCurrent || projects.current.path === reminder.mutedPath)
+  if (!useAppConfigStore().projectReminder || !projects.hasCurrent || projects.current.path === reminder.mutedPath)
     return;
   reminder.armed = true;
   reminder.reason = reason;
@@ -14161,6 +14171,7 @@ function initReminder() {
     reminder.mutedPath = null;
     disarmReminder();
   });
+  watch(() => useAppConfigStore().projectReminder, (enabled) => enabled || disarmReminder());
 }
 const _withScopeId$B = (n) => (pushScopeId("data-v-20fe9c1b"), n = n(), popScopeId(), n);
 const _hoisted_1$17 = /* @__PURE__ */ _withScopeId$B(() => /* @__PURE__ */ createBaseVNode("span", { class: "name" }, "No project", -1));
@@ -20895,7 +20906,7 @@ const useDocsStore = defineStore("docs", () => {
   }
   return { tree, treeError, selectedPath, doc: doc2, docError, loading, loadTree, open: open2 };
 });
-const _withScopeId$o = (n) => (pushScopeId("data-v-d1ad8d27"), n = n(), popScopeId(), n);
+const _withScopeId$o = (n) => (pushScopeId("data-v-2338e152"), n = n(), popScopeId(), n);
 const _hoisted_1$M = { class: "settings-container" };
 const _hoisted_2$M = { class: "settings-left" };
 const _hoisted_3$H = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "Appearance", -1));
@@ -20916,18 +20927,19 @@ const _hoisted_13$h = { class: "setting-label" };
 const _hoisted_14$g = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "Generate Tab", -1));
 const _hoisted_15$f = { class: "setting-label" };
 const _hoisted_16$e = { class: "setting-label" };
-const _hoisted_17$d = { class: "setting-label generate-setting" };
-const _hoisted_18$d = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Inpaint crop reset size", -1));
-const _hoisted_19$d = ["value"];
+const _hoisted_17$d = { class: "setting-label" };
+const _hoisted_18$d = { class: "setting-label generate-setting" };
+const _hoisted_19$d = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Inpaint crop reset size", -1));
 const _hoisted_20$b = ["value"];
-const _hoisted_21$b = { class: "setting-label generate-setting" };
-const _hoisted_22$9 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "UI preset buttons", -1));
-const _hoisted_23$9 = ["value", "aria-label", "onChange"];
-const _hoisted_24$9 = ["value"];
-const _hoisted_25$7 = { class: "setting-label generate-setting" };
-const _hoisted_26$7 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Images set by the count button", -1));
-const _hoisted_27$6 = ["value"];
-const _hoisted_28$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", {
+const _hoisted_21$b = ["value"];
+const _hoisted_22$9 = { class: "setting-label generate-setting" };
+const _hoisted_23$9 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "UI preset buttons", -1));
+const _hoisted_24$9 = ["value", "aria-label", "onChange"];
+const _hoisted_25$7 = ["value"];
+const _hoisted_26$7 = { class: "setting-label generate-setting" };
+const _hoisted_27$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Images set by the count button", -1));
+const _hoisted_28$6 = ["value"];
+const _hoisted_29$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", {
   class: "help",
   tabindex: "0",
   role: "note",
@@ -20947,69 +20959,69 @@ const _hoisted_28$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ creat
     /* @__PURE__ */ createTextVNode(" in the WebUI folder, then restart WebUI.")
   ])
 ], -1));
-const _hoisted_29$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "Library", -1));
-const _hoisted_30$6 = { class: "setting-label root-setting" };
-const _hoisted_31$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("label", { for: "project-root" }, "Project root", -1));
-const _hoisted_32$4 = ["disabled"];
-const _hoisted_33$4 = { class: "setting-label root-help" };
-const _hoisted_34$5 = { class: "setting-label root-setting" };
-const _hoisted_35$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("label", { for: "docs-root" }, "Docs root", -1));
-const _hoisted_36$5 = ["placeholder"];
-const _hoisted_37$5 = ["disabled"];
-const _hoisted_38$5 = { class: "setting-label root-help" };
-const _hoisted_39$5 = { class: "with-help" };
-const _hoisted_40$5 = ["aria-label"];
-const _hoisted_41$5 = {
+const _hoisted_30$6 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "Library", -1));
+const _hoisted_31$6 = { class: "setting-label root-setting" };
+const _hoisted_32$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("label", { for: "project-root" }, "Project root", -1));
+const _hoisted_33$4 = ["disabled"];
+const _hoisted_34$5 = { class: "setting-label root-help" };
+const _hoisted_35$5 = { class: "setting-label root-setting" };
+const _hoisted_36$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("label", { for: "docs-root" }, "Docs root", -1));
+const _hoisted_37$5 = ["placeholder"];
+const _hoisted_38$5 = ["disabled"];
+const _hoisted_39$5 = { class: "setting-label root-help" };
+const _hoisted_40$5 = { class: "with-help" };
+const _hoisted_41$5 = ["aria-label"];
+const _hoisted_42$5 = {
   class: "help-text",
   "aria-hidden": "true"
 };
-const _hoisted_42$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
 const _hoisted_43$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
-const _hoisted_44$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("code", null, '{"command": "path of the script"}', -1));
-const _hoisted_45$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
+const _hoisted_44$5 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
+const _hoisted_45$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("code", null, '{"command": "path of the script"}', -1));
 const _hoisted_46$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
-const _hoisted_47$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("code", null, '"port"', -1));
-const _hoisted_48$4 = {
+const _hoisted_47$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("br", null, null, -1));
+const _hoisted_48$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("code", null, '"port"', -1));
+const _hoisted_49$4 = {
   key: 1,
   class: "setting-label restart-info"
 };
-const _hoisted_49$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Addon", -1));
-const _hoisted_50$4 = { class: "root-status" };
-const _hoisted_51$4 = ["href"];
-const _hoisted_52$4 = {
+const _hoisted_50$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Addon", -1));
+const _hoisted_51$4 = { class: "root-status" };
+const _hoisted_52$4 = ["href"];
+const _hoisted_53$4 = {
   key: 2,
   class: "setting-label restart-info"
 };
-const _hoisted_53$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Start script", -1));
-const _hoisted_54$4 = { key: 0 };
-const _hoisted_55$4 = {
+const _hoisted_54$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Start script", -1));
+const _hoisted_55$4 = { key: 0 };
+const _hoisted_56$4 = {
   key: 1,
   class: "muted"
 };
-const _hoisted_56$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Config file", -1));
-const _hoisted_57$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Detected", -1));
-const _hoisted_58$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Helper", -1));
-const _hoisted_59$4 = ["href"];
-const _hoisted_60$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "SD WebUI Interface", -1));
-const _hoisted_61$4 = { class: "setting-label" };
-const _hoisted_62$4 = { class: "setting-label civitai-setting" };
-const _hoisted_63$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("input", {
+const _hoisted_57$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Config file", -1));
+const _hoisted_58$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Detected", -1));
+const _hoisted_59$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("span", null, "Helper", -1));
+const _hoisted_60$4 = ["href"];
+const _hoisted_61$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("h3", null, "SD WebUI Interface", -1));
+const _hoisted_62$4 = { class: "setting-label" };
+const _hoisted_63$4 = { class: "setting-label civitai-setting" };
+const _hoisted_64$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("input", {
   type: "checkbox",
   class: "checkbox-spacer",
   "aria-hidden": "true",
   tabindex: "-1"
 }, null, -1));
-const _hoisted_64$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("option", { value: "com" }, "civitai.com", -1));
-const _hoisted_65$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("option", { value: "red" }, "civitai.red", -1));
-const _hoisted_66$4 = [
-  _hoisted_64$4,
-  _hoisted_65$4
+const _hoisted_65$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("option", { value: "com" }, "civitai.com", -1));
+const _hoisted_66$4 = /* @__PURE__ */ _withScopeId$o(() => /* @__PURE__ */ createBaseVNode("option", { value: "red" }, "civitai.red", -1));
+const _hoisted_67$4 = [
+  _hoisted_65$4,
+  _hoisted_66$4
 ];
-const _hoisted_67$4 = {
+const _hoisted_68$4 = {
   key: 3,
   class: "setting-label"
 };
-const _hoisted_68$4 = {
+const _hoisted_69$4 = {
   key: 4,
   class: "setting-label"
 };
@@ -21164,22 +21176,31 @@ const _sfc_main$M = {
           createBaseVNode("label", _hoisted_16$e, [
             withDirectives(createBaseVNode("input", {
               type: "checkbox",
-              "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => unref(appConfigStore).commonSizesOnly = $event)
+              "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => unref(appConfigStore).projectReminder = $event)
+            }, null, 512), [
+              [vModelCheckbox, unref(appConfigStore).projectReminder]
+            ]),
+            createTextVNode("Ask whether to continue the current project before generating")
+          ]),
+          createBaseVNode("label", _hoisted_17$d, [
+            withDirectives(createBaseVNode("input", {
+              type: "checkbox",
+              "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => unref(appConfigStore).commonSizesOnly = $event)
             }, null, 512), [
               [vModelCheckbox, unref(appConfigStore).commonSizesOnly]
             ]),
             createTextVNode("Show only common sizes in the size picker (1:1, A4, canvas, photo, video, cinema)")
           ]),
-          createBaseVNode("div", _hoisted_17$d, [
-            _hoisted_18$d,
+          createBaseVNode("div", _hoisted_18$d, [
+            _hoisted_19$d,
             createBaseVNode("input", {
               type: "number",
               min: "16",
               step: "16",
               value: unref(appConfigStore).inpaintResetWidth,
               "aria-label": "Inpaint crop reset width",
-              onChange: _cache[6] || (_cache[6] = (e) => unref(appConfigStore).inpaintResetWidth = e.target.value)
-            }, null, 40, _hoisted_19$d),
+              onChange: _cache[7] || (_cache[7] = (e) => unref(appConfigStore).inpaintResetWidth = e.target.value)
+            }, null, 40, _hoisted_20$b),
             createTextVNode(" × "),
             createBaseVNode("input", {
               type: "number",
@@ -21187,12 +21208,12 @@ const _sfc_main$M = {
               step: "16",
               value: unref(appConfigStore).inpaintResetHeight,
               "aria-label": "Inpaint crop reset height",
-              onChange: _cache[7] || (_cache[7] = (e) => unref(appConfigStore).inpaintResetHeight = e.target.value)
-            }, null, 40, _hoisted_20$b)
+              onChange: _cache[8] || (_cache[8] = (e) => unref(appConfigStore).inpaintResetHeight = e.target.value)
+            }, null, 40, _hoisted_21$b)
           ]),
           (openBlock(), createElementBlock(Fragment, { key: 0 }, [
-            createBaseVNode("div", _hoisted_21$b, [
-              _hoisted_22$9,
+            createBaseVNode("div", _hoisted_22$9, [
+              _hoisted_23$9,
               (openBlock(true), createElementBlock(Fragment, null, renderList(unref(appConfigStore).generateUiPresets, (preset, index) => {
                 return openBlock(), createElementBlock("select", {
                   key: index,
@@ -21204,28 +21225,28 @@ const _sfc_main$M = {
                     return openBlock(), createElementBlock("option", {
                       key: choice,
                       value: choice
-                    }, toDisplayString(choice), 9, _hoisted_24$9);
+                    }, toDisplayString(choice), 9, _hoisted_25$7);
                   }), 128))
-                ], 40, _hoisted_23$9);
+                ], 40, _hoisted_24$9);
               }), 128))
             ]),
-            createBaseVNode("label", _hoisted_25$7, [
-              _hoisted_26$7,
+            createBaseVNode("label", _hoisted_26$7, [
+              _hoisted_27$6,
               createBaseVNode("input", {
                 type: "number",
                 min: "2",
                 value: unref(appConfigStore).generatePresetImages,
-                onChange: _cache[8] || (_cache[8] = (e) => unref(appConfigStore).generatePresetImages = e.target.value)
-              }, null, 40, _hoisted_27$6),
-              _hoisted_28$6
+                onChange: _cache[9] || (_cache[9] = (e) => unref(appConfigStore).generatePresetImages = e.target.value)
+              }, null, 40, _hoisted_28$6),
+              _hoisted_29$6
             ])
           ], 64)),
-          _hoisted_29$6,
-          createBaseVNode("div", _hoisted_30$6, [
-            _hoisted_31$6,
+          _hoisted_30$6,
+          createBaseVNode("div", _hoisted_31$6, [
+            _hoisted_32$4,
             withDirectives(createBaseVNode("input", {
               id: "project-root",
-              "onUpdate:modelValue": _cache[9] || (_cache[9] = ($event) => projectRoot.value = $event),
+              "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => projectRoot.value = $event),
               type: "text",
               spellcheck: "false",
               placeholder: "D:\\Projects or \\\\server\\share\\projects",
@@ -21238,9 +21259,9 @@ const _sfc_main$M = {
               class: "btn outline",
               disabled: checking.value || !projectRoot.value.trim(),
               onClick: checkRoot
-            }, "Check", 8, _hoisted_32$4)
+            }, "Check", 8, _hoisted_33$4)
           ]),
-          createBaseVNode("div", _hoisted_33$4, [
+          createBaseVNode("div", _hoisted_34$5, [
             createTextVNode(" The folder of the projects as the " + toDisplayString(unref(HOST_NAME)) + " server sees it: a local path or a network (UNC) path. ", 1),
             rootCheck.value ? (openBlock(), createElementBlock("span", {
               key: 0,
@@ -21259,26 +21280,26 @@ const _sfc_main$M = {
               ], 64))
             ], 2)) : createCommentVNode("", true)
           ]),
-          createBaseVNode("div", _hoisted_34$5, [
-            _hoisted_35$5,
+          createBaseVNode("div", _hoisted_35$5, [
+            _hoisted_36$5,
             withDirectives(createBaseVNode("input", {
               id: "docs-root",
-              "onUpdate:modelValue": _cache[10] || (_cache[10] = ($event) => docsRoot.value = $event),
+              "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => docsRoot.value = $event),
               type: "text",
               spellcheck: "false",
               placeholder: defaultDocsRoot.value || "The docs folder of the extension",
               onChange: saveDocsRoot,
               onKeydown: withKeys(saveDocsRoot, ["enter"])
-            }, null, 40, _hoisted_36$5), [
+            }, null, 40, _hoisted_37$5), [
               [vModelText, docsRoot.value]
             ]),
             createBaseVNode("button", {
               class: "btn outline",
               disabled: checkingDocs.value,
               onClick: checkDocs
-            }, "Check", 8, _hoisted_37$5)
+            }, "Check", 8, _hoisted_38$5)
           ]),
-          createBaseVNode("div", _hoisted_38$5, [
+          createBaseVNode("div", _hoisted_39$5, [
             createTextVNode(" The folder of the Markdown documents of the Library as the " + toDisplayString(unref(HOST_NAME)) + " server sees it; empty for the docs folder of the extension. ", 1),
             docsCheck.value ? (openBlock(), createElementBlock("span", {
               key: 0,
@@ -21295,7 +21316,7 @@ const _sfc_main$M = {
               ], 64))
             ], 2)) : createCommentVNode("", true)
           ]),
-          createBaseVNode("h3", _hoisted_39$5, [
+          createBaseVNode("h3", _hoisted_40$5, [
             createTextVNode("Host restart "),
             createBaseVNode("span", {
               class: "help",
@@ -21304,24 +21325,24 @@ const _sfc_main$M = {
               "aria-label": `The restart button of the console restarts a hung or crashed ${unref(HOST_NAME)}. It needs the Host Restart addon, which is installed by hand, since security software may flag its process control. It kills the process along with its console window and runs the start script, which is set only by hand in the config file as {"command": "path of the script"}. Changes to the file take effect without a restart. The restart helper listens where ${unref(HOST_NAME)} does, on its port + 100 ("port" in the file sets another), with its certificate. A self-signed certificate has to be accepted for the helper once too.`
             }, [
               createTextVNode("?"),
-              createBaseVNode("span", _hoisted_41$5, [
+              createBaseVNode("span", _hoisted_42$5, [
                 createTextVNode("The restart button of the console restarts a hung or crashed " + toDisplayString(unref(HOST_NAME)) + ". It needs the Host Restart addon, which is installed by hand, since security software may flag its process control. It kills the process along with its console window and runs the start script.", 1),
-                _hoisted_42$5,
                 _hoisted_43$5,
-                createTextVNode(" The script is set only by hand in the config file, as "),
                 _hoisted_44$5,
-                createTextVNode(". Changes to the file take effect without a restart."),
+                createTextVNode(" The script is set only by hand in the config file, as "),
                 _hoisted_45$4,
+                createTextVNode(". Changes to the file take effect without a restart."),
                 _hoisted_46$4,
-                createTextVNode(" The restart helper listens where " + toDisplayString(unref(HOST_NAME)) + " does, on its port + 100 (", 1),
                 _hoisted_47$4,
+                createTextVNode(" The restart helper listens where " + toDisplayString(unref(HOST_NAME)) + " does, on its port + 100 (", 1),
+                _hoisted_48$4,
                 createTextVNode(" in the file sets another), with its certificate. A self-signed certificate has to be accepted for the helper once too.")
               ])
-            ], 8, _hoisted_40$5)
+            ], 8, _hoisted_41$5)
           ]),
-          ((_a = unref(restartInfo)) == null ? void 0 : _a.installed) === false ? (openBlock(), createElementBlock("div", _hoisted_48$4, [
-            _hoisted_49$4,
-            createBaseVNode("span", _hoisted_50$4, [
+          ((_a = unref(restartInfo)) == null ? void 0 : _a.installed) === false ? (openBlock(), createElementBlock("div", _hoisted_49$4, [
+            _hoisted_50$4,
+            createBaseVNode("span", _hoisted_51$4, [
               createVNode(AppIcon, {
                 name: "alert",
                 size: 13
@@ -21331,15 +21352,15 @@ const _sfc_main$M = {
                 href: unref(ADDON_URL),
                 target: "_blank",
                 rel: "noopener"
-              }, "Get the Host Restart addon", 8, _hoisted_51$4)
+              }, "Get the Host Restart addon", 8, _hoisted_52$4)
             ])
-          ])) : unref(restartInfo) ? (openBlock(), createElementBlock("div", _hoisted_52$4, [
-            _hoisted_53$4,
-            unref(restartInfo).configured ? (openBlock(), createElementBlock("code", _hoisted_54$4, toDisplayString(unref(restartInfo).command), 1)) : (openBlock(), createElementBlock("span", _hoisted_55$4, "Not set")),
-            _hoisted_56$4,
+          ])) : unref(restartInfo) ? (openBlock(), createElementBlock("div", _hoisted_53$4, [
+            _hoisted_54$4,
+            unref(restartInfo).configured ? (openBlock(), createElementBlock("code", _hoisted_55$4, toDisplayString(unref(restartInfo).command), 1)) : (openBlock(), createElementBlock("span", _hoisted_56$4, "Not set")),
+            _hoisted_57$4,
             createBaseVNode("code", null, toDisplayString(unref(restartInfo).configPath), 1),
             unref(restartInfo).detected ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
-              _hoisted_57$4,
+              _hoisted_58$4,
               createBaseVNode("span", null, [
                 createBaseVNode("code", null, toDisplayString(unref(restartInfo).detected), 1),
                 !unref(restartInfo).configured ? (openBlock(), createElementBlock("button", {
@@ -21350,7 +21371,7 @@ const _sfc_main$M = {
               ])
             ], 64)) : createCommentVNode("", true),
             unref(restartInfo).configured ? (openBlock(), createElementBlock(Fragment, { key: 3 }, [
-              _hoisted_58$4,
+              _hoisted_59$4,
               createBaseVNode("span", {
                 class: normalizeClass(["root-status", { ok: unref(restartInfo).running }])
               }, [
@@ -21367,45 +21388,45 @@ const _sfc_main$M = {
                     target: "_blank",
                     rel: "noopener",
                     title: "With a self-signed certificate, accept it here once, so that a hung host can be restarted"
-                  }, "Accept the certificate", 8, _hoisted_59$4)) : createCommentVNode("", true)
+                  }, "Accept the certificate", 8, _hoisted_60$4)) : createCommentVNode("", true)
                 ], 64)) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
                   createTextVNode("Not running (see host_supervisor.log in the store folder of the addon)")
                 ], 64))
               ], 2)
             ], 64)) : createCommentVNode("", true)
           ])) : createCommentVNode("", true),
-          _hoisted_60$4,
-          createBaseVNode("label", _hoisted_61$4, [
+          _hoisted_61$4,
+          createBaseVNode("label", _hoisted_62$4, [
             withDirectives(createBaseVNode("input", {
               type: "checkbox",
-              "onUpdate:modelValue": _cache[11] || (_cache[11] = ($event) => unref(appConfigStore).addModelInfoButton = $event)
+              "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => unref(appConfigStore).addModelInfoButton = $event)
             }, null, 512), [
               [vModelCheckbox, unref(appConfigStore).addModelInfoButton]
             ]),
             createTextVNode("Add 'Civitai Model Info' settings button (restart required)")
           ]),
-          createBaseVNode("label", _hoisted_62$4, [
-            _hoisted_63$4,
+          createBaseVNode("label", _hoisted_63$4, [
+            _hoisted_64$4,
             createTextVNode("Open models on "),
             withDirectives(createBaseVNode("select", {
-              "onUpdate:modelValue": _cache[12] || (_cache[12] = ($event) => unref(appConfigStore).civitaiDomain = $event)
-            }, _hoisted_66$4, 512), [
+              "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => unref(appConfigStore).civitaiDomain = $event)
+            }, _hoisted_67$4, 512), [
               [vModelSelect, unref(appConfigStore).civitaiDomain]
             ])
           ]),
-          (openBlock(), createElementBlock("label", _hoisted_67$4, [
+          (openBlock(), createElementBlock("label", _hoisted_68$4, [
             withDirectives(createBaseVNode("input", {
               type: "checkbox",
-              "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => unref(appConfigStore).repositionConfigPresetsDropdown = $event)
+              "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => unref(appConfigStore).repositionConfigPresetsDropdown = $event)
             }, null, 512), [
               [vModelCheckbox, unref(appConfigStore).repositionConfigPresetsDropdown]
             ]),
             createTextVNode("Bring up the dropdown of the 'Config Presets' extension")
           ])),
-          (openBlock(), createElementBlock("label", _hoisted_68$4, [
+          (openBlock(), createElementBlock("label", _hoisted_69$4, [
             withDirectives(createBaseVNode("input", {
               type: "checkbox",
-              "onUpdate:modelValue": _cache[14] || (_cache[14] = ($event) => unref(appConfigStore).persistGenerationParams = $event)
+              "onUpdate:modelValue": _cache[15] || (_cache[15] = ($event) => unref(appConfigStore).persistGenerationParams = $event)
             }, null, 512), [
               [vModelCheckbox, unref(appConfigStore).persistGenerationParams]
             ]),
@@ -21416,7 +21437,7 @@ const _sfc_main$M = {
     };
   }
 };
-const Settings = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-d1ad8d27"]]);
+const Settings = /* @__PURE__ */ _export_sfc(_sfc_main$M, [["__scopeId", "data-v-2338e152"]]);
 const MEDIA_TYPE = /^(image|video|audio)\//;
 function accepted(type, media) {
   return media ? MEDIA_TYPE.test(type || "") : (type || "").startsWith("image/");
@@ -35080,14 +35101,14 @@ const _sfc_main$7 = {
   }
 };
 const PluginCard = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-1fe5c9db"]]);
-const _withScopeId$4 = (n) => (pushScopeId("data-v-387dbd7a"), n = n(), popScopeId(), n);
+const _withScopeId$4 = (n) => (pushScopeId("data-v-7da20fab"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "manual" };
 const _hoisted_2$6 = { id: "manual-overview" };
 const _hoisted_3$6 = { class: "lead" };
 const _hoisted_4$5 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " For example, to upscale an image you usually find it in the filesystem, extract its id and prompt, enable Hires. fix, upscale, disable Hires. fix again and randomize the seed. In Image Bench you press one button on an image saved in a tray, and Image Bench does the rest. ", -1));
 const _hoisted_5$5 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " It may be hard to read this manual at once. Read only the parts of interest at first, and refer to it while exploring the application tabs. ", -1));
 const _hoisted_6$5 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The window has the following tabs:", -1));
-const _hoisted_7$5 = /* @__PURE__ */ createStaticVNode("<li data-v-387dbd7a><b data-v-387dbd7a>Generate</b> and <b data-v-387dbd7a>ControlNet</b>: compact editors for the generation parameters and the ControlNet units.</li><li data-v-387dbd7a><b data-v-387dbd7a>Explore</b> runs one prompt on many checkpoints and LoRAs and shows the results side by side.</li><li data-v-387dbd7a><b data-v-387dbd7a>Generated</b> holds batches, variations and endless generation. Images appear as they finish.</li><li data-v-387dbd7a><b data-v-387dbd7a>Compare</b> shows chosen images side by side, and the same region of each of them, so you can pick the best of several variants.</li><li data-v-387dbd7a><b data-v-387dbd7a>Concept tray</b> and <b data-v-387dbd7a>Image tray</b> are permanent collections of the images worth keeping.</li><li data-v-387dbd7a><b data-v-387dbd7a>Upscaled</b> holds upscaled (Hires. fix) versions of the images you choose.</li><li data-v-387dbd7a><b data-v-387dbd7a>Library</b> holds docs (your Markdown notes), snippets (prompt text inserted from the Generate tab) and this manual.</li>", 7);
+const _hoisted_7$5 = /* @__PURE__ */ createStaticVNode("<li data-v-7da20fab><b data-v-7da20fab>Generate</b> and <b data-v-7da20fab>ControlNet</b>: compact editors for the generation parameters and the ControlNet units.</li><li data-v-7da20fab><b data-v-7da20fab>Explore</b> runs one prompt on many checkpoints and LoRAs and shows the results side by side.</li><li data-v-7da20fab><b data-v-7da20fab>Generated</b> holds batches, variations and endless generation. Images appear as they finish.</li><li data-v-7da20fab><b data-v-7da20fab>Compare</b> shows chosen images side by side, and the same region of each of them, so you can pick the best of several variants.</li><li data-v-7da20fab><b data-v-7da20fab>Concept tray</b> and <b data-v-7da20fab>Image tray</b> are permanent collections of the images worth keeping.</li><li data-v-7da20fab><b data-v-7da20fab>Upscaled</b> holds upscaled (Hires. fix) versions of the images you choose.</li><li data-v-7da20fab><b data-v-7da20fab>Library</b> holds docs (your Markdown notes), snippets (prompt text inserted from the Generate tab) and this manual.</li>", 7);
 const _hoisted_14$2 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Project", -1));
 const _hoisted_15$2 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings", -1));
 const _hoisted_16$2 = { id: "manual-window" };
@@ -35105,7 +35126,7 @@ const _hoisted_27$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ creat
 const _hoisted_28$1 = { id: "manual-images" };
 const _hoisted_29$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Working with images", -1));
 const _hoisted_30$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "Ctrl", -1));
-const _hoisted_31$1 = /* @__PURE__ */ createStaticVNode('<p data-v-387dbd7a> With <b data-v-387dbd7a>Show the action rim of an image on hover (without holding Ctrl)</b> turned on in the Settings tab, hovering alone opens the ring. In this mode, holding <span class="kbd" data-v-387dbd7a>Ctrl</span> hides the ring and all other controls, so a click anywhere on the image opens it. </p><p data-v-387dbd7a> The button in the middle shows the marking of the image; click it to switch the ring to the markings and back. The marking is also shown at the bottom-right corner of the image. Click it there to show only the images with that marking, or middle-click it to remove the marking. While the pointer is over an image, the hotkeys act on that image: <span class="kbd" data-v-387dbd7a>1</span>–<span class="kbd" data-v-387dbd7a>9</span> set its marking (<span class="kbd" data-v-387dbd7a>0</span> removes it) and <span class="kbd" data-v-387dbd7a>V</span> views it large. </p><h3 data-v-387dbd7a>The menu actions</h3>', 3);
+const _hoisted_31$1 = /* @__PURE__ */ createStaticVNode('<p data-v-7da20fab> With <b data-v-7da20fab>Show the action rim of an image on hover (without holding Ctrl)</b> turned on in the Settings tab, hovering alone opens the ring. In this mode, holding <span class="kbd" data-v-7da20fab>Ctrl</span> hides the ring and all other controls, so a click anywhere on the image opens it. </p><p data-v-7da20fab> The button in the middle shows the marking of the image; click it to switch the ring to the markings and back. The marking is also shown at the bottom-right corner of the image. Click it there to show only the images with that marking, or middle-click it to remove the marking. While the pointer is over an image, the hotkeys act on that image: <span class="kbd" data-v-7da20fab>1</span>–<span class="kbd" data-v-7da20fab>9</span> set its marking (<span class="kbd" data-v-7da20fab>0</span> removes it) and <span class="kbd" data-v-7da20fab>V</span> views it large. </p><h3 data-v-7da20fab>The menu actions</h3>', 3);
 const _hoisted_34$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "I", -1));
 const _hoisted_35$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "C"),
@@ -35304,7 +35325,7 @@ const _hoisted_146 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_147 = { key: 0 };
 const _hoisted_148 = { key: 3 };
 const _hoisted_149 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Upload independent control image", -1));
-const _hoisted_150 = /* @__PURE__ */ createStaticVNode("<h3 data-v-387dbd7a>Sweep</h3><p data-v-387dbd7a> A sweep generates the same prompt with the same seed for every combination of control weight and ending step of the selected unit. To set one up, switch the top of the right column from <b data-v-387dbd7a>Parameters</b> to <b data-v-387dbd7a>Sweep</b>, enter <b data-v-387dbd7a>From</b>, <b data-v-387dbd7a>To</b> and <b data-v-387dbd7a>Step</b> for both axes (by default 0.5 to 1 in steps of 0.1) and press <b data-v-387dbd7a>Sweep</b>. A matrix replaces the image panes. Weights run down the rows and ending steps across the columns, with the lowest values at the top left. </p><ul data-v-387dbd7a><li data-v-387dbd7a>The first image is generated with the unit&#39;s current values. It is shown at the left of the matrix next to the control image, as a reference for the other cells.</li><li data-v-387dbd7a>The diagonals are generated first. Weak and short to strong and long shows how much control you need; strong and short to weak and long compares kinds of control at roughly the same strength. The cells between them follow. If you have seen enough, stop the sweep and leave the rest of the matrix empty.</li><li data-v-387dbd7a>Hovering an image shows <b data-v-387dbd7a>Apply</b>, which copies its weight and ending step into the unit. Clicking a row or column header applies just that one value. The cell that matches the unit&#39;s current values is outlined.</li><li data-v-387dbd7a>Sweep images have no action rim. Their overlay shows the values with an <b data-v-387dbd7a>Apply</b> button at the top. The arrow keys move between images and skip empty cells: ←/→ go to the previous or next image in reading order and wrap into the next row, so you can step through the diagonals while the rest is still generating; ↑/↓ move within the column.</li><li data-v-387dbd7a>When <b data-v-387dbd7a>Use seed</b> is checked, every image uses the seed in the field next to it (the dice button picks a random one). When it is unchecked, the sweep takes the seed of the generation tab, or picks one random seed for all images if that seed is -1. The generation tab gets its seed back after the sweep.</li><li data-v-387dbd7a>If the unit is disabled, the sweep enables it. When the sweep ends, the unit returns to the values it had before. Each image keeps its ControlNet values in its parameters.</li></ul>", 3);
+const _hoisted_150 = /* @__PURE__ */ createStaticVNode("<h3 data-v-7da20fab>Sweep</h3><p data-v-7da20fab> A sweep generates the same prompt with the same seed for every combination of control weight and ending step of the selected unit. To set one up, switch the top of the right column from <b data-v-7da20fab>Parameters</b> to <b data-v-7da20fab>Sweep</b>, enter <b data-v-7da20fab>From</b>, <b data-v-7da20fab>To</b> and <b data-v-7da20fab>Step</b> for both axes (by default 0.5 to 1 in steps of 0.1) and press <b data-v-7da20fab>Sweep</b>. A matrix replaces the image panes. Weights run down the rows and ending steps across the columns, with the lowest values at the top left. </p><ul data-v-7da20fab><li data-v-7da20fab>The first image is generated with the unit&#39;s current values. It is shown at the left of the matrix next to the control image, as a reference for the other cells.</li><li data-v-7da20fab>The diagonals are generated first. Weak and short to strong and long shows how much control you need; strong and short to weak and long compares kinds of control at roughly the same strength. The cells between them follow. If you have seen enough, stop the sweep and leave the rest of the matrix empty.</li><li data-v-7da20fab>Hovering an image shows <b data-v-7da20fab>Apply</b>, which copies its weight and ending step into the unit. Clicking a row or column header applies just that one value. The cell that matches the unit&#39;s current values is outlined.</li><li data-v-7da20fab>Sweep images have no action rim. Their overlay shows the values with an <b data-v-7da20fab>Apply</b> button at the top. The arrow keys move between images and skip empty cells: ←/→ go to the previous or next image in reading order and wrap into the next row, so you can step through the diagonals while the rest is still generating; ↑/↓ move within the column.</li><li data-v-7da20fab>When <b data-v-7da20fab>Use seed</b> is checked, every image uses the seed in the field next to it (the dice button picks a random one). When it is unchecked, the sweep takes the seed of the generation tab, or picks one random seed for all images if that seed is -1. The generation tab gets its seed back after the sweep.</li><li data-v-7da20fab>If the unit is disabled, the sweep enables it. When the sweep ends, the unit returns to the values it had before. Each image keeps its ControlNet values in its parameters.</li></ul>", 3);
 const _hoisted_153 = { id: "manual-explore" };
 const _hoisted_154 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " Explore runs the current prompt on every checked checkpoint with every checked LoRA, and groups the results by model, so that you can compare models and LoRAs. ", -1));
 const _hoisted_155 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "To run an exploration:", -1));
@@ -35347,7 +35368,7 @@ const _hoisted_169 = {
   key: 0,
   class: "note"
 };
-const _hoisted_170 = /* @__PURE__ */ createStaticVNode("<div data-v-387dbd7a> Model exploration switches the <b data-v-387dbd7a>UI Preset</b> for each model automatically, based on the model&#39;s folder and file name. A preset is chosen when its name appears in them (<code data-v-387dbd7a>flux</code>, <code data-v-387dbd7a>klein</code>, <code data-v-387dbd7a>qwen</code>, ...), and <code data-v-387dbd7a>sd</code>, <code data-v-387dbd7a>xl</code> and <code data-v-387dbd7a>zit</code> are recognised by <code data-v-387dbd7a>sd/</code>, <code data-v-387dbd7a>sdxl</code> and <code data-v-387dbd7a>z-image</code>. When several presets match, the longest match wins, so <code data-v-387dbd7a>flux/klein/model.safetensors</code> selects <code data-v-387dbd7a>klein</code>, not <code data-v-387dbd7a>flux</code>. Models that match nothing keep the current preset. To make this reliable, sort checkpoints into folders named after their family (<code data-v-387dbd7a>sdxl/</code>, <code data-v-387dbd7a>flux/</code>, <code data-v-387dbd7a>klein/</code>, ...). </div>", 1);
+const _hoisted_170 = /* @__PURE__ */ createStaticVNode("<div data-v-7da20fab> Model exploration switches the <b data-v-7da20fab>UI Preset</b> for each model automatically, based on the model&#39;s folder and file name. A preset is chosen when its name appears in them (<code data-v-7da20fab>flux</code>, <code data-v-7da20fab>klein</code>, <code data-v-7da20fab>qwen</code>, ...), and <code data-v-7da20fab>sd</code>, <code data-v-7da20fab>xl</code> and <code data-v-7da20fab>zit</code> are recognised by <code data-v-7da20fab>sd/</code>, <code data-v-7da20fab>sdxl</code> and <code data-v-7da20fab>z-image</code>. When several presets match, the longest match wins, so <code data-v-7da20fab>flux/klein/model.safetensors</code> selects <code data-v-7da20fab>klein</code>, not <code data-v-7da20fab>flux</code>. Models that match nothing keep the current preset. To make this reliable, sort checkpoints into folders named after their family (<code data-v-7da20fab>sdxl/</code>, <code data-v-7da20fab>flux/</code>, <code data-v-7da20fab>klein/</code>, ...). </div>", 1);
 const _hoisted_171 = { id: "manual-generated" };
 const _hoisted_172 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The toolbar and what you can do with the results:", -1));
 const _hoisted_173 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Generate × N", -1));
@@ -35386,7 +35407,7 @@ const _hoisted_200 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_201 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "Shift", -1));
 const _hoisted_202 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Crops", -1));
 const _hoisted_203 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "X", -1));
-const _hoisted_204 = /* @__PURE__ */ createStaticVNode('<li data-v-387dbd7a><b data-v-387dbd7a>Image actions</b>: images and crops show only their number, comment and marking. Hold <span class="kbd" data-v-387dbd7a>Ctrl</span> over one to show its action rim (parameters, ControlNet, editor, the trays, a comment, Remove from compare at the bottom, and the markings in the middle), right-click it for its actions, or use the keys. Middle-click or Shift+click an image to view it large (in Crops, click or middle-click it).</li><li data-v-387dbd7a><b data-v-387dbd7a>Clear</b>: <b data-v-387dbd7a>Marked</b> / <b data-v-387dbd7a>Unmarked</b> remove the images with or without a marking, and <b data-v-387dbd7a>All</b> removes all of them. The files stay on disk.</li>', 2);
+const _hoisted_204 = /* @__PURE__ */ createStaticVNode('<li data-v-7da20fab><b data-v-7da20fab>Image actions</b>: images and crops show only their number, comment and marking. Hold <span class="kbd" data-v-7da20fab>Ctrl</span> over one to show its action rim (parameters, ControlNet, editor, the trays, a comment, Remove from compare at the bottom, and the markings in the middle), right-click it for its actions, or use the keys. Middle-click or Shift+click an image to view it large (in Crops, click or middle-click it).</li><li data-v-7da20fab><b data-v-7da20fab>Clear</b>: <b data-v-7da20fab>Marked</b> / <b data-v-7da20fab>Unmarked</b> remove the images with or without a marking, and <b data-v-7da20fab>All</b> removes all of them. The files stay on disk.</li>', 2);
 const _hoisted_206 = { id: "manual-trays" };
 const _hoisted_207 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "concept tray", -1));
 const _hoisted_208 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "image tray", -1));
@@ -35447,7 +35468,7 @@ const _hoisted_244 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_245 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, ".md", -1));
 const _hoisted_246 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings › Library › Docs root", -1));
 const _hoisted_247 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "model_docs", -1));
-const _hoisted_248 = /* @__PURE__ */ createStaticVNode('<p data-v-387dbd7a> Extension updates replace the documents shipped in <code data-v-387dbd7a>model_docs</code>, so keep your own documents in a separate folder (you can copy the shipped ones there to start with) and set it as the docs root. </p><p data-v-387dbd7a> Tag lists (<code data-v-387dbd7a>.csv</code> files for tag autocompletion, such as the Anima or Danbooru tags: tag, category, post count, aliases) are shown with a search field instead. Type part of a tag or of one of its aliases to find it (spaces and underscores are treated the same). Exact and leading matches come first, then the more frequently used tags. Click a tag to copy it with spaces instead of underscores, as it is written in prompts. </p><h3 id="manual-library-snippets" data-v-387dbd7a>Snippets</h3><p data-v-387dbd7a> Snippets are pieces of prompt text with an optional negative part, organised in folders. You insert them from the Snippets panel of the Generate tab. <code data-v-387dbd7a>{}</code> or <code data-v-387dbd7a>{prompt}</code> (as in WebUI styles) in a snippet stands for the selected prompt text, which Shift+click wraps. For example, with the snippet <code data-v-387dbd7a>watercolor painting of {}, soft pastel colors</code>, selecting <code data-v-387dbd7a>a cat on a windowsill</code> in the prompt and Shift+clicking the snippet turns the selection into <code data-v-387dbd7a>watercolor painting of a cat on a windowsill, soft pastel colors</code>. Edit a snippet in the right pane; changes are saved as you type. Drag snippets to reorder them or to move them into a folder. </p><p data-v-387dbd7a> Badges after the name show what a snippet does: <span class="snippet-badge negative" data-v-387dbd7a>−</span> marks a snippet with a negative part, which is added to the negative prompt when the snippet is inserted, and <span class="snippet-badge wrap" data-v-387dbd7a>{}</span> marks one that wraps the selected text. Hover over the name to see the whole text of the snippet, including the negative part. The <span class="snippet-badge negative" data-v-387dbd7a>−</span> badge also appears in the Snippets panel of the Generate tab. </p>', 5);
+const _hoisted_248 = /* @__PURE__ */ createStaticVNode('<p data-v-7da20fab> Extension updates replace the documents shipped in <code data-v-7da20fab>model_docs</code>, so keep your own documents in a separate folder (you can copy the shipped ones there to start with) and set it as the docs root. </p><p data-v-7da20fab> Tag lists (<code data-v-7da20fab>.csv</code> files for tag autocompletion, such as the Anima or Danbooru tags: tag, category, post count, aliases) are shown with a search field instead. Type part of a tag or of one of its aliases to find it (spaces and underscores are treated the same). Exact and leading matches come first, then the more frequently used tags. Click a tag to copy it with spaces instead of underscores, as it is written in prompts. </p><h3 id="manual-library-snippets" data-v-7da20fab>Snippets</h3><p data-v-7da20fab> Snippets are pieces of prompt text with an optional negative part, organised in folders. You insert them from the Snippets panel of the Generate tab. <code data-v-7da20fab>{}</code> or <code data-v-7da20fab>{prompt}</code> (as in WebUI styles) in a snippet stands for the selected prompt text, which Shift+click wraps. For example, with the snippet <code data-v-7da20fab>watercolor painting of {}, soft pastel colors</code>, selecting <code data-v-7da20fab>a cat on a windowsill</code> in the prompt and Shift+clicking the snippet turns the selection into <code data-v-7da20fab>watercolor painting of a cat on a windowsill, soft pastel colors</code>. Edit a snippet in the right pane; changes are saved as you type. Drag snippets to reorder them or to move them into a folder. </p><p data-v-7da20fab> Badges after the name show what a snippet does: <span class="snippet-badge negative" data-v-7da20fab>−</span> marks a snippet with a negative part, which is added to the negative prompt when the snippet is inserted, and <span class="snippet-badge wrap" data-v-7da20fab>{}</span> marks one that wraps the selected text. Hover over the name to see the whole text of the snippet, including the negative part. The <span class="snippet-badge negative" data-v-7da20fab>−</span> badge also appears in the Snippets panel of the Generate tab. </p>', 5);
 const _hoisted_253 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "styles.csv", -1));
 const _hoisted_254 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h3", { id: "manual-library-manual" }, "Manual", -1));
 const _hoisted_255 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " This manual. ", -1));
@@ -35478,12 +35499,12 @@ const _hoisted_270 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_271 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "Ctrl", -1));
 const _hoisted_272 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "S", -1));
 const _hoisted_273 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("i", null, "No project", -1));
-const _hoisted_274 = /* @__PURE__ */ createStaticVNode('<li data-v-387dbd7a><b data-v-387dbd7a>The project reminder</b>: while a project is current, a cube in the project color is joined to the Generate button; click it for <b data-v-387dbd7a>Save project</b> and <b data-v-387dbd7a>New workspace…</b>. The cube turns striped and pulses when the work may be starting anew: when the Image Bench window opens with a project current (not when it is reloaded), after clearing the prompts, and after applying PNG Info. The next <b data-v-387dbd7a>Generate</b> or <b data-v-387dbd7a>Variations…</b> then asks first: <b data-v-387dbd7a>Continue project</b> (<span class="kbd" data-v-387dbd7a>Enter</span>) generates, <b data-v-387dbd7a>New workspace</b> clears the images and trays and closes the project but keeps the prompts and parameters, then generates, and <span class="kbd" data-v-387dbd7a>Esc</span> generates nothing. Ctrl+click on Generate skips the question; <b data-v-387dbd7a>Don&#39;t ask again for this project</b> silences it until the window is opened again.</li><li data-v-387dbd7a><b data-v-387dbd7a>New project</b> creates the folder and, unless unchecked, saves the workspace into it and makes it current.</li><li data-v-387dbd7a><b data-v-387dbd7a>Open</b> (or double-click) restores the trays and parameters of a project and makes it current. If the current project has unsaved changes, you are asked to save or discard them first. The menu next to <b data-v-387dbd7a>Open</b> restores <b data-v-387dbd7a>Trays only</b> or <b data-v-387dbd7a>Parameters only</b>, or offers <b data-v-387dbd7a>Merge trays into the workspace</b>. <b data-v-387dbd7a>Save</b> (<b data-v-387dbd7a>Save here</b> on a project that is not current) saves the workspace into the project shown; the menu next to it saves it as a new project in the same folder (<b data-v-387dbd7a>Save as new project…</b>), which becomes current. <b data-v-387dbd7a>Revert</b> restores the saved state of the current project.</li>', 3);
+const _hoisted_274 = /* @__PURE__ */ createStaticVNode('<li data-v-7da20fab><b data-v-7da20fab>The project reminder</b>: while a project is current, a cube in the project color is joined to the Generate button. Click it for <b data-v-7da20fab>Save project</b> and <b data-v-7da20fab>New workspace…</b>. The cube turns striped and pulses when the work may be starting anew: when the Image Bench window opens with a project current (not when it is reloaded), after clearing the prompts, and after applying PNG Info. The next <b data-v-7da20fab>Generate</b> or <b data-v-7da20fab>Variations…</b> then asks first: <b data-v-7da20fab>Continue project</b> (<span class="kbd" data-v-7da20fab>Enter</span>) generates, <b data-v-7da20fab>New workspace</b> clears the images and trays and closes the project but keeps the prompts and parameters, then generates, and <span class="kbd" data-v-7da20fab>Esc</span> generates nothing. Ctrl+click on Generate skips the question; <b data-v-7da20fab>Don&#39;t ask again for this project</b> silences it until the window is opened again. To turn the question off for good (the cube stays), uncheck <b data-v-7da20fab>Settings › Generate Tab › Ask whether to continue the current project</b>.</li><li data-v-7da20fab><b data-v-7da20fab>New project</b> creates the folder and, unless unchecked, saves the workspace into it and makes it current.</li><li data-v-7da20fab><b data-v-7da20fab>Open</b> (or double-click) restores the trays and parameters of a project and makes it current. If the current project has unsaved changes, you are asked to save or discard them first. The menu next to <b data-v-7da20fab>Open</b> restores <b data-v-7da20fab>Trays only</b> or <b data-v-7da20fab>Parameters only</b>, or offers <b data-v-7da20fab>Merge trays into the workspace</b>. <b data-v-7da20fab>Save</b> (<b data-v-7da20fab>Save here</b> on a project that is not current) saves the workspace into the project shown; the menu next to it saves it as a new project in the same folder (<b data-v-7da20fab>Save as new project…</b>), which becomes current. <b data-v-7da20fab>Revert</b> restores the saved state of the current project.</li>', 3);
 const _hoisted_277 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Parameters", -1));
 const _hoisted_278 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Apply to Generate", -1));
 const _hoisted_279 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Final image", -1));
 const _hoisted_280 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "ib_project", -1));
-const _hoisted_281 = /* @__PURE__ */ createStaticVNode('<li data-v-387dbd7a><b data-v-387dbd7a>Tags</b> and <b data-v-387dbd7a>notes</b> are saved immediately. Click a tag to search by it.</li><li data-v-387dbd7a>The tabs under the parameters, <b data-v-387dbd7a>Image tray</b>, <b data-v-387dbd7a>Concept tray</b>, <b data-v-387dbd7a>Compare</b> and <b data-v-387dbd7a>Files</b>, contain the images of the trays as of the last save, and the image files of the project folder. Click an image to view it (<span class="kbd" data-v-387dbd7a>←</span> / <span class="kbd" data-v-387dbd7a>→</span> page through them), middle-click to open it in a new tab, or right-click for the menu (final image, Compare, editor, and deleting a file of the project folder).</li>', 2);
+const _hoisted_281 = /* @__PURE__ */ createStaticVNode('<li data-v-7da20fab><b data-v-7da20fab>Tags</b> and <b data-v-7da20fab>notes</b> are saved immediately. Click a tag to search by it.</li><li data-v-7da20fab>The tabs under the parameters, <b data-v-7da20fab>Image tray</b>, <b data-v-7da20fab>Concept tray</b>, <b data-v-7da20fab>Compare</b> and <b data-v-7da20fab>Files</b>, contain the images of the trays as of the last save, and the image files of the project folder. Click an image to view it (<span class="kbd" data-v-7da20fab>←</span> / <span class="kbd" data-v-7da20fab>→</span> page through them), middle-click to open it in a new tab, or right-click for the menu (final image, Compare, editor, and deleting a file of the project folder).</li>', 2);
 const _hoisted_283 = { id: "manual-settings" };
 const _hoisted_284 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings", -1));
 const _hoisted_285 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
@@ -35656,7 +35677,7 @@ const _hoisted_350 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_351 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, '"name": "Canny Edges"', -1));
 const _hoisted_352 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, '"pluginId": "image-bench.canny"', -1));
 const _hoisted_353 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Plugins › Canny Edges", -1));
-const _hoisted_354 = /* @__PURE__ */ createStaticVNode('<ul data-v-387dbd7a><li data-v-387dbd7a><b data-v-387dbd7a>Threshold 1</b> and <b data-v-387dbd7a>Threshold 2</b> are the hysteresis thresholds: lines start at edges stronger than the higher one and continue down to the lower one.</li><li data-v-387dbd7a><b data-v-387dbd7a>Blur</b> is the size of a Gaussian blur applied first (1 means no blur). It removes fine texture.</li><li data-v-387dbd7a><b data-v-387dbd7a>Merged</b> or <b data-v-387dbd7a>Active layer</b> selects the image the edges are computed from. The plugin reads it again when another document or layer is selected, when you press <b data-v-387dbd7a>Refresh</b> after editing it, and before each apply.</li><li data-v-387dbd7a>The preview updates live and shows the full-size result zoomed out. <b data-v-387dbd7a>Fast preview</b> computes it from a smaller copy instead, which is quicker for full images but does not show exactly the edges that are applied.</li><li data-v-387dbd7a><b data-v-387dbd7a>Selection only</b> keeps the edges inside the selection.</li><li data-v-387dbd7a><b data-v-387dbd7a>As layer</b> puts white-on-black edges into a layer named after the parameters, as one history step; applying again in the same document overwrites that layer. <b data-v-387dbd7a>As document</b> opens them as a new document.</li></ul><h3 id="manual-editor-krita" data-v-387dbd7a>Krita</h3><p data-v-387dbd7a> The <b data-v-387dbd7a>Image Bench</b> plugin for Krita (5.2 or newer) works like the Photoshop plugin. </p>', 3);
+const _hoisted_354 = /* @__PURE__ */ createStaticVNode('<ul data-v-7da20fab><li data-v-7da20fab><b data-v-7da20fab>Threshold 1</b> and <b data-v-7da20fab>Threshold 2</b> are the hysteresis thresholds: lines start at edges stronger than the higher one and continue down to the lower one.</li><li data-v-7da20fab><b data-v-7da20fab>Blur</b> is the size of a Gaussian blur applied first (1 means no blur). It removes fine texture.</li><li data-v-7da20fab><b data-v-7da20fab>Merged</b> or <b data-v-7da20fab>Active layer</b> selects the image the edges are computed from. The plugin reads it again when another document or layer is selected, when you press <b data-v-7da20fab>Refresh</b> after editing it, and before each apply.</li><li data-v-7da20fab>The preview updates live and shows the full-size result zoomed out. <b data-v-7da20fab>Fast preview</b> computes it from a smaller copy instead, which is quicker for full images but does not show exactly the edges that are applied.</li><li data-v-7da20fab><b data-v-7da20fab>Selection only</b> keeps the edges inside the selection.</li><li data-v-7da20fab><b data-v-7da20fab>As layer</b> puts white-on-black edges into a layer named after the parameters, as one history step; applying again in the same document overwrites that layer. <b data-v-7da20fab>As document</b> opens them as a new document.</li></ul><h3 id="manual-editor-krita" data-v-7da20fab>Krita</h3><p data-v-7da20fab> The <b data-v-7da20fab>Image Bench</b> plugin for Krita (5.2 or newer) works like the Photoshop plugin. </p>', 3);
 const _hoisted_357 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Download .zip"),
   /* @__PURE__ */ createTextVNode(", then in Krita choose "),
@@ -35672,7 +35693,7 @@ const _hoisted_358 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 ], -1));
 const _hoisted_359 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h4", null, "Connecting", -1));
 const _hoisted_360 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings › Dockers › Image Bench", -1));
-const _hoisted_361 = /* @__PURE__ */ createStaticVNode("<p data-v-387dbd7a> The docker has the commands of the Photoshop panel: <b data-v-387dbd7a>Input / Inpaint</b> (<b data-v-387dbd7a>Image</b>, <b data-v-387dbd7a>Mask</b>, <b data-v-387dbd7a>Image + Mask</b>), <b data-v-387dbd7a>ControlNet</b> (<b data-v-387dbd7a>Preprocess</b>, <b data-v-387dbd7a>Image</b>, <b data-v-387dbd7a>Mask</b>) and <b data-v-387dbd7a>Keep</b> (<b data-v-387dbd7a>Compare</b>, <b data-v-387dbd7a>File</b>, <b data-v-387dbd7a>Final</b>). The image is the merged document, converted to 8-bit sRGB regardless of the document&#39;s color space; the mask is the selection. The same commands are in <b data-v-387dbd7a>Tools › Scripts › Image Bench</b>, and you can assign shortcuts to them in <b data-v-387dbd7a>Settings › Configure Krita › Keyboard Shortcuts</b>. </p>", 1);
+const _hoisted_361 = /* @__PURE__ */ createStaticVNode("<p data-v-7da20fab> The docker has the commands of the Photoshop panel: <b data-v-7da20fab>Input / Inpaint</b> (<b data-v-7da20fab>Image</b>, <b data-v-7da20fab>Mask</b>, <b data-v-7da20fab>Image + Mask</b>), <b data-v-7da20fab>ControlNet</b> (<b data-v-7da20fab>Preprocess</b>, <b data-v-7da20fab>Image</b>, <b data-v-7da20fab>Mask</b>) and <b data-v-7da20fab>Keep</b> (<b data-v-7da20fab>Compare</b>, <b data-v-7da20fab>File</b>, <b data-v-7da20fab>Final</b>). The image is the merged document, converted to 8-bit sRGB regardless of the document&#39;s color space; the mask is the selection. The same commands are in <b data-v-7da20fab>Tools › Scripts › Image Bench</b>, and you can assign shortcuts to them in <b data-v-7da20fab>Settings › Configure Krita › Keyboard Shortcuts</b>. </p>", 1);
 const _hoisted_362 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Send to Krita"),
   /* @__PURE__ */ createTextVNode(" opens the image as a new document. Middle-click or Shift+click places it as a new paint layer above the active one, centered on the canvas and converted to the color space of the document. ")
@@ -35706,7 +35727,7 @@ const _hoisted_367 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_368 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Tools › Image Bench › Panel", -1));
 const _hoisted_369 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Tools › Image Bench › Panel", -1));
 const _hoisted_370 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Quit", -1));
-const _hoisted_371 = /* @__PURE__ */ createStaticVNode("<p data-v-387dbd7a> The panel has the commands of the Photoshop panel: <b data-v-387dbd7a>Input / Inpaint</b> (<b data-v-387dbd7a>Image</b>, <b data-v-387dbd7a>Mask</b>, <b data-v-387dbd7a>Image + Mask</b>), <b data-v-387dbd7a>ControlNet</b> (<b data-v-387dbd7a>Preprocess</b>, <b data-v-387dbd7a>Image</b>, <b data-v-387dbd7a>Mask</b>) and <b data-v-387dbd7a>Keep</b> (<b data-v-387dbd7a>Compare</b>, <b data-v-387dbd7a>File</b>, <b data-v-387dbd7a>Final</b>). They send the image chosen in the panel&#39;s <b data-v-387dbd7a>Image</b> list, because GIMP does not tell plugins which image window is active; opening the panel from an image window selects that image. The image is the visible layers merged and converted to 8-bit sRGB regardless of the image&#39;s mode and precision; the mask is the selection. The same commands are in the <b data-v-387dbd7a>Tools › Image Bench</b> menu. There they send the image of the window they are chosen in, also while the panel is closed, and you can assign shortcuts to them in <b data-v-387dbd7a>Edit › Keyboard Shortcuts</b>. </p>", 1);
+const _hoisted_371 = /* @__PURE__ */ createStaticVNode("<p data-v-7da20fab> The panel has the commands of the Photoshop panel: <b data-v-7da20fab>Input / Inpaint</b> (<b data-v-7da20fab>Image</b>, <b data-v-7da20fab>Mask</b>, <b data-v-7da20fab>Image + Mask</b>), <b data-v-7da20fab>ControlNet</b> (<b data-v-7da20fab>Preprocess</b>, <b data-v-7da20fab>Image</b>, <b data-v-7da20fab>Mask</b>) and <b data-v-7da20fab>Keep</b> (<b data-v-7da20fab>Compare</b>, <b data-v-7da20fab>File</b>, <b data-v-7da20fab>Final</b>). They send the image chosen in the panel&#39;s <b data-v-7da20fab>Image</b> list, because GIMP does not tell plugins which image window is active; opening the panel from an image window selects that image. The image is the visible layers merged and converted to 8-bit sRGB regardless of the image&#39;s mode and precision; the mask is the selection. The same commands are in the <b data-v-7da20fab>Tools › Image Bench</b> menu. There they send the image of the window they are chosen in, also while the panel is closed, and you can assign shortcuts to them in <b data-v-7da20fab>Edit › Keyboard Shortcuts</b>. </p>", 1);
 const _hoisted_372 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Send to GIMP"),
   /* @__PURE__ */ createTextVNode(" opens the image as a new image. Middle-click or Shift+click places it as a new layer of the image chosen in the panel, above its selected layer and centered on the canvas. Images are received only while the panel runs. ")
@@ -35717,11 +35738,11 @@ const _hoisted_373 = {
 };
 const _hoisted_374 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "ComfyUI setup", -1));
 const _hoisted_375 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
-  /* @__PURE__ */ createTextVNode(" A workflow may contain several loaders, samplers and text encoders, so Image Bench needs to be told which nodes to use. To do this, add a "),
+  /* @__PURE__ */ createTextVNode(" A workflow can contain several loaders, samplers and text encoders, so Image Bench cannot tell on its own which nodes to work with. You point it to them by adding a "),
   /* @__PURE__ */ createBaseVNode("b", null, "marker"),
-  /* @__PURE__ */ createTextVNode(" to the title of each of those nodes (double-click the title, or right-click › "),
+  /* @__PURE__ */ createTextVNode(" to the title of each node (double-click the title, or right-click › "),
   /* @__PURE__ */ createBaseVNode("b", null, "Title"),
-  /* @__PURE__ */ createTextVNode("). The marker can be anywhere in the title, as in "),
+  /* @__PURE__ */ createTextVNode("). The marker can appear anywhere in the title, as in "),
   /* @__PURE__ */ createBaseVNode("code", null, "Main model ib:cp"),
   /* @__PURE__ */ createTextVNode(". ")
 ], -1));
@@ -35729,16 +35750,16 @@ const _hoisted_376 = { class: "markers" };
 const _hoisted_377 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("th", null, "Marker"),
   /* @__PURE__ */ createBaseVNode("th", null, "Accepted nodes"),
-  /* @__PURE__ */ createBaseVNode("th", null, "Needed for"),
-  /* @__PURE__ */ createBaseVNode("th", null, "Without it")
+  /* @__PURE__ */ createBaseVNode("th", null, "Used for"),
+  /* @__PURE__ */ createBaseVNode("th", null, "If no node is marked")
 ], -1));
 const _hoisted_378 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
     /* @__PURE__ */ createBaseVNode("code", null, "ib:cp")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "Load Checkpoint (also the older and unCLIP loaders), Load Diffusion Model (UNETLoader), Unet Loader (GGUF), GGUF Loader KJ"),
+  /* @__PURE__ */ createBaseVNode("td", null, "Load Checkpoint (including the older and unCLIP loaders), Load Diffusion Model (UNETLoader), Unet Loader (GGUF), GGUF Loader KJ"),
   /* @__PURE__ */ createBaseVNode("td", null, "Checkpoint list, model exploration"),
-  /* @__PURE__ */ createBaseVNode("td", null, "No checkpoint list; model exploration fails")
+  /* @__PURE__ */ createBaseVNode("td", null, "There is no checkpoint list, and model exploration fails")
 ], -1));
 const _hoisted_379 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -35746,30 +35767,30 @@ const _hoisted_379 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
     /* @__PURE__ */ createTextVNode(" / "),
     /* @__PURE__ */ createBaseVNode("code", null, "ib:np")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "Image Bench Prompt, String Literal, CLIPTextEncode (also the SDXL, Flux and SD3 variants), Text Encode Qwen Image 2.1"),
+  /* @__PURE__ */ createBaseVNode("td", null, "Image Bench Prompt, String Literal, CLIPTextEncode (including the SDXL, Flux and SD3 variants), Text Encode Qwen Image 2.1"),
   /* @__PURE__ */ createBaseVNode("td", null, "Prompt and LoRA list / negative prompt"),
-  /* @__PURE__ */ createBaseVNode("td", null, "The first / second CLIPTextEncode of the graph. Which one that is depends on the order in which the nodes were created, so mark them. Without either, the negative prompt is hidden.")
+  /* @__PURE__ */ createBaseVNode("td", null, "Image Bench uses the first / second CLIPTextEncode of the graph. Which node that is depends on the order in which the nodes were created, so it is safer to mark them. Without either, the negative prompt is hidden.")
 ], -1));
 const _hoisted_380 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("code", null, "ib:smp")
 ], -1));
 const _hoisted_381 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, "KSampler, KSampler (Advanced), SamplerCustom, SamplerCustomAdvanced", -1));
-const _hoisted_382 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, "The first KSampler of the graph", -1));
+const _hoisted_382 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, "Image Bench uses the first KSampler of the graph", -1));
 const _hoisted_383 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
     /* @__PURE__ */ createBaseVNode("code", null, "ib:smp:1")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "The same, as the second-pass sampler"),
+  /* @__PURE__ */ createBaseVNode("td", null, "The same nodes, used as the second-pass sampler"),
   /* @__PURE__ */ createBaseVNode("td", null, "Hires. fix group"),
-  /* @__PURE__ */ createBaseVNode("td", null, "No Hires. fix group; Upscale is refused")
+  /* @__PURE__ */ createBaseVNode("td", null, "There is no Hires. fix group, and Upscale is refused")
 ], -1));
 const _hoisted_384 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
     /* @__PURE__ */ createBaseVNode("code", null, "ib:hr")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "If/Else Switch, Soft Switch, Boolean primitive between the first-pass and the Hires. fix image (all marked nodes are set together)"),
-  /* @__PURE__ */ createBaseVNode("td", null, "Hires. fix checkbox; the Upscale action"),
-  /* @__PURE__ */ createBaseVNode("td", null, "No Hires. fix checkbox; the Hires. fix pass always runs")
+  /* @__PURE__ */ createBaseVNode("td", null, "If/Else Switch, Soft Switch or a Boolean primitive placed between the first-pass and the Hires. fix image (all marked nodes are set together)"),
+  /* @__PURE__ */ createBaseVNode("td", null, "Hires. fix checkbox, Upscale action"),
+  /* @__PURE__ */ createBaseVNode("td", null, "There is no Hires. fix checkbox, and the Hires. fix pass always runs")
 ], -1));
 const _hoisted_385 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -35777,7 +35798,7 @@ const _hoisted_385 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
   ]),
   /* @__PURE__ */ createBaseVNode("td", null, "Load LoRA, LoraLoaderModelOnly"),
   /* @__PURE__ */ createBaseVNode("td", null, "LoRA exploration"),
-  /* @__PURE__ */ createBaseVNode("td", null, "Exploring LoRAs is refused")
+  /* @__PURE__ */ createBaseVNode("td", null, "LoRA exploration is refused")
 ], -1));
 const _hoisted_386 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -35786,8 +35807,8 @@ const _hoisted_386 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
     /* @__PURE__ */ createBaseVNode("code", null, "ib:mask")
   ]),
   /* @__PURE__ */ createBaseVNode("td", null, "Load Image / Load Image (as Mask) or Load Image"),
-  /* @__PURE__ */ createBaseVNode("td", null, "img2img, inpaint, images from the editor"),
-  /* @__PURE__ */ createBaseVNode("td", null, "txt2img mode; images from the editor are saved, and a message says that no node is marked")
+  /* @__PURE__ */ createBaseVNode("td", null, "img2img, inpainting, images from the editor"),
+  /* @__PURE__ */ createBaseVNode("td", null, "The Generate tab stays in txt2img mode. Images from the editor are saved, and a message reports that no node is marked.")
 ], -1));
 const _hoisted_387 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -35796,9 +35817,9 @@ const _hoisted_387 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
     /* @__PURE__ */ createBaseVNode("code", null, "ib:ref:1"),
     /* @__PURE__ */ createTextVNode(", ...")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "Load Image of edit-model references"),
+  /* @__PURE__ */ createBaseVNode("td", null, "Load Image nodes of edit-model references"),
   /* @__PURE__ */ createBaseVNode("td", null, "References panel"),
-  /* @__PURE__ */ createBaseVNode("td", null, "No References panel")
+  /* @__PURE__ */ createBaseVNode("td", null, "There is no References panel")
 ], -1));
 const _hoisted_388 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -35807,44 +35828,43 @@ const _hoisted_388 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
     /* @__PURE__ */ createBaseVNode("code", null, "ib:cn:1"),
     /* @__PURE__ */ createTextVNode(", ...")
   ]),
-  /* @__PURE__ */ createBaseVNode("td", null, "Apply ControlNet (also the SD3 and old ones), the Advanced-ControlNet apply nodes"),
+  /* @__PURE__ */ createBaseVNode("td", null, "Apply ControlNet (including the SD3 and legacy versions) and the Advanced-ControlNet apply nodes"),
   /* @__PURE__ */ createBaseVNode("td", null, "ControlNet tab"),
-  /* @__PURE__ */ createBaseVNode("td", null, "The ControlNet tab says that no node is marked")
+  /* @__PURE__ */ createBaseVNode("td", null, "The ControlNet tab reports that no node is marked")
 ], -1));
-const _hoisted_389 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "Further notes:", -1));
+const _hoisted_389 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "A few more points to keep in mind when you set up a workflow:", -1));
 const _hoisted_390 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Image Bench Prompt", -1));
 const _hoisted_391 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Image Bench", -1));
 const _hoisted_392 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "<lora:name:weight>", -1));
 const _hoisted_393 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "ib:pp", -1));
 const _hoisted_394 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
-  /* @__PURE__ */ createBaseVNode("b", null, "Example workflows"),
-  /* @__PURE__ */ createTextVNode(" with all nodes already marked are listed under "),
+  /* @__PURE__ */ createTextVNode("Example workflows with every node already marked appear under "),
   /* @__PURE__ */ createBaseVNode("b", null, "Image Bench"),
-  /* @__PURE__ */ createTextVNode(" in the ComfyUI template browser. They are also copied into the "),
+  /* @__PURE__ */ createTextVNode(" in the ComfyUI template browser. Image Bench also copies them into the "),
   /* @__PURE__ */ createBaseVNode("b", null, "Image Bench"),
-  /* @__PURE__ */ createTextVNode(" folder of your saved workflows (only the missing ones, so your saved edits are kept).")
+  /* @__PURE__ */ createTextVNode(" folder of your saved workflows. Only missing workflows are copied, so any edits you have saved are kept.")
 ], -1));
-const _hoisted_395 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Workflow dropdown", -1));
+const _hoisted_395 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "workflow dropdown", -1));
 const _hoisted_396 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "Ctrl", -1));
 const _hoisted_397 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "S", -1));
 const _hoisted_398 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
   /* @__PURE__ */ createTextVNode("Two node packs are optional: "),
   /* @__PURE__ */ createBaseVNode("b", null, "comfyui_controlnet_aux"),
-  /* @__PURE__ */ createTextVNode(" for ControlNet preprocessors, and "),
+  /* @__PURE__ */ createTextVNode(" enables ControlNet preprocessors, and "),
   /* @__PURE__ */ createBaseVNode("b", null, "ComfyUI-Advanced-ControlNet"),
-  /* @__PURE__ */ createTextVNode(" for ControlNet masks.")
+  /* @__PURE__ */ createTextVNode(" enables ControlNet masks.")
 ], -1));
 const _hoisted_399 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
   /* @__PURE__ */ createTextVNode("To support custom loader or sampler nodes, add them to "),
   /* @__PURE__ */ createBaseVNode("code", null, "store/node_config.json"),
-  /* @__PURE__ */ createTextVNode(" in the extension folder and reload the page. This file is merged over the shipped "),
+  /* @__PURE__ */ createTextVNode(" in the extension folder and reload the page. Image Bench merges this file over the shipped "),
   /* @__PURE__ */ createBaseVNode("code", null, "node_config.json"),
-  /* @__PURE__ */ createTextVNode(", which updates replace, so it needs only the additions. "),
+  /* @__PURE__ */ createTextVNode(", which is replaced on every update, so your file only needs the additions. "),
   /* @__PURE__ */ createBaseVNode("code", null, "NODE_CONFIG.md"),
   /* @__PURE__ */ createTextVNode(" in the extension folder describes the format.")
 ], -1));
-const _hoisted_400 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, "The workflow needs an output node (Save Image or Preview Image); without one, no images reach Image Bench.", -1));
-const _hoisted_401 = /* @__PURE__ */ createStaticVNode('<h3 id="manual-comfy-markers" data-v-387dbd7a>Markers in detail</h3><ul data-v-387dbd7a><li data-v-387dbd7a>The marker is case-insensitive and can be anywhere in the title, but it must be a separate word: <code data-v-387dbd7a>Main model ib:cp</code> and <code data-v-387dbd7a>IB:CP - base</code> work, <code data-v-387dbd7a>xib:cp</code> does not.</li><li data-v-387dbd7a>One title can hold several markers, e.g. <code data-v-387dbd7a>Text to Image ib:pp ib:smp ib:cp</code>.</li><li data-v-387dbd7a>The index after the marker is 0 when omitted (<code data-v-387dbd7a>ib:smp</code> is <code data-v-387dbd7a>ib:smp:0</code>). It matters for <code data-v-387dbd7a>ib:smp</code> (0 is the main sampler, 1 the Hires. fix sampler), <code data-v-387dbd7a>ib:ref</code> and <code data-v-387dbd7a>ib:cn</code>. For the other markers, the first marked node of the graph is used, so mark only one node for each.</li><li data-v-387dbd7a>Mark the node that holds the prompt text: if the text of an encoder comes from a String Literal node, mark the String Literal. A node holding both prompts (Text Encode Qwen Image 2.1) can carry both <code data-v-387dbd7a>ib:pp</code> and <code data-v-387dbd7a>ib:np</code>. Otherwise <code data-v-387dbd7a>ib:np</code> skips the node of <code data-v-387dbd7a>ib:pp</code>, and <code data-v-387dbd7a>ib:mask</code> skips the node of <code data-v-387dbd7a>ib:img</code>.</li></ul><p data-v-387dbd7a> During LoRA exploration, the <code data-v-387dbd7a>ib:lora</code> loader receives each explored LoRA with its weight as both strengths; for the LoRA-free images the strengths are set to 0. A bypassed or muted loader is enabled for the run, and its LoRA, strengths and mode are restored afterwards. </p><h3 id="manual-comfy-prompt" data-v-387dbd7a>Image Bench Prompt node</h3><p data-v-387dbd7a> Wire it as <b data-v-387dbd7a>Load Checkpoint</b> → <code data-v-387dbd7a>model</code> / <code data-v-387dbd7a>clip</code> → <b data-v-387dbd7a>Image Bench Prompt</b> (titled <code data-v-387dbd7a>ib:pp</code>) → <code data-v-387dbd7a>model</code> to the sampler, <code data-v-387dbd7a>clip</code> and <code data-v-387dbd7a>text</code> to a CLIPTextEncode whose <code data-v-387dbd7a>text</code> is converted to an input. Take the <code data-v-387dbd7a>clip</code> of the negative prompt encoder from the prompt node as well, so that both encoders use the same CLIP. Leave the <code data-v-387dbd7a>clip</code> input unconnected for model-only LoRAs. </p><ul data-v-387dbd7a><li data-v-387dbd7a><code data-v-387dbd7a>&lt;lora:name&gt;</code> uses weight 1, <code data-v-387dbd7a>&lt;lora:name:0.8&gt;</code> uses 0.8 for both the model and the text encoder, and <code data-v-387dbd7a>&lt;lora:name:0.5:1&gt;</code> uses 0.5 for the text encoder and 1 for the model.</li><li data-v-387dbd7a><code data-v-387dbd7a>name</code> is the path in the <code data-v-387dbd7a>loras</code> folder, with or without the extension, or just the file name: <code data-v-387dbd7a>styles/ink.safetensors</code>, <code data-v-387dbd7a>styles/ink</code> and <code data-v-387dbd7a>ink</code> all match.</li><li data-v-387dbd7a>Unknown names are reported in the ComfyUI console (&quot;LoRA ... is not found&quot;) and skipped. LoRAs with both weights at 0 are not loaded.</li></ul><h3 id="manual-comfy-params" data-v-387dbd7a>Generation parameters</h3><p data-v-387dbd7a> The sampling fields of the Generate tab are found starting from the sampler marked <code data-v-387dbd7a>ib:smp</code>, so both sampler styles work without further markers. Links are followed through Reroutes and out of subgraphs. A field whose node is not found is hidden. </p><table data-v-387dbd7a><tr data-v-387dbd7a><th data-v-387dbd7a>Field</th><th data-v-387dbd7a>KSampler</th><th data-v-387dbd7a>SamplerCustomAdvanced</th></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Seed</td><td data-v-387dbd7a><code data-v-387dbd7a>seed</code></td><td data-v-387dbd7a>RandomNoise</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Steps, schedule type, denoising</td><td data-v-387dbd7a>The sampler</td><td data-v-387dbd7a>BasicScheduler (or Flux2Scheduler)</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>CFG scale</td><td data-v-387dbd7a><code data-v-387dbd7a>cfg</code></td><td data-v-387dbd7a>CFGGuider</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Sampling method</td><td data-v-387dbd7a><code data-v-387dbd7a>sampler_name</code></td><td data-v-387dbd7a>KSamplerSelect</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Distilled CFG</td><td colspan="2" data-v-387dbd7a>FluxGuidance on the positive conditioning or in front of the guider</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Shift</td><td colspan="2" data-v-387dbd7a>ModelSamplingSD3 / ModelSamplingAuraFlow along the model (when there is no FluxGuidance)</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Width × height</td><td colspan="2" data-v-387dbd7a>The empty latent, or the integer primitives feeding it</td></tr></table><ul data-v-387dbd7a><li data-v-387dbd7a><b data-v-387dbd7a>Hires. fix</b> (<code data-v-387dbd7a>ib:smp:1</code>) edits the steps and denoising of the second sampler (or of its scheduler and Split Sigmas Denoise), the <i data-v-387dbd7a>Upscale by</i> value of the Upscale Latent By / Upscale Image By node in front of it, and the upscaler: the Load Upscale Model node, or else the method of the scale node. For the checkbox, put an <b data-v-387dbd7a>If/Else Switch</b> titled <code data-v-387dbd7a>ib:hr</code> before the save node, with the first-pass image on <code data-v-387dbd7a>on_false</code> and the Hires. fix image on <code data-v-387dbd7a>on_true</code>. Its inputs are lazy, so the Hires. fix nodes do not run while it is off.</li><li data-v-387dbd7a><b data-v-387dbd7a>Lists</b>: the checkpoint, sampler, scheduler and upscaler lists are the choices of the workflow&#39;s widgets, so a UNETLoader lists the diffusion models and a GGUF loader the <code data-v-387dbd7a>.gguf</code> files. <b data-v-387dbd7a>Model exploration lists only the <code data-v-387dbd7a>checkpoints</code> folder</b>, so with a UNETLoader or GGUF loader marked <code data-v-387dbd7a>ib:cp</code> it has no usable models; switch those models in the Generate tab instead.</li><li data-v-387dbd7a><b data-v-387dbd7a>Seed −1</b> sets the seed widget&#39;s <i data-v-387dbd7a>control after generate</i> to <i data-v-387dbd7a>randomize</i>; any other seed sets it to <i data-v-387dbd7a>fixed</i>. A batch sets −1.</li></ul><h3 id="manual-comfy-images" data-v-387dbd7a>Input images and inpainting</h3><p data-v-387dbd7a> Image Bench only selects the file in the marked loader; what the workflow does with the image and the mask is up to the workflow (Set Latent Noise Mask, VAE Encode (for Inpainting), InpaintModelConditioning, ...). Mask files hold the mask in their color channels and its inverse in alpha, so both Load Image (as Mask) with any channel and the <code data-v-387dbd7a>MASK</code> output of Load Image can read it. </p><table data-v-387dbd7a><tr data-v-387dbd7a><th data-v-387dbd7a><code data-v-387dbd7a>ib:img</code></th><th data-v-387dbd7a><code data-v-387dbd7a>ib:mask</code></th><th data-v-387dbd7a></th></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Load Image</td><td data-v-387dbd7a>Load Image (as Mask)</td><td data-v-387dbd7a>The usual setup.</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Load Image</td><td data-v-387dbd7a>Another Load Image</td><td data-v-387dbd7a>Use the <code data-v-387dbd7a>MASK</code> output of the mask node.</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Load Image</td><td data-v-387dbd7a>—</td><td data-v-387dbd7a>img2img; a mask sent from the editor is reported.</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>—</td><td data-v-387dbd7a>Either</td><td data-v-387dbd7a>Mask only; the image comes from elsewhere in the workflow (the Generate tab stays in txt2img mode).</td></tr></table><ul data-v-387dbd7a><li data-v-387dbd7a>The mask never goes to the <code data-v-387dbd7a>ib:img</code> node, so a single Load Image marked <code data-v-387dbd7a>ib:img ib:mask</code> receives only the image.</li><li data-v-387dbd7a>A bypassed or muted marked node receives the file but stays bypassed.</li><li data-v-387dbd7a>Other loaders that select a file of the <code data-v-387dbd7a>input</code> folder by name can be added to <code data-v-387dbd7a>store/node_config.json</code>.</li></ul><p data-v-387dbd7a> The bundled inpaint workflows (<code data-v-387dbd7a>Image Bench/image_*_inpaint</code>) need <a href="https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" target="_blank" rel="noopener" data-v-387dbd7a>ComfyUI-Inpaint-CropAndStitch</a> (install it with the ComfyUI Manager). They inpaint like WebUI&#39;s Inpaint upload: <b data-v-387dbd7a>Inpaint Crop</b> cuts the masked area with its padding out of the image and scales it to the size of the Generate tab, <b data-v-387dbd7a>Inpaint Stitch</b> blends the result back through the blurred mask. The Generate tab sets them through the Inpaint group, which shows the options a workflow has: </p><table data-v-387dbd7a><tr data-v-387dbd7a><th data-v-387dbd7a>Generate tab</th><th data-v-387dbd7a>Node</th></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Size</td><td data-v-387dbd7a>Inpaint Crop: <code data-v-387dbd7a>output_target_width</code> / <code data-v-387dbd7a>output_target_height</code></td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Mask blur</td><td data-v-387dbd7a>Inpaint Crop: <code data-v-387dbd7a>mask_blend_pixels</code> (widens the mask and blurs it)</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Mask mode</td><td data-v-387dbd7a>Inpaint Crop: <code data-v-387dbd7a>mask_invert</code></td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Inpaint area</td><td data-v-387dbd7a>The Solid Mask of the context mask: 0 Only masked, 1 Whole picture</td></tr><tr data-v-387dbd7a><td data-v-387dbd7a>Padding</td><td data-v-387dbd7a>The Grow Mask of the context mask (only masked padding, pixels)</td></tr></table><h3 id="manual-comfy-references" data-v-387dbd7a>References</h3><p data-v-387dbd7a> Title the Load Image nodes of the reference images <code data-v-387dbd7a>ib:ref:0</code>, <code data-v-387dbd7a>ib:ref:1</code>, ... in the order the prompt refers to them (Image 1, Image 2, ...). An added image goes into the first unused slot, or replaces the last one when all slots are used. Removing an image bypasses its Load Image together with the nodes that cannot run without it (a VAE Encode, for example), up to a node that passes its other input through (Reference Latent) or takes the image as an optional input. On a new workflow, check the bypassed nodes once. Slots inside a subgraph cannot be bypassed and are always in use. </p><h3 id="manual-comfy-controlnet" data-v-387dbd7a>ControlNet units</h3><p data-v-387dbd7a> Starting from the apply node titled <code data-v-387dbd7a>ib:cn:N</code>, the unit&#39;s other nodes are found through its inputs: the ControlNet loader on <code data-v-387dbd7a>control_net</code> (the Model), the Load Image on <code data-v-387dbd7a>image</code>, directly or through an AIO Aux Preprocessor (the control image), and, for the Advanced-ControlNet apply nodes, the mask loader on <code data-v-387dbd7a>mask_optional</code>. Weight and the starting and ending steps are the apply node&#39;s <code data-v-387dbd7a>strength</code>, <code data-v-387dbd7a>start_percent</code> and <code data-v-387dbd7a>end_percent</code>; <b data-v-387dbd7a>Enable</b> and <b data-v-387dbd7a>Use Mask</b> bypass the apply node and the mask loader. </p><ul data-v-387dbd7a><li data-v-387dbd7a>With an AIO Aux Preprocessor in the unit, the <b data-v-387dbd7a>Preprocessor</b> field is its widget, and the workflow preprocesses the image at each generation. Without one, the field only selects the preprocessor for <b data-v-387dbd7a>Run preprocessor</b>, and the control image is used unchanged.</li><li data-v-387dbd7a><b data-v-387dbd7a>Run preprocessor</b> runs a small prompt of its own at the front of the queue (your workflow does not run). Its images do not appear in the Generated tab.</li><li data-v-387dbd7a>Without <b data-v-387dbd7a>Pixel Perfect</b> the preprocessor resolution is 512. ComfyUI has no control types, so all preprocessors and models are listed.</li></ul><h3 id="manual-comfy-subgraphs" data-v-387dbd7a>Subgraphs</h3><p data-v-387dbd7a> A marker on a <b data-v-387dbd7a>subgraph node</b> works through the widgets promoted to it: for each marker, Image Bench looks for a promoted widget of an accepted inner node (e.g. the <code data-v-387dbd7a>text</code> of a CLIPTextEncode) and writes to it. Nested subgraphs are followed; markers on nodes <i data-v-387dbd7a>inside</i> a subgraph are not searched. </p><ul data-v-387dbd7a><li data-v-387dbd7a>Promote every widget that Image Bench should change. A widget that is not promoted (e.g. <i data-v-387dbd7a>control after generate</i>) is written on the inner node, which changes the subgraph for all its instances.</li><li data-v-387dbd7a>Nodes linked to the marked node (the RandomNoise of a sampler, the loader of a ControlNet) are found inside the subgraph, and links from its inputs are followed out to the parent graph.</li><li data-v-387dbd7a>On a subgraph node marked both <code data-v-387dbd7a>ib:pp</code> and <code data-v-387dbd7a>ib:np</code>, the first promoted text widget is the positive prompt. On one marked <code data-v-387dbd7a>ib:img ib:mask</code>, the image goes to the first promoted Load Image and the mask to the next promoted loader.</li><li data-v-387dbd7a>Reference slots and ControlNet units inside a subgraph cannot be bypassed.</li></ul><h3 id="manual-comfy-files" data-v-387dbd7a>Files written</h3><p data-v-387dbd7a> Images for the marked nodes are saved in the ComfyUI <code data-v-387dbd7a>input</code> folder under fixed names, and each is overwritten by the next image of the same kind: <code data-v-387dbd7a>image_bench_input_*.png</code> (Input and Mask panes), <code data-v-387dbd7a>image_bench_reference_N.png</code> (references), <code data-v-387dbd7a>image_bench_cn_N_*.png</code> (ControlNet units) and <code data-v-387dbd7a>image_bench_photoshop_*.png</code> (the editor). The trays, presets, model hashes and Civitai lookups are kept in <code data-v-387dbd7a>store/</code> of the extension folder. </p>', 26);
+const _hoisted_400 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, "The workflow must have an output node (Save Image or Preview Image). Without one, no images reach Image Bench.", -1));
+const _hoisted_401 = /* @__PURE__ */ createStaticVNode('<h3 id="manual-comfy-markers" data-v-7da20fab>Markers in detail</h3><ul data-v-7da20fab><li data-v-7da20fab>Markers are case-insensitive and can appear anywhere in the title, but each one must be a separate word: <code data-v-7da20fab>Main model ib:cp</code> and <code data-v-7da20fab>IB:CP - base</code> work, while <code data-v-7da20fab>xib:cp</code> does not.</li><li data-v-7da20fab>A title can hold several markers, e.g. <code data-v-7da20fab>Text to Image ib:pp ib:smp ib:cp</code>.</li><li data-v-7da20fab>An omitted index counts as 0, so <code data-v-7da20fab>ib:smp</code> is the same as <code data-v-7da20fab>ib:smp:0</code>. The index matters for <code data-v-7da20fab>ib:smp</code> (0 is the main sampler, 1 the Hires. fix sampler), <code data-v-7da20fab>ib:ref</code> and <code data-v-7da20fab>ib:cn</code>. For all other markers, Image Bench uses the first marked node in the graph, so mark only one node of each kind.</li><li data-v-7da20fab>Mark the node that holds the prompt text: if an encoder takes its text from a String Literal node, mark the String Literal. A node that holds both prompts (Text Encode Qwen Image 2.1) can carry both <code data-v-7da20fab>ib:pp</code> and <code data-v-7da20fab>ib:np</code>. In every other case, <code data-v-7da20fab>ib:np</code> skips the node marked <code data-v-7da20fab>ib:pp</code>, and <code data-v-7da20fab>ib:mask</code> skips the node marked <code data-v-7da20fab>ib:img</code>.</li></ul><p data-v-7da20fab> During LoRA exploration, the <code data-v-7da20fab>ib:lora</code> loader receives each explored LoRA, with its weight applied to both strengths. For the images without a LoRA, both strengths are set to 0. If the loader is bypassed or muted, it is enabled for the run, and its LoRA, strengths and mode are restored afterwards. </p><h3 id="manual-comfy-prompt" data-v-7da20fab>Image Bench Prompt node</h3><p data-v-7da20fab> Wire it as <b data-v-7da20fab>Load Checkpoint</b> → <code data-v-7da20fab>model</code> / <code data-v-7da20fab>clip</code> → <b data-v-7da20fab>Image Bench Prompt</b> (titled <code data-v-7da20fab>ib:pp</code>) → <code data-v-7da20fab>model</code> to the sampler, <code data-v-7da20fab>clip</code> and <code data-v-7da20fab>text</code> to a CLIPTextEncode whose <code data-v-7da20fab>text</code> is converted to an input. Feed the <code data-v-7da20fab>clip</code> of the negative prompt encoder from the prompt node too, so that both encoders use the same CLIP. For model-only LoRAs, leave the <code data-v-7da20fab>clip</code> input unconnected. </p><ul data-v-7da20fab><li data-v-7da20fab><code data-v-7da20fab>&lt;lora:name&gt;</code> uses weight 1. <code data-v-7da20fab>&lt;lora:name:0.8&gt;</code> applies 0.8 to both the model and the text encoder, and <code data-v-7da20fab>&lt;lora:name:0.5:1&gt;</code> applies 0.5 to the text encoder and 1 to the model.</li><li data-v-7da20fab><code data-v-7da20fab>name</code> is the path inside the <code data-v-7da20fab>loras</code> folder, with or without the extension, or the bare file name: <code data-v-7da20fab>styles/ink.safetensors</code>, <code data-v-7da20fab>styles/ink</code> and <code data-v-7da20fab>ink</code> all match.</li><li data-v-7da20fab>Unknown names are skipped and reported in the ComfyUI console (&quot;LoRA ... is not found&quot;). A LoRA with both weights at 0 is not loaded.</li></ul><h3 id="manual-comfy-params" data-v-7da20fab>Generation parameters</h3><p data-v-7da20fab> Image Bench finds the sampling fields of the Generate tab by starting at the sampler marked <code data-v-7da20fab>ib:smp</code>, so both sampler styles work without additional markers. It follows links through Reroutes and out of subgraphs. A field whose node cannot be found is hidden. </p><table data-v-7da20fab><tr data-v-7da20fab><th data-v-7da20fab>Field</th><th data-v-7da20fab>KSampler</th><th data-v-7da20fab>SamplerCustomAdvanced</th></tr><tr data-v-7da20fab><td data-v-7da20fab>Seed</td><td data-v-7da20fab><code data-v-7da20fab>seed</code></td><td data-v-7da20fab>RandomNoise</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Steps, schedule type, denoising</td><td data-v-7da20fab>The sampler</td><td data-v-7da20fab>BasicScheduler (or Flux2Scheduler)</td></tr><tr data-v-7da20fab><td data-v-7da20fab>CFG scale</td><td data-v-7da20fab><code data-v-7da20fab>cfg</code></td><td data-v-7da20fab>CFGGuider</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Sampling method</td><td data-v-7da20fab><code data-v-7da20fab>sampler_name</code></td><td data-v-7da20fab>KSamplerSelect</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Distilled CFG</td><td colspan="2" data-v-7da20fab>FluxGuidance on the positive conditioning or in front of the guider</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Shift</td><td colspan="2" data-v-7da20fab>ModelSamplingSD3 / ModelSamplingAuraFlow along the model path (if there is no FluxGuidance)</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Width × height</td><td colspan="2" data-v-7da20fab>The empty latent, or the integer primitives that feed it</td></tr></table><ul data-v-7da20fab><li data-v-7da20fab><b data-v-7da20fab>Hires. fix</b> (<code data-v-7da20fab>ib:smp:1</code>) edits the steps and denoising of the second sampler (or of its scheduler and Split Sigmas Denoise), the <i data-v-7da20fab>Upscale by</i> value of the Upscale Latent By / Upscale Image By node in front of it, and the upscaler, which is the Load Upscale Model node if there is one and otherwise the method of the scale node. For the checkbox, place an <b data-v-7da20fab>If/Else Switch</b> titled <code data-v-7da20fab>ib:hr</code> before the save node, with the first-pass image on <code data-v-7da20fab>on_false</code> and the Hires. fix image on <code data-v-7da20fab>on_true</code>. The switch evaluates its inputs lazily, so the Hires. fix nodes do not run while it is off.</li><li data-v-7da20fab>The checkpoint, sampler, scheduler and upscaler lists are taken from the choices of the workflow&#39;s widgets, so a UNETLoader lists diffusion models and a GGUF loader lists <code data-v-7da20fab>.gguf</code> files. <b data-v-7da20fab>Model exploration lists only the <code data-v-7da20fab>checkpoints</code> folder</b>, so it has no usable models when <code data-v-7da20fab>ib:cp</code> is on a UNETLoader or GGUF loader. Switch those models in the Generate tab instead.</li><li data-v-7da20fab>A seed of −1 sets the seed widget&#39;s <i data-v-7da20fab>control after generate</i> to <i data-v-7da20fab>randomize</i>, and any other value sets it to <i data-v-7da20fab>fixed</i>. A batch sets −1.</li></ul><h3 id="manual-comfy-images" data-v-7da20fab>Input images and inpainting</h3><p data-v-7da20fab> Image Bench only selects the file in the marked loader. What happens to the image and the mask after that is up to the workflow (Set Latent Noise Mask, VAE Encode (for Inpainting), InpaintModelConditioning, ...). Mask files store the mask in their color channels and its inverse in alpha, so Load Image (as Mask) with any channel and the <code data-v-7da20fab>MASK</code> output of Load Image both read it correctly. </p><table data-v-7da20fab><tr data-v-7da20fab><th data-v-7da20fab><code data-v-7da20fab>ib:img</code></th><th data-v-7da20fab><code data-v-7da20fab>ib:mask</code></th><th data-v-7da20fab></th></tr><tr data-v-7da20fab><td data-v-7da20fab>Load Image</td><td data-v-7da20fab>Load Image (as Mask)</td><td data-v-7da20fab>The usual setup.</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Load Image</td><td data-v-7da20fab>Another Load Image</td><td data-v-7da20fab>Use the <code data-v-7da20fab>MASK</code> output of the mask node.</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Load Image</td><td data-v-7da20fab>—</td><td data-v-7da20fab>img2img. A mask sent from the editor is reported.</td></tr><tr data-v-7da20fab><td data-v-7da20fab>—</td><td data-v-7da20fab>Either</td><td data-v-7da20fab>Mask only. The image comes from elsewhere in the workflow, and the Generate tab stays in txt2img mode.</td></tr></table><ul data-v-7da20fab><li data-v-7da20fab>The mask never goes to the <code data-v-7da20fab>ib:img</code> node, so a single Load Image marked <code data-v-7da20fab>ib:img ib:mask</code> receives only the image.</li><li data-v-7da20fab>A marked node that is bypassed or muted still receives the file, but stays bypassed.</li><li data-v-7da20fab>Other loaders that select a file from the <code data-v-7da20fab>input</code> folder by name can be added to <code data-v-7da20fab>store/node_config.json</code>.</li></ul><p data-v-7da20fab> The bundled inpaint workflows (<code data-v-7da20fab>Image Bench/image_*_inpaint</code>) require <a href="https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" target="_blank" rel="noopener" data-v-7da20fab>ComfyUI-Inpaint-CropAndStitch</a>, which you can install with the ComfyUI Manager. They inpaint the way WebUI&#39;s Inpaint upload does: <b data-v-7da20fab>Inpaint Crop</b> cuts the masked area and its padding out of the image and scales it to the size set in the Generate tab, and <b data-v-7da20fab>Inpaint Stitch</b> blends the result back in through the blurred mask. The Generate tab controls these nodes through its Inpaint group, which shows only the options the workflow has: </p><table data-v-7da20fab><tr data-v-7da20fab><th data-v-7da20fab>Generate tab</th><th data-v-7da20fab>Node</th></tr><tr data-v-7da20fab><td data-v-7da20fab>Size</td><td data-v-7da20fab>Inpaint Crop: <code data-v-7da20fab>output_target_width</code> / <code data-v-7da20fab>output_target_height</code></td></tr><tr data-v-7da20fab><td data-v-7da20fab>Mask blur</td><td data-v-7da20fab>Inpaint Crop: <code data-v-7da20fab>mask_blend_pixels</code> (widens the mask and blurs it)</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Mask mode</td><td data-v-7da20fab>Inpaint Crop: <code data-v-7da20fab>mask_invert</code></td></tr><tr data-v-7da20fab><td data-v-7da20fab>Inpaint area</td><td data-v-7da20fab>The Solid Mask of the context mask: 0 Only masked, 1 Whole picture</td></tr><tr data-v-7da20fab><td data-v-7da20fab>Padding</td><td data-v-7da20fab>The Grow Mask of the context mask (Only masked padding, in pixels)</td></tr></table><h3 id="manual-comfy-references" data-v-7da20fab>References</h3><p data-v-7da20fab> Title the Load Image nodes of the reference images <code data-v-7da20fab>ib:ref:0</code>, <code data-v-7da20fab>ib:ref:1</code>, ... in the order the prompt refers to them (Image 1, Image 2, ...). An added image goes into the first free slot, or replaces the last one if every slot is taken. Removing an image bypasses its Load Image along with the nodes that cannot run without it (a VAE Encode, for example). The bypass stops at a node that passes its other input through (Reference Latent) or takes the image as an optional input. When you use a new workflow, check the bypassed nodes once. Slots inside a subgraph cannot be bypassed and always count as used. </p><h3 id="manual-comfy-controlnet" data-v-7da20fab>ControlNet units</h3><p data-v-7da20fab> Image Bench finds the other nodes of a unit by following the inputs of the apply node titled <code data-v-7da20fab>ib:cn:N</code>. The ControlNet loader on <code data-v-7da20fab>control_net</code> is the Model, and the Load Image on <code data-v-7da20fab>image</code>, connected directly or through an AIO Aux Preprocessor, is the control image. For the Advanced-ControlNet apply nodes, the mask loader on <code data-v-7da20fab>mask_optional</code> is used as well. Weight and the starting and ending steps map to the apply node&#39;s <code data-v-7da20fab>strength</code>, <code data-v-7da20fab>start_percent</code> and <code data-v-7da20fab>end_percent</code>. <b data-v-7da20fab>Enable</b> and <b data-v-7da20fab>Use Mask</b> work by bypassing the apply node and the mask loader. </p><ul data-v-7da20fab><li data-v-7da20fab>If the unit contains an AIO Aux Preprocessor, the <b data-v-7da20fab>Preprocessor</b> field is that node&#39;s widget, and the workflow preprocesses the image on every generation. Without one, the field only selects the preprocessor for <b data-v-7da20fab>Run preprocessor</b>, and the control image is used as it is.</li><li data-v-7da20fab><b data-v-7da20fab>Run preprocessor</b> puts a small prompt of its own at the front of the queue; your workflow does not run. Its images do not appear in the Generated tab.</li><li data-v-7da20fab>Without <b data-v-7da20fab>Pixel Perfect</b>, the preprocessor resolution is 512. ComfyUI has no control types, so every preprocessor and model is listed.</li></ul><h3 id="manual-comfy-subgraphs" data-v-7da20fab>Subgraphs</h3><p data-v-7da20fab> A marker on a <b data-v-7da20fab>subgraph node</b> works through the widgets promoted to it. For each marker, Image Bench looks for a promoted widget of an accepted inner node (e.g. the <code data-v-7da20fab>text</code> of a CLIPTextEncode) and writes to it. Nested subgraphs are followed, but markers on nodes <i data-v-7da20fab>inside</i> a subgraph are not searched. </p><ul data-v-7da20fab><li data-v-7da20fab>Promote every widget that Image Bench should change. A widget that is not promoted (e.g. <i data-v-7da20fab>control after generate</i>) is written on the inner node, which changes the subgraph for all of its instances.</li><li data-v-7da20fab>Nodes linked to the marked node, such as the RandomNoise of a sampler or the loader of a ControlNet, are found inside the subgraph, and links from the subgraph&#39;s inputs are followed out to the parent graph.</li><li data-v-7da20fab>On a subgraph node marked both <code data-v-7da20fab>ib:pp</code> and <code data-v-7da20fab>ib:np</code>, the first promoted text widget receives the positive prompt. On one marked <code data-v-7da20fab>ib:img ib:mask</code>, the image goes to the first promoted Load Image and the mask to the next promoted loader.</li><li data-v-7da20fab>Reference slots and ControlNet units inside a subgraph cannot be bypassed.</li></ul><h3 id="manual-comfy-files" data-v-7da20fab>Files written</h3><p data-v-7da20fab> Images for the marked nodes are saved under fixed names in the ComfyUI <code data-v-7da20fab>input</code> folder, and each file is overwritten by the next image of the same kind: <code data-v-7da20fab>image_bench_input_*.png</code> (Input and Mask panes), <code data-v-7da20fab>image_bench_reference_N.png</code> (references), <code data-v-7da20fab>image_bench_cn_N_*.png</code> (ControlNet units) and <code data-v-7da20fab>image_bench_photoshop_*.png</code> (the editor). The trays, presets, model hashes and Civitai lookups are stored in <code data-v-7da20fab>store/</code> in the extension folder. </p>', 26);
 const _hoisted_427 = { id: "manual-shortcuts" };
 const _hoisted_428 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Keyboard and mouse", -1));
 const _hoisted_429 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The window has these shortcuts:", -1));
@@ -37774,7 +37794,7 @@ const _sfc_main$6 = {
                 _hoisted_380,
                 _hoisted_381,
                 createBaseVNode("td", null, [
-                  createTextVNode("Seed, steps, CFG, sampler, size, ... (also found in the nodes connected to the sampler, see "),
+                  createTextVNode("Seed, steps, CFG, sampler, size and the other sampling fields, some of which are read from the nodes connected to the sampler (see "),
                   createBaseVNode("a", {
                     href: "#",
                     onClick: _cache[14] || (_cache[14] = withModifiers(($event) => scrollTo("comfy-params"), ["prevent"]))
@@ -37799,9 +37819,9 @@ const _sfc_main$6 = {
                 _hoisted_391,
                 createTextVNode(") applies the "),
                 _hoisted_392,
-                createTextVNode(" tags in its text to the model and CLIP, and passes on the text without them. Place it between the checkpoint loader and the text encoder and title it "),
+                createTextVNode(" tags in its text to the model and CLIP and passes the text on with the tags removed. Place it between the checkpoint loader and the text encoder and title it "),
                 _hoisted_393,
-                createTextVNode("; the LoRA list then works as it does in WebUI (see "),
+                createTextVNode(", and the LoRA list works the same way as in WebUI (see "),
                 createBaseVNode("a", {
                   href: "#",
                   onClick: _cache[15] || (_cache[15] = withModifiers(($event) => scrollTo("comfy-prompt"), ["prevent"]))
@@ -37810,22 +37830,23 @@ const _sfc_main$6 = {
               ]),
               _hoisted_394,
               createBaseVNode("li", null, [
+                createTextVNode("The "),
                 _hoisted_395,
-                createTextVNode(" (at the right of the Generate toolbar): the saved workflows of the ComfyUI Workflows sidebar as a folder tree with a filter (Enter takes the first match). Choosing a workflow opens it as the sidebar does: if it is already open, it switches to its tab (keeping its changes); otherwise it opens it. The dropdown follows the active ComfyUI tab, and • marks unsaved changes. "),
+                createTextVNode(" at the right of the Generate toolbar shows the saved workflows of the ComfyUI Workflows sidebar as a folder tree with a filter; Enter picks the first match. Choosing a workflow behaves as it does in the sidebar: a workflow that is already open is brought to its tab with its changes intact, and any other workflow is opened. The dropdown follows the active ComfyUI tab and marks unsaved changes with •. The "),
                 createVNode(AppIcon, {
                   name: "save",
                   size: 13,
                   class: "inline-icon"
                 }),
-                createTextVNode(" after it saves the active workflow (like "),
+                createTextVNode(" button next to it saves the active workflow, like "),
                 _hoisted_396,
                 createTextVNode("+"),
                 _hoisted_397,
-                createTextVNode(" in ComfyUI). For a workflow that has not been saved yet, it asks for a name, with folders separated by /.")
+                createTextVNode(" in ComfyUI. If the workflow has never been saved, it asks for a name, with folders separated by /.")
               ]),
               _hoisted_398,
               createBaseVNode("li", null, [
-                createTextVNode("A marker can also go on a subgraph node; promote the widgets that Image Bench should change (see "),
+                createTextVNode("Markers also work on subgraph nodes, provided the widgets that Image Bench should change are promoted (see "),
                 createBaseVNode("a", {
                   href: "#",
                   onClick: _cache[16] || (_cache[16] = withModifiers(($event) => scrollTo("comfy-subgraphs"), ["prevent"]))
@@ -37870,7 +37891,7 @@ const _sfc_main$6 = {
     };
   }
 };
-const ManualViewer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-387dbd7a"]]);
+const ManualViewer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-7da20fab"]]);
 const _withScopeId$3 = (n) => (pushScopeId("data-v-d474331a"), n = n(), popScopeId(), n);
 const _hoisted_1$5 = { class: "view-container library" };
 const _hoisted_2$5 = {
@@ -43237,7 +43258,7 @@ a.window-warning[data-v-bb80c78e] {
 }
 
 /* Scrolls within the tab content, so that the tab bar stays */
-.settings-container[data-v-d1ad8d27] {
+.settings-container[data-v-2338e152] {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -43246,41 +43267,41 @@ a.window-warning[data-v-bb80c78e] {
   overflow-y: auto;
   padding-top: 15px;
 }
-a[data-v-d1ad8d27] {
+a[data-v-2338e152] {
   text-decoration: none;
   color: var(--ib-accent);
   transition: 0.4s;
   padding: 3px;
 }
-a[data-v-d1ad8d27]:hover {
+a[data-v-2338e152]:hover {
   background-color: var(--ib-accent-soft);
 }
-.setting-label[data-v-d1ad8d27] {
+.setting-label[data-v-2338e152] {
   display: block;
   padding-left: 15px;
 }
-.setting-label input[data-v-d1ad8d27] {
+.setting-label input[data-v-2338e152] {
   margin-right: 5px;
 }
 
 /* Invisible checkbox that aligns the text with the checkbox labels */
-.checkbox-spacer[data-v-d1ad8d27] {
+.checkbox-spacer[data-v-2338e152] {
   visibility: hidden;
 }
-.civitai-setting select[data-v-d1ad8d27] {
+.civitai-setting select[data-v-2338e152] {
   margin-left: 5px;
 }
-.generate-setting[data-v-d1ad8d27] {
+.generate-setting[data-v-2338e152] {
   display: flex;
   align-items: center;
   gap: 6px;
   margin-top: 4px;
 }
-.generate-setting span[data-v-d1ad8d27] {
+.generate-setting span[data-v-2338e152] {
   min-width: 200px;
 }
-.generate-setting .help[data-v-d1ad8d27],
-h3 .help[data-v-d1ad8d27] {
+.generate-setting .help[data-v-2338e152],
+h3 .help[data-v-2338e152] {
   position: relative;
   min-width: 0;
   width: 16px;
@@ -43296,16 +43317,16 @@ h3 .help[data-v-d1ad8d27] {
   font-weight: 600;
   cursor: help;
 }
-.generate-setting .help[data-v-d1ad8d27]:hover,
-.generate-setting .help[data-v-d1ad8d27]:focus-visible,
-h3 .help[data-v-d1ad8d27]:hover,
-h3 .help[data-v-d1ad8d27]:focus-visible {
+.generate-setting .help[data-v-2338e152]:hover,
+.generate-setting .help[data-v-2338e152]:focus-visible,
+h3 .help[data-v-2338e152]:hover,
+h3 .help[data-v-2338e152]:focus-visible {
   outline: none;
   border-color: var(--ib-accent-border);
   color: var(--ib-accent);
 }
-.generate-setting .help-text[data-v-d1ad8d27],
-h3 .help-text[data-v-d1ad8d27] {
+.generate-setting .help-text[data-v-2338e152],
+h3 .help-text[data-v-2338e152] {
   position: absolute;
   left: 22px;
   top: 50%;
@@ -43324,26 +43345,26 @@ h3 .help-text[data-v-d1ad8d27] {
   visibility: hidden;
   pointer-events: none;
 }
-.generate-setting .help:hover .help-text[data-v-d1ad8d27],
-.generate-setting .help:focus .help-text[data-v-d1ad8d27],
-h3 .help:hover .help-text[data-v-d1ad8d27],
-h3 .help:focus .help-text[data-v-d1ad8d27] {
+.generate-setting .help:hover .help-text[data-v-2338e152],
+.generate-setting .help:focus .help-text[data-v-2338e152],
+h3 .help:hover .help-text[data-v-2338e152],
+h3 .help:focus .help-text[data-v-2338e152] {
   visibility: visible;
 }
-.help-text code[data-v-d1ad8d27] {
+.help-text code[data-v-2338e152] {
   font-family: var(--ib-mono);
   font-size: 11.5px;
   color: var(--ib-accent);
 }
-.generate-setting input[data-v-d1ad8d27] {
+.generate-setting input[data-v-2338e152] {
   width: 80px;
 }
-.root-setting[data-v-d1ad8d27] {
+.root-setting[data-v-2338e152] {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.root-setting input[data-v-d1ad8d27] {
+.root-setting input[data-v-2338e152] {
   width: 420px;
   height: 26px;
   margin: 0;
@@ -43355,56 +43376,56 @@ h3 .help:focus .help-text[data-v-d1ad8d27] {
   font-family: var(--ib-mono);
   font-size: 12px;
 }
-.root-setting input[data-v-d1ad8d27]:focus {
+.root-setting input[data-v-2338e152]:focus {
   outline: none;
   border-color: var(--ib-accent-border);
 }
-h3.with-help[data-v-d1ad8d27] {
+h3.with-help[data-v-2338e152] {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.restart-info[data-v-d1ad8d27] {
+.restart-info[data-v-2338e152] {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
   gap: 4px 12px;
   align-items: baseline;
 }
-.restart-info code[data-v-d1ad8d27] {
+.restart-info code[data-v-2338e152] {
   font-family: var(--ib-mono);
   font-size: 11.5px;
   overflow-wrap: anywhere;
 }
-.restart-info .muted[data-v-d1ad8d27] {
+.restart-info .muted[data-v-2338e152] {
   color: var(--ib-muted);
 }
-.restart-info .root-status[data-v-d1ad8d27] {
+.restart-info .root-status[data-v-2338e152] {
   margin-left: 0;
 }
-.copy-config[data-v-d1ad8d27] {
+.copy-config[data-v-2338e152] {
   margin-left: 8px;
 }
-.root-help[data-v-d1ad8d27] {
+.root-help[data-v-2338e152] {
   margin-top: 4px;
   color: var(--ib-muted);
   font-size: 12px;
 }
-.root-status[data-v-d1ad8d27] {
+.root-status[data-v-2338e152] {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   margin-left: 8px;
   color: var(--ib-warn);
 }
-.root-status.ok[data-v-d1ad8d27] {
+.root-status.ok[data-v-2338e152] {
   color: var(--ib-info);
 }
-.accent-setting[data-v-d1ad8d27] {
+.accent-setting[data-v-2338e152] {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.accent-swatches[data-v-d1ad8d27] {
+.accent-swatches[data-v-2338e152] {
   display: inline-flex;
   gap: 4px;
   padding: 4px;
@@ -43412,7 +43433,7 @@ h3.with-help[data-v-d1ad8d27] {
   border-radius: 6px;
   background: var(--ib-surface);
 }
-.accent-swatch[data-v-d1ad8d27] {
+.accent-swatch[data-v-2338e152] {
   width: 22px;
   height: 22px;
   padding: 0;
@@ -43424,20 +43445,20 @@ h3.with-help[data-v-d1ad8d27] {
   outline-offset: 1px;
   transition: outline-color 0.15s, transform 0.15s;
 }
-.accent-swatch[data-v-d1ad8d27]:hover {
+.accent-swatch[data-v-2338e152]:hover {
   transform: scale(1.08);
 }
-.accent-swatch.selected[data-v-d1ad8d27] {
+.accent-swatch.selected[data-v-2338e152] {
   outline-color: var(--ib-text);
   box-shadow: inset 0 0 0 2px var(--ib-surface);
 }
-.accent-name[data-v-d1ad8d27] {
+.accent-name[data-v-2338e152] {
   color: var(--ib-text-2);
 }
-h3[data-v-d1ad8d27] {
+h3[data-v-2338e152] {
   font-weight: bold;
 }
-h3[data-v-d1ad8d27]:not(:first-child) {
+h3[data-v-2338e152]:not(:first-child) {
   margin-top: 15px;
 }
 
@@ -47578,33 +47599,33 @@ mark[data-v-6a99e282] {
   font-size: 12.5px;
 }
 
-.manual[data-v-387dbd7a] {
+.manual[data-v-7da20fab] {
   display: flex;
   height: 100%;
   min-height: 0;
 }
-.manual-content[data-v-387dbd7a] {
+.manual-content[data-v-7da20fab] {
   flex-grow: 1;
   min-width: 0;
   overflow-y: auto;
   padding: 18px 28px 60px;
   line-height: 1.55;
 }
-.manual-content section[data-v-387dbd7a] {
+.manual-content section[data-v-7da20fab] {
   max-width: 820px;
   padding-bottom: 22px;
   margin-bottom: 22px;
   border-bottom: 1px solid var(--ib-border);
 }
-.manual-content section[data-v-387dbd7a]:last-child {
+.manual-content section[data-v-7da20fab]:last-child {
   border-bottom: none;
 }
-h1[data-v-387dbd7a] {
+h1[data-v-7da20fab] {
   margin: 0 0 10px;
   font-size: 22px;
   font-weight: 600;
 }
-h2[data-v-387dbd7a] {
+h2[data-v-7da20fab] {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -47612,44 +47633,44 @@ h2[data-v-387dbd7a] {
   font-size: 17px;
   font-weight: 600;
 }
-h3[data-v-387dbd7a] {
+h3[data-v-7da20fab] {
   margin: 16px 0 6px;
   font-size: 14px;
   font-weight: 600;
 }
-h4[data-v-387dbd7a] {
+h4[data-v-7da20fab] {
   margin: 12px 0 6px;
   font-size: 13px;
   font-weight: 600;
 }
-p[data-v-387dbd7a], ul[data-v-387dbd7a], ol[data-v-387dbd7a], dl[data-v-387dbd7a], table[data-v-387dbd7a] {
+p[data-v-7da20fab], ul[data-v-7da20fab], ol[data-v-7da20fab], dl[data-v-7da20fab], table[data-v-7da20fab] {
   margin: 0 0 10px;
 }
 
 /* The global reset sets font-weight: normal on every element */
-b[data-v-387dbd7a] {
+b[data-v-7da20fab] {
   font-weight: 600;
 }
-ul[data-v-387dbd7a], ol[data-v-387dbd7a] {
+ul[data-v-7da20fab], ol[data-v-7da20fab] {
   padding-left: 22px;
 }
-li[data-v-387dbd7a] {
+li[data-v-7da20fab] {
   margin-bottom: 4px;
 }
-.lead[data-v-387dbd7a] {
+.lead[data-v-7da20fab] {
   color: var(--ib-text);
 }
-.muted[data-v-387dbd7a] {
+.muted[data-v-7da20fab] {
   color: var(--ib-text-2);
 }
-a[data-v-387dbd7a] {
+a[data-v-7da20fab] {
   color: var(--ib-accent);
   text-decoration: none;
 }
-a[data-v-387dbd7a]:hover {
+a[data-v-7da20fab]:hover {
   text-decoration: underline;
 }
-code[data-v-387dbd7a] {
+code[data-v-7da20fab] {
   font-family: var(--ib-mono);
   font-size: 12px;
   padding: 1px 4px;
@@ -47657,7 +47678,7 @@ code[data-v-387dbd7a] {
   background: var(--ib-elev);
   color: var(--ib-accent);
 }
-pre[data-v-387dbd7a] {
+pre[data-v-7da20fab] {
   margin: 6px 0;
   padding: 8px 10px;
   border-radius: 4px;
@@ -47667,7 +47688,7 @@ pre[data-v-387dbd7a] {
   white-space: pre;
   overflow-x: auto;
 }
-.kbd[data-v-387dbd7a] {
+.kbd[data-v-7da20fab] {
   display: inline-block;
   padding: 0 5px;
   border: 1px solid var(--ib-border-2);
@@ -47677,41 +47698,41 @@ pre[data-v-387dbd7a] {
   font-size: 11.5px;
   line-height: 1.5;
 }
-.kbd.warn[data-v-387dbd7a] {
+.kbd.warn[data-v-7da20fab] {
   color: var(--ib-warn);
 }
-.inline-icon[data-v-387dbd7a] {
+.inline-icon[data-v-7da20fab] {
   display: inline-block;
   vertical-align: -2px;
 }
-table[data-v-387dbd7a] {
+table[data-v-7da20fab] {
   border-collapse: collapse;
 }
-td[data-v-387dbd7a], th[data-v-387dbd7a] {
+td[data-v-7da20fab], th[data-v-7da20fab] {
   padding: 5px 12px 5px 0;
   vertical-align: top;
   text-align: left;
   border-bottom: 1px solid var(--ib-border);
 }
-th[data-v-387dbd7a] {
+th[data-v-7da20fab] {
   color: var(--ib-text-2);
   font-weight: 600;
 }
-td[data-v-387dbd7a]:first-child {
+td[data-v-7da20fab]:first-child {
   white-space: nowrap;
 }
-td[data-v-387dbd7a] .app-icon {
+td[data-v-7da20fab] .app-icon {
   display: inline-block;
 }
-dt[data-v-387dbd7a] {
+dt[data-v-7da20fab] {
   font-weight: 600;
   margin-top: 8px;
 }
-dd[data-v-387dbd7a] {
+dd[data-v-7da20fab] {
   margin: 2px 0 0 16px;
   color: var(--ib-text-2);
 }
-.note[data-v-387dbd7a] {
+.note[data-v-7da20fab] {
   display: flex;
   gap: 10px;
   padding: 10px 12px;
@@ -47720,18 +47741,18 @@ dd[data-v-387dbd7a] {
   border-radius: 6px;
   background: var(--ib-accent-soft);
 }
-.note .app-icon[data-v-387dbd7a] {
+.note .app-icon[data-v-7da20fab] {
   margin-top: 3px;
   color: var(--ib-accent);
 }
-.note.warn[data-v-387dbd7a] {
+.note.warn[data-v-7da20fab] {
   border-color: color-mix(in srgb, var(--ib-warn) 40%, transparent);
   background: color-mix(in srgb, var(--ib-warn) 10%, transparent);
 }
-.note.warn > .app-icon[data-v-387dbd7a] {
+.note.warn > .app-icon[data-v-7da20fab] {
   color: var(--ib-warn);
 }
-.snippet-badge[data-v-387dbd7a] {
+.snippet-badge[data-v-7da20fab] {
   display: inline-block;
   padding: 0 4px;
   border-radius: 3px;
@@ -47740,19 +47761,19 @@ dd[data-v-387dbd7a] {
   line-height: 14px;
   vertical-align: 1px;
 }
-.snippet-badge.negative[data-v-387dbd7a] {
+.snippet-badge.negative[data-v-7da20fab] {
   border: 1px solid rgba(255, 122, 125, 0.4);
   color: var(--ib-danger-text);
 }
-.snippet-badge.wrap[data-v-387dbd7a] {
+.snippet-badge.wrap[data-v-7da20fab] {
   border: 1px solid var(--ib-border-2);
   color: var(--ib-muted);
   font-family: var(--ib-mono);
 }
-.note p[data-v-387dbd7a]:last-child {
+.note p[data-v-7da20fab]:last-child {
   margin-bottom: 0;
 }
-.note .inline-icon[data-v-387dbd7a] {
+.note .inline-icon[data-v-7da20fab] {
   margin-top: 0;
   color: inherit;
 }
