@@ -40,7 +40,7 @@ from PIL import Image
 
 from . import media
 from .controlnet_inputs import HASH, image_hashes, input_dir, input_path
-from .persist import PROMPT_HISTORY_FILE, read_json_file
+from .persist import PROMPT_HISTORY_FILE, read_json_file, replace_file
 from .tray import TRAY_FILES, unique_file_path
 
 PROJECT_DIR = "ib_project"
@@ -182,13 +182,7 @@ def read_json(path: str, default=None):
 
 def write_json(path: str, data) -> None:
     """Write a JSON file through a temporary file, so that it is never left half-written"""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    temp = path + ".tmp"
-
-    with open(temp, "w", encoding="utf-8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=1)
-
-    os.replace(temp, path)
+    replace_file(path, json.dumps(data, ensure_ascii=False, indent=1))
 
 
 def read_project_file(data_dir: str) -> Dict[str, Any]:
@@ -807,7 +801,7 @@ def update_current_path(store_dir: str, old: str, new: Optional[str]) -> None:
 
 
 def read_tray_store(store_dir: str, kind: str):
-    """(content of the store file of a tray, its hash, its image count)"""
+    """(content of the store file of a tray, its hash, its image count); the count is None if it is unreadable"""
     path = os.path.join(store_dir, TRAY_FILES[kind])
 
     try:
@@ -819,9 +813,20 @@ def read_tray_store(store_dir: str, kind: str):
     try:
         count = len(json.loads(content).get("images") or []) if content.strip() else 0
     except (ValueError, AttributeError):
-        count = 0
+        count = None
 
     return content, hashlib.sha1(content).hexdigest() if count else "", count
+
+
+def read_tray_store_checked(store_dir: str, kind: str):
+    """read_tray_store() for a save or merge, which must not take an unreadable store file for an empty tray"""
+    content, tray_hash, count = read_tray_store(store_dir, kind)
+
+    if count is None:
+        raise ProjectError(f"The store file of the {kind.replace('_', ' ')} ({TRAY_FILES[kind]}) cannot be read; "
+                           "nothing was changed.", 500)
+
+    return content, tray_hash, count
 
 
 def get_current(root: str, store_dir: str) -> Dict[str, Any]:
@@ -844,7 +849,7 @@ def get_current(root: str, store_dir: str) -> Dict[str, Any]:
 
     for kind in TRAY_KINDS:
         _, tray_hash, count = read_tray_store(store_dir, kind)
-        trays[kind] = {"workspace": count, "saved": (saved.get(kind) or {}).get("count", 0),
+        trays[kind] = {"workspace": count or 0, "saved": (saved.get(kind) or {}).get("count", 0),
                        "changed": tray_hash != hashes.get(kind, "")}
 
     return {"path": relative(root, directory), "name": os.path.basename(directory), "exists": True,
@@ -1228,10 +1233,12 @@ def save_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
     trays = {}
     hashes = {}
 
+    # All store files are read before anything is changed
+    stores = {kind: read_tray_store_checked(store_dir, kind) for kind in TRAY_KINDS}
     os.makedirs(os.path.join(data_dir, TRAYS_DIR), exist_ok=True)
 
     for kind in TRAY_KINDS:
-        content, tray_hash, count = read_tray_store(store_dir, kind)
+        content, tray_hash, count = stores[kind]
         directory_path = tray_dir(data_dir, kind)
         hashes[kind] = tray_hash
 
@@ -1298,23 +1305,22 @@ def open_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
     counts = {}
 
     if restore_trays:
+        # A merge keeps the workspace images, which must be readable before anything is changed
+        stores = {kind: read_tray_store_checked(store_dir, kind) for kind in TRAY_KINDS} if merge else {}
+
         for kind in TRAY_KINDS:
             directory_path = tray_dir(data_dir, kind)
             images = extract_tray_dir(directory_path, image_bench_dir, kind, platform) \
                 if os.path.isfile(tray_file(directory_path)) else []
 
             if merge:
-                content, _, _ = read_tray_store(store_dir, kind)
-                existing = (json.loads(content).get("images") or []) if content.strip() else []
+                content, _, count = stores[kind]
+                existing = (json.loads(content).get("images") or []) if count else []
                 keys = {image_key(image) for image in existing}
                 images = existing + [image for image in images if image_key(image) not in keys]
 
             counts[kind] = len(images)
-            store_path = os.path.join(store_dir, TRAY_FILES[kind])
-            os.makedirs(store_dir, exist_ok=True)
-
-            with open(store_path, "w", encoding="utf-8") as file:
-                json.dump({"version": 1, "images": images}, file)
+            replace_file(os.path.join(store_dir, TRAY_FILES[kind]), json.dumps({"version": 1, "images": images}))
 
     # Merged trays or parameters only leave the workspace with the project it belongs to
     if restore_trays and not merge:
@@ -1332,13 +1338,21 @@ def open_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
 
 # ---------- Dispatch ----------
 
+# Actions that change nothing, the only ones allowed on GET (a GET may come from a page of another site)
+READ_ACTIONS = {"docs_tree", "docs_check", "doc", "doc_asset", "tree", "check", "project", "file", "tray",
+                "tray_image", "current"}
+
+
 def dispatch(action: str, args: Dict[str, Any], files: Dict[str, Any], config: Dict[str, Any],
-             store_dir: str, image_bench_dir: str, platform: str):
+             store_dir: str, image_bench_dir: str, platform: str, method: str = "POST"):
     """
     Run an action of the /image-bench/projects/<action> endpoint.
     args: query or JSON body; files: uploaded files by field name as (file name, content).
     Returns a JSON-serializable dict or a FileResult; raises ProjectError
     """
+    if method.upper() in ("GET", "HEAD") and action not in READ_ACTIONS:
+        raise ProjectError(f"{action} needs a POST request", 405)
+
     root = get_root(config)
     path = args.get("path") or ""
 

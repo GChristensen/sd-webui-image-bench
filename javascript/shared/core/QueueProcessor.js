@@ -66,13 +66,18 @@ export class QueueProcessor {
         console.log('[QueueProcessor] Starting process with options:', options);
         this.isActive = true;
 
-        console.log('[QueueProcessor] Calling initialize()');
-        this.initialize(options);
-        console.log('[QueueProcessor] Queue initialized with', this.queue.length, 'items');
+        try {
+            console.log('[QueueProcessor] Calling initialize()');
+            this.initialize(options);
+            console.log('[QueueProcessor] Queue initialized with', this.queue.length, 'items');
 
-        console.log('[QueueProcessor] Calling prepare()');
-        await this.prepare(options);
-        console.log('[QueueProcessor] Prepare complete');
+            console.log('[QueueProcessor] Calling prepare()');
+            await this.prepare(options);
+            console.log('[QueueProcessor] Prepare complete');
+        } catch (error) {
+            this.abort(error);
+            return;
+        }
 
         if (this.queue.length > 0) {
             console.log('[QueueProcessor] Queue has items, calling processNext()');
@@ -80,6 +85,20 @@ export class QueueProcessor {
         } else {
             console.log('[QueueProcessor] Queue is empty, calling finish()');
             await this.finish();
+        }
+    }
+
+    /**
+     * End the strategy after an error, so that it does not stay active, routing the later images to itself,
+     * with the parameters it changed: its finish() restores what it has backed up
+     * @param {Error} error
+     */
+    abort(error) {
+        console.error('[QueueProcessor] The strategy failed:', error);
+
+        if (this.isActive) {
+            this.messageBus.publish('STRATEGY_FINISH_REQUEST');
+            this.messageBus.publish('GENERATION_FINISHED', {});
         }
     }
 
@@ -97,15 +116,20 @@ export class QueueProcessor {
 
         const item = this.queue.shift();
 
-        if (item) {
-            console.log('[QueueProcessor] Processing item:', item, 'Remaining queue:', this.queue.length);
-            await this.processItem(item);
-            console.log('[QueueProcessor] processItem() complete. Reporting progress...');
-            this.reportProgress();
-            console.log('[QueueProcessor] Progress reported. Waiting for next trigger...');
-        } else {
-            console.log('[QueueProcessor] No more items in queue, calling finish()');
-            await this.finish();
+        // Callers do not wait for this: an error ends the strategy instead of being lost
+        try {
+            if (item) {
+                console.log('[QueueProcessor] Processing item:', item, 'Remaining queue:', this.queue.length);
+                await this.processItem(item);
+                console.log('[QueueProcessor] processItem() complete. Reporting progress...');
+                this.reportProgress();
+                console.log('[QueueProcessor] Progress reported. Waiting for next trigger...');
+            } else {
+                console.log('[QueueProcessor] No more items in queue, calling finish()');
+                await this.finish();
+            }
+        } catch (error) {
+            this.abort(error);
         }
     }
 
@@ -115,6 +139,10 @@ export class QueueProcessor {
      * @returns {Promise<boolean>} Whether generation was started
      */
     async clickGenerate() {
+        // Stopped while the item was being prepared
+        if (!this.isActive)
+            return false;
+
         if (await this.uiOperations.clickGenerate())
             return true;
 

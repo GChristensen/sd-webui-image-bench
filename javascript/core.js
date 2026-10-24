@@ -74,7 +74,7 @@ export async function init() {
     // Close popup on page unload
     window.addEventListener("pagehide", () => {
         popupManager.close();
-        fetch("/image-bench/close_websocket", {keepalive: true});
+        fetch("/image-bench/close_websocket", {method: "POST", keepalive: true});
     });
 
     // Set up message bus event handlers

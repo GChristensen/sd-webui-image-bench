@@ -6,7 +6,7 @@ import sys
 import time
 import zipfile
 
-from fastapi import FastAPI, Body, HTTPException, Request, Response, UploadFile
+from fastapi import Depends, FastAPI, Body, HTTPException, Request, Response, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import FileResponse, StreamingResponse
 
@@ -61,6 +61,8 @@ class ImageBenchApi():
         self.websocket_queue = asyncio.Queue()
         # Loop of the websocket, which owns the queue (asyncio queues are not thread-safe)
         self.websocket_loop = None
+        # Set to end the handler of a connection when a new one replaces it
+        self.websocket_retire_events = set()
         # WebUI pages listening for images sent from the editor
         self.editor_host_websockets = set()
         # The editor plugin receiving images sent from the Image Bench window
@@ -97,7 +99,7 @@ class ImageBenchApi():
         self.add_api_route("/png_info", self.png_info, methods=["POST"])
         self.add_api_route("/media/thumb", self.get_media_thumb, methods=["GET"])
         self.add_api_route("/config_presets", self.get_presets, methods=["GET"])
-        self.add_api_route("/clear_outputs_dir", self.clear_outputs_dir, methods=["GET"])
+        self.add_api_route("/clear_outputs_dir", self.clear_outputs_dir, methods=["POST"])
         self.add_api_route("/download_image_tray", self.download_image_tray, methods=["GET"])
         self.add_api_route("/explore_export", self.explore_export, methods=["POST"])
         self.add_api_route("/image_tray_upload", self.image_tray_upload, methods=["POST"])
@@ -122,18 +124,18 @@ class ImageBenchApi():
         self.add_api_route("/generation_settings", self.write_generation_settings, methods=["POST"])
         self.add_api_route("/projects/{action}", self.projects_action, methods=["GET", "POST"])
         self.app.add_websocket_route(self.BASE_PATH + "/websocket", self.handle_websocket)
-        self.add_api_route("/close_websocket", self.close_websocket, methods=["GET"])
+        self.add_api_route("/close_websocket", self.close_websocket, methods=["POST"])
         self.app.add_websocket_route(self.BASE_PATH + "/heartbeat", self.handle_heartbeat)
         self.app.add_websocket_route(self.BASE_PATH + "/console", self.handle_console)
-        self.add_api_route("/editor/upload", self.editor_upload, methods=["POST"])
-        self.add_api_route("/editor/project", self.editor_project, methods=["POST"])
+        self.add_api_route("/editor/upload", self.editor_upload, methods=["POST"], guarded=False)
+        self.add_api_route("/editor/project", self.editor_project, methods=["POST"], guarded=False)
         self.add_api_route("/editor/send", self.editor_send, methods=["POST"])
         self.add_api_route("/editor/image", self.get_editor_image, methods=["GET"])
         self.add_api_route("/editor/status", self.get_editor_status, methods=["GET"])
         self.app.add_websocket_route(self.BASE_PATH + "/editor/host-websocket", self.handle_editor_host_websocket)
         self.app.add_websocket_route(self.BASE_PATH + "/editor/websocket", self.handle_editor_websocket)
         # The routes of the Photoshop plugins installed before the editor bridge
-        self.add_api_route("/photoshop/upload", self.editor_upload, methods=["POST"])
+        self.add_api_route("/photoshop/upload", self.editor_upload, methods=["POST"], guarded=False)
         self.app.add_websocket_route(self.BASE_PATH + "/photoshop/plugin-websocket", self.handle_editor_websocket)
 
     def get_path(self, path):
@@ -142,8 +144,25 @@ class ImageBenchApi():
     def get_webui_root_dir(self):
         return os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-    def add_api_route(self, path: str, endpoint, **kwargs):
+    def add_api_route(self, path: str, endpoint, guarded: bool = True, **kwargs):
+        """
+        A route of the extension; guarded routes refuse the requests that change something from other sites.
+        The routes of the editor plugins are not guarded, since their requests may carry any headers
+        """
+        if guarded:
+            kwargs["dependencies"] = [*kwargs.get("dependencies", []), Depends(self.reject_cross_site)]
+
         return self.app.add_api_route(self.get_path(path), endpoint, **kwargs)
+
+    @staticmethod
+    def reject_cross_site(request: Request):
+        """
+        Refuse a request that may change something sent by a page of another site (as ComfyUI does). The browser sets
+        Sec-Fetch-Site itself, so proxies do not change it; GET is never refused, since Firefox marks bookmarks of an
+        https host reached by HTTPS-First as cross-site, and no GET route changes anything
+        """
+        if request.method not in ("GET", "HEAD") and request.headers.get("Sec-Fetch-Site") == "cross-site":
+            raise HTTPException(status_code=403, detail="Cross-site request")
 
     def get_config(self):
         config_path = self.get_file_path(EXTENSION_CONFIG_FILE, upper=True)
@@ -185,10 +204,10 @@ class ImageBenchApi():
         # print("\n", image_data.pnginfo, "\n")
         # print("\n", image_data.p.__dict__, "\n")
 
-        if "grid" not in filename:
-            if not (filename.startswith("/") or ":" in filename):
-                filename = self.get_webui_root_dir() + "/" + filename
+        if not (filename.startswith("/") or ":" in filename):
+            filename = self.get_webui_root_dir() + "/" + filename
 
+        if not self.is_grid(filename):
             filename = filename.replace("\\", "/")
 
             msg = {
@@ -202,6 +221,32 @@ class ImageBenchApi():
             }
 
             self.post_websocket_message(msg)
+
+    def is_grid(self, path):
+        """
+        Whether a saved image is a grid: WebUI names grids grid-NNNN and saves them to the grid directories
+        (a path merely containing "grid", e.g. from the prompt, is an image)
+        """
+        if os.path.basename(path).lower().startswith("grid-"):
+            return True
+
+        root_dir = self.get_webui_root_dir()
+
+        def option_dirs(names):
+            values = (getattr(shared.opts, name, None) for name in names)
+            return [os.path.normcase(os.path.abspath(v if os.path.isabs(v) else os.path.join(root_dir, v)))
+                    for v in values if v]
+
+        def is_inside(directory, parent):
+            return directory == parent or directory.startswith(parent.rstrip(os.sep) + os.sep)
+
+        directory = os.path.normcase(os.path.abspath(os.path.dirname(path)))
+        sample_dirs = option_dirs(("outdir_samples", "outdir_txt2img_samples", "outdir_img2img_samples"))
+
+        # A grid directory holding the images too (configured so) tells nothing
+        return any(is_inside(directory, grid_dir)
+                   for grid_dir in option_dirs(("outdir_grids", "outdir_txt2img_grids", "outdir_img2img_grids"))
+                   if not any(is_inside(sample_dir, grid_dir) for sample_dir in sample_dirs))
 
     def on_video_saved(self, p, path, info):
         """A video saved by Forge Neo (modules.images.save_video, which has no callback), sent like an image"""
@@ -288,19 +333,44 @@ class ImageBenchApi():
         while not self.websocket_queue.empty():
             self.websocket_queue.get_nowait()
 
-        while True:
-            try:
-                msg = await self.websocket_queue.get()
+        # The handlers of earlier connections end: one of a connection lost without close_websocket would wait for
+        # the next image and lose it
+        for event in self.websocket_retire_events:
+            event.set()
 
-                if msg == TERMINATE_WEBSOCKET:
+        retired = asyncio.Event()
+        self.websocket_retire_events.add(retired)
+
+        try:
+            while True:
+                getter = asyncio.ensure_future(self.websocket_queue.get())
+                retire_wait = asyncio.ensure_future(retired.wait())
+                await asyncio.wait({getter, retire_wait}, return_when=asyncio.FIRST_COMPLETED)
+                retire_wait.cancel()
+
+                if retired.is_set():
+                    # A message taken at the same moment goes to the new connection
+                    if getter.done() and not getter.cancelled():
+                        if getter.result() is not TERMINATE_WEBSOCKET:
+                            self.websocket_queue.put_nowait(getter.result())
+                    else:
+                        getter.cancel()
                     break
 
-                await websocket.send_text(json.dumps(msg))
-            except Exception as e:
-                print(e)
-                break
-            finally:
-                self.websocket_queue.task_done()
+                msg = getter.result()
+
+                if msg is TERMINATE_WEBSOCKET:
+                    break
+
+                try:
+                    await websocket.send_text(json.dumps(msg))
+                except Exception as e:
+                    print(e)
+                    # Kept for the next connection
+                    self.websocket_queue.put_nowait(msg)
+                    break
+        finally:
+            self.websocket_retire_events.discard(retired)
 
     def close_websocket(self):
         self.post_websocket_message(TERMINATE_WEBSOCKET)
@@ -549,7 +619,7 @@ class ImageBenchApi():
         try:
             args = projects.parse_args(dict(request.query_params), form, body, files)
             result = await asyncio.to_thread(projects.dispatch, action, args, files, config, store_dir,
-                                             self.image_bench_dir, "webui")
+                                             self.image_bench_dir, "webui", request.method)
         except projects.ProjectError as e:
             return JSONResponse({"error": str(e)}, status_code=e.status)
         except OSError as e:

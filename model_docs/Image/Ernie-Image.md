@@ -167,3 +167,7 @@ A candid street photograph at dusk in a narrow old-town lane after rain. An elde
 - Missing download: `ministral-3-3b.safetensors` is required even with the PE disabled; the PE file is optional.
 - 24 GB VRAM is the official floor for bf16; on a 3090, OOM or heavy slowdown usually comes from the PE and DiT loaded together, not the DiT alone.
 - No ControlNet, edit model or regional-prompting support exists from Baidu; third-party "ERNIE ControlNet" guides mostly point at models built for other architectures.
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*

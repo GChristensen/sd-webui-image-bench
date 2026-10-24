@@ -223,3 +223,7 @@ Pipeline (RTX 3090, Z-Image-Turbo example):
 - `LatentCrop` in core silently mis-crops 5-D Qwen/Wan latents; do not crop Qwen-family latents with it before PiD.
 - ComfyUI Desktop / stable builds lagged behind nightly when PiD landed; "Node has no class_type" means the PiD nodes are missing, so update ComfyUI.
 - mxfp8 files rely on hardware formats newer than Ampere; on a 3090 prefer bf16 or int8_convrot [?].
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*

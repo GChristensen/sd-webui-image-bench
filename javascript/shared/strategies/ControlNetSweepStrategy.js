@@ -68,6 +68,8 @@ export class ControlNetSweepStrategy extends QueueProcessor {
         this.paramsBefore = null;
         this.seedBefore = null;
         this.currentItem = null;
+        // The item being prepared, which finish() waits for before restoring
+        this.processing = null;
     }
 
     /**
@@ -105,9 +107,20 @@ export class ControlNetSweepStrategy extends QueueProcessor {
 
     async processItem(item) {
         this.currentItem = item;
-        await this.controlNet.applyParams(this.unit, {weight: item.weight, guidanceEnd: item.end});
-        // Lets the host take the values before Generate reads them
-        await this.uiOperations.sleep(500);
+
+        this.processing = (async () => {
+            await this.controlNet.applyParams(this.unit, {weight: item.weight, guidanceEnd: item.end});
+            // Lets the host take the values before Generate reads them
+            await this.uiOperations.sleep(500);
+        })();
+
+        try {
+            await this.processing;
+        } finally {
+            this.processing = null;
+        }
+
+        // Does nothing if stopped meanwhile
         await this.clickGenerate();
     }
 
@@ -115,6 +128,9 @@ export class ControlNetSweepStrategy extends QueueProcessor {
         this.isActive = false;
         this.queue = [];
         this.currentItem = null;
+
+        // An item being prepared would set its values after they are restored
+        await this.processing?.catch(() => {});
 
         // GENERATION_FINISHED resets the generation state, which would otherwise route all later images to the sweep
         try {

@@ -199,3 +199,7 @@ VGL prompt:
 - Anatomy is better than FIBO 1 but piano keys, repeated mechanical patterns and crowded scenes still break.
 - Auto-written captions (by any VLM) can contradict the request (adding walls to a top-down shot) or delete detail; read and fix the JSON before blaming the model.
 - Off-spec sizes (not multiples of 16, far from 1 MP) degrade composition and text; stay near 1 MP.
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*

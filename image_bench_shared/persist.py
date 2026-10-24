@@ -1,6 +1,8 @@
 import os
 import json
-from typing import Dict, Any, Optional, Tuple
+import threading
+import time
+from typing import Dict, Any, Optional, Tuple, Union
 
 
 def read_json_file(file_path: str) -> Optional[Dict[str, Any]]:
@@ -65,6 +67,40 @@ def read_file_content(file_path: str, default: str = "") -> str:
     return default
 
 
+REPLACE_ATTEMPTS = 5
+
+
+def replace_file(file_path: str, content: Union[str, bytes]):
+    """
+    Write a file through a temporary file, so that it is never left half-written (a crash, a concurrent reader).
+    On Windows the replace fails while another thread has the file open, so it is tried again shortly after
+
+    Args:
+        file_path: Path to write to
+        content: Text (written as UTF-8) or bytes
+    """
+    # store/ is not shipped: a new install creates it with the first write
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    temp = f"{file_path}.{os.getpid()}.{threading.get_ident()}.tmp"
+
+    if isinstance(content, str):
+        content = content.encode("utf-8")
+
+    with open(temp, 'wb') as f:
+        f.write(content)
+
+    for attempt in range(REPLACE_ATTEMPTS):
+        try:
+            os.replace(temp, file_path)
+            return
+        except PermissionError:
+            if attempt == REPLACE_ATTEMPTS - 1:
+                os.unlink(temp)
+                raise
+
+            time.sleep(0.05 * (attempt + 1))
+
+
 def write_file_content(file_path: str, content: str):
     """
     Write text content to file.
@@ -73,11 +109,7 @@ def write_file_content(file_path: str, content: str):
         file_path: Path to write to
         content: String content to write
     """
-    # store/ is not shipped: a new install creates it with the first write
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-    with open(file_path, 'w', encoding='utf-8') as f:
-        f.write(content)
+    replace_file(file_path, content)
 
 
 def write_file_bytes(file_path: str, content: bytes):
@@ -88,10 +120,7 @@ def write_file_bytes(file_path: str, content: bytes):
         file_path: Path to write to
         content: Bytes to write
     """
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-
-    with open(file_path, 'wb') as f:
-        f.write(content)
+    replace_file(file_path, content)
 
 
 async def write_file_from_request(file_path: str, request, as_text: bool = False):

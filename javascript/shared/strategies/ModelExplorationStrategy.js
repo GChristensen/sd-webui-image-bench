@@ -22,6 +22,8 @@ export class ModelExplorationStrategy extends QueueProcessor {
         this.invalidated = false;
         this.seed = null;
         this.seedControlBeforeExplore = null;
+        // The item being prepared, which finish() waits for before restoring
+        this.processing = null;
     }
 
     /**
@@ -114,7 +116,22 @@ export class ModelExplorationStrategy extends QueueProcessor {
      * Process a single model/LoRA exploration
      * @param {Object} item - { model: {title, params}, lora: {name, prompt} | null }
      */
-    async processItem({model, lora}) {
+    async processItem(item) {
+        this.processing = this.prepareItem(item);
+
+        try {
+            await this.processing;
+        } finally {
+            this.processing = null;
+        }
+    }
+
+    /**
+     * Set the model, prompt, LoRA and parameters of an item and generate it; stopped meanwhile, it ends at the next
+     * step, so that finish() restores after it
+     * @param {Object} item - { model: {title, params}, lora: {name, prompt} | null }
+     */
+    async prepareItem({model, lora}) {
         console.log('[ModelExploration] processItem() called for model:', model.title, 'LoRA:', lora?.name ?? 'none');
         console.log('[ModelExploration] Current model:', this.currentModel.title);
 
@@ -129,6 +146,9 @@ export class ModelExplorationStrategy extends QueueProcessor {
         } else {
             console.log('[ModelExploration] Model is already loaded, skipping switch');
         }
+
+        if (!this.isActive)
+            return;
 
         // Set the prompt for every image, so the LoRA string is removed once its combination is done
         if (this.promptBeforeExplore !== null) {
@@ -148,6 +168,9 @@ export class ModelExplorationStrategy extends QueueProcessor {
 
         console.log('[ModelExploration] Waiting 1 second before generation...');
         await this.uiOperations.sleep(1000);
+
+        if (!this.isActive)
+            return;
 
         // Apply per-model parameters after the wait, so the Forge UI preset reset doesn't overwrite them
         if (model.params) {
@@ -191,6 +214,9 @@ export class ModelExplorationStrategy extends QueueProcessor {
         console.log('[ModelExploration] finish() called');
         this.isActive = false;
         this.queue = [];
+
+        // An item being prepared would set its values after they are restored
+        await this.processing?.catch(() => {});
 
         await this.restoreParamsBeforeModel();
 

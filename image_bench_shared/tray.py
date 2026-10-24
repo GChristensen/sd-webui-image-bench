@@ -17,7 +17,7 @@ from urllib.parse import quote
 from PIL import Image
 
 from .controlnet_inputs import image_hashes, input_path
-from .persist import read_json_file
+from .persist import read_json_file, replace_file
 
 # Store files of the persistent image collections by kind; the images are copied to image-bench/<kind>/
 TRAY_FILES = {
@@ -203,6 +203,12 @@ def same_content(path: str, other: str) -> bool:
         return False
 
 
+def safe_file_name(filename: Optional[str], default: str) -> str:
+    """The name part of a file name sent by a client, without characters invalid in file names or URLs"""
+    name = re.sub(r'[<>:"/\|?*&#%\x00-\x1f]', "_", os.path.basename((filename or "").replace("\\", "/"))).strip(" .")
+    return name or default
+
+
 def unique_file_path(directory: str, filename: str) -> str:
     """Path of a file in the directory that does not exist yet: the file name with a counter if it is taken"""
     path = os.path.join(directory, filename)
@@ -236,8 +242,7 @@ def save_compare_file(filename: str, file_data: bytes, image_bench_dir: str, pla
     compare_dir = os.path.join(image_bench_dir, COMPARE_KIND)
     os.makedirs(compare_dir, exist_ok=True)
 
-    name = re.sub(r'[<>:"/\|?*&#%\x00-\x1f]', "_", os.path.basename(filename.replace("\\", "/"))).strip(" .")
-    path = unique_file_path(compare_dir, name or "image.png")
+    path = unique_file_path(compare_dir, safe_file_name(filename, "image.png"))
 
     with open(path, "wb") as f:
         f.write(file_data)
@@ -278,9 +283,7 @@ def append_tray_image(store_dir: str, kind: str, image: Dict[str, Any]) -> None:
     content = content or {"version": 1, "images": []}
     content.setdefault("images", []).append(image)
 
-    os.makedirs(store_dir, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(content, f)
+    replace_file(path, json.dumps(content))
 
 
 async def save_tray_images(tray_data: Dict[str, Any], kind: str, image_bench_dir: str, platform: str) -> None:
@@ -323,8 +326,9 @@ async def image_tray_upload(
         Dictionary with imported image data or error
     """
     imported_dir = os.path.join(image_bench_dir, "images")
-    imported_file = os.path.join(imported_dir, filename)
     os.makedirs(imported_dir, exist_ok=True)
+    # Only the name part of the client's file name, so that the file stays in the directory; a new name if it is taken
+    imported_file = unique_file_path(imported_dir, safe_file_name(filename, "image.png"))
 
     with open(imported_file, "wb") as f:
         f.write(file_data)
@@ -332,17 +336,17 @@ async def image_tray_upload(
     if imported_file.lower().endswith(".zip"):
         return import_image_tray(imported_file, image_bench_dir, image_tray_file)
     else:
-        image = Image.open(imported_file)
         result = {"error": "No PNGINFO text found."}
 
-        if hasattr(image, "text") and image.text:
-            parameters = image.text.get("parameters")
+        with Image.open(imported_file) as image:
+            text = getattr(image, "text", None) or {}
+            parameters = text.get("parameters")
 
             if parameters:
                 p, n = prompts_from_pnginfo(parameters)
                 result = {
                     "imagePath": imported_file,
-                    "parameters": pnginfo_to_dict(p, n, image.text)
+                    "parameters": pnginfo_to_dict(p, n, text)
                 }
 
         return result
@@ -377,14 +381,28 @@ def download_image_tray(
     tray_file_path = tray_filename and os.path.join(store_dir, tray_filename)
 
     if tray_file_path and os.path.exists(tray_file_path):
-        image_tray = read_json_file(tray_file_path)
-        images = image_tray["images"]
+        image_tray = read_json_file(tray_file_path) or {}
+        # Images whose file was deleted are left out, so that the others can still be downloaded
+        images = [image for image in image_tray.get("images") or [] if os.path.isfile(image.get("imagePath") or "")]
+        image_tray["images"] = images
         controlnet_inputs = set()
 
-        if images and len(images):
+        if images:
             with zipfile.ZipFile(export_file, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                archive_names = set()
+
                 for image in images:
-                    archive_name = "images/" + os.path.basename(image["imagePath"])
+                    # Images of different directories may have the same name
+                    name = os.path.basename(image["imagePath"])
+                    base_name, ext = os.path.splitext(name)
+                    counter = 1
+
+                    while name.lower() in archive_names:
+                        name = f"{base_name}_{counter:03d}{ext}"
+                        counter += 1
+
+                    archive_names.add(name.lower())
+                    archive_name = "images/" + name
                     zip_file.write(image["imagePath"], archive_name)
                     image["imagePath"] = archive_name
                     controlnet_inputs |= image_hashes(image)
@@ -435,10 +453,24 @@ def import_image_tray(
                 image_tray = read_json_file(tray_file_path)
 
                 if image_tray:
-                    for image in image_tray["images"]:
-                        image["imagePath"] = image_bench_dir + "/" + image["imagePath"]
+                    root = os.path.abspath(image_bench_dir)
+                    images = []
 
-                    return image_tray["images"]
+                    # Only the files of the archive: a path of the tray file pointing elsewhere would let the tray
+                    # copy any file of the server
+                    for image in image_tray.get("images") or []:
+                        path = os.path.abspath(os.path.join(root, str(image.get("imagePath") or "")))
+
+                        try:
+                            inside = path != root and os.path.commonpath([root, path]) == root
+                        except ValueError:  # Another drive
+                            inside = False
+
+                        if inside:
+                            image["imagePath"] = image_bench_dir + "/" + os.path.relpath(path, root).replace(os.sep, "/")
+                            images.append(image)
+
+                    return images
     finally:
         if image_tray:
             os.unlink(tray_file_path)

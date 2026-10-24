@@ -178,3 +178,7 @@ A vintage travel poster in flat screen-print style showing a red cable car climb
 - Off-bucket sizes much above 1.5 MP → duplicated subjects.
 - Fine-tune settings do not transfer: NetaYume at 30 steps / base shift looks underbaked [?].
 - VRAM: bf16 DiT + fp16 Gemma + VAE fit comfortably on a 3090 (~11–14 GB peak at 1024² [?]); no offload or quantization needed.
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*

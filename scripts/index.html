@@ -10244,16 +10244,45 @@ function useTrayStoreState(kind) {
   const baseStore = useImageStoreState(kind);
   let persistTimer = null;
   let persisting = Promise.resolve();
-  async function init() {
-    const response = await fetch(`/image-bench/${kind}`);
-    if (response.ok && response.headers.get("content-length") > 0) {
-      const trayContent = await response.json();
-      baseStore.images.value = trayContent.images;
-    }
-  }
+  let loaded = false;
   let dirty = false;
-  onBackendReconnected(() => dirty && !persistTimer && (persisting = _persistToServer()));
+  async function init() {
+    var _a;
+    let text2;
+    try {
+      const response = await fetch(`/image-bench/${kind}`, { cache: "no-store" });
+      if (!response.ok)
+        throw new Error(`The request failed (${response.status}).`);
+      text2 = await response.text();
+    } catch (error) {
+      console.error(`[Image Bench] Unable to load the ${kind}:`, error);
+      return;
+    }
+    let images = [];
+    try {
+      images = text2.trim() && ((_a = JSON.parse(text2)) == null ? void 0 : _a.images) || [];
+    } catch (error) {
+      console.error(`[Image Bench] The saved ${kind} is unreadable:`, error);
+    }
+    const added = loaded ? [] : baseStore.images.value.filter((image) => !findIn(images, image));
+    baseStore.images.value = [...images, ...added];
+    loaded = true;
+    if (added.length)
+      persist();
+    else
+      dirty = false;
+  }
+  onBackendReconnected(() => {
+    if (!loaded)
+      init();
+    else if (dirty && !persistTimer)
+      persisting = _persistToServer();
+  });
   async function _persistToServer() {
+    if (!loaded) {
+      dirty = true;
+      return;
+    }
     try {
       dirty = !await _sendToServer();
     } catch (error) {
@@ -10299,8 +10328,11 @@ function useTrayStoreState(kind) {
       throw new Error(`The ${kind.replace("_", " ")} could not be saved. Try again when the server is running.`);
   }
   function findInTray(imageData) {
+    return findIn(baseStore.images.value, imageData);
+  }
+  function findIn(images, imageData) {
     const source = imageData.sourcePath || imageData.imagePath;
-    return baseStore.images.value.find((i) => (i.sourcePath || i.imagePath) === source || i.imagePath === imageData.imagePath);
+    return images.find((i) => (i.sourcePath || i.imagePath) === source || i.imagePath === imageData.imagePath);
   }
   async function addImage2(imageData) {
     const existing = findInTray(imageData);
@@ -12496,7 +12528,7 @@ const _sfc_main$1h = {
   }
 };
 const AppIcon = /* @__PURE__ */ _export_sfc(_sfc_main$1h, [["__scopeId", "data-v-c71120d5"]]);
-const _withScopeId$D = (n) => (pushScopeId("data-v-c71d632f"), n = n(), popScopeId(), n);
+const _withScopeId$D = (n) => (pushScopeId("data-v-c713fcd5"), n = n(), popScopeId(), n);
 const _hoisted_1$1e = {
   key: 0,
   class: "actions-modal-container"
@@ -12557,7 +12589,7 @@ const _sfc_main$1g = {
     async function onDeleteOutputsClick() {
       if (await dialog.confirm(`Permanently deletes every file and folder in the ${HOST_NAME} outputs directory, including the images of the trays, the Compare tab and the Upscaled tab, and empties all tabs and trays. This cannot be undone.`, { title: "Delete all output files", okText: "Delete files", danger: true })) {
         clearViewsAndTrays();
-        setTimeout(() => fetch("/image-bench/clear_outputs_dir"), 500);
+        setTimeout(() => fetch("/image-bench/clear_outputs_dir", { method: "POST" }), 500);
         emit2("close");
       }
     }
@@ -12676,7 +12708,7 @@ const _sfc_main$1g = {
     };
   }
 };
-const ActionsModal = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-c71d632f"]]);
+const ActionsModal = /* @__PURE__ */ _export_sfc(_sfc_main$1g, [["__scopeId", "data-v-c713fcd5"]]);
 const _hoisted_1$1d = { class: "combo" };
 const _hoisted_2$1a = ["id", "aria-expanded", "placeholder"];
 const _hoisted_3$14 = {
@@ -15226,7 +15258,7 @@ function useShiftKey() {
   }
   return shiftDown;
 }
-const _withScopeId$z = (n) => (pushScopeId("data-v-bb80c78e"), n = n(), popScopeId(), n);
+const _withScopeId$z = (n) => (pushScopeId("data-v-97690351"), n = n(), popScopeId(), n);
 const _hoisted_1$14 = { class: "tab-container" };
 const _hoisted_2$12 = { class: "tabs" };
 const _hoisted_3$Z = {
@@ -15310,15 +15342,22 @@ const _sfc_main$15 = {
       [controlNetSweepStore.kind]: controlNetSweepStore
     };
     onBeforeMount(async () => {
-      await appConfigStore.init();
+      const load = async (name, init) => {
+        try {
+          await init();
+        } catch (error) {
+          console.error(`[Image Bench] Unable to load the ${name}:`, error);
+        }
+      };
+      await load("settings", () => appConfigStore.init());
       await imageTrayStore.init();
       await conceptTrayStore.init();
       await compareStore.init();
       await upscaledImageStore.init();
-      await configPresetsStore.init();
-      await useGenerationSettingsStore().init();
-      await usePromptHistoryStore().load();
-      await projectsStore.init();
+      await load("config presets", () => configPresetsStore.init());
+      await load("generation settings", () => useGenerationSettingsStore().init());
+      await load("prompt history", () => usePromptHistoryStore().load());
+      await load("projects", () => projectsStore.init());
       initReminder();
       if (!EMBEDDED)
         initHostPage();
@@ -15773,7 +15812,7 @@ Middle-click or Shift+click: console (Ctrl+\`)`,
     };
   }
 };
-const App = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-bb80c78e"]]);
+const App = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-97690351"]]);
 function syncTrayMarkings(image, kind, isTray) {
   if (isTray)
     return;
@@ -40513,7 +40552,7 @@ input[type=checkbox]:disabled {
   display: block;
 }
 
-.actions-modal-container[data-v-c71d632f] {
+.actions-modal-container[data-v-c713fcd5] {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -40524,7 +40563,7 @@ input[type=checkbox]:disabled {
   align-items: center;
   justify-content: center;
 }
-.actions-modal-overlay[data-v-c71d632f] {
+.actions-modal-overlay[data-v-c713fcd5] {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -40534,7 +40573,7 @@ input[type=checkbox]:disabled {
   z-index: 1001;
   cursor: pointer;
 }
-.actions-modal-content[data-v-c71d632f] {
+.actions-modal-content[data-v-c713fcd5] {
   position: relative;
   z-index: 1002;
   background: var(--ib-elev);
@@ -40545,19 +40584,19 @@ input[type=checkbox]:disabled {
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
   color: var(--ib-text);
 }
-.actions-modal-header[data-v-c71d632f] {
+.actions-modal-header[data-v-c713fcd5] {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
   border-bottom: 1px solid var(--ib-border);
 }
-.actions-modal-header h3[data-v-c71d632f] {
+.actions-modal-header h3[data-v-c713fcd5] {
   margin: 0;
   font-size: 15px;
   font-weight: 600;
 }
-.close-button[data-v-c71d632f] {
+.close-button[data-v-c713fcd5] {
   background: none;
   border: none;
   color: var(--ib-muted);
@@ -40571,16 +40610,16 @@ input[type=checkbox]:disabled {
   justify-content: center;
   transition: color 0.2s;
 }
-.close-button[data-v-c71d632f]:hover {
+.close-button[data-v-c713fcd5]:hover {
   color: var(--ib-text);
 }
-.actions-modal-body[data-v-c71d632f] {
+.actions-modal-body[data-v-c713fcd5] {
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-.action-button[data-v-c71d632f] {
+.action-button[data-v-c713fcd5] {
   display: grid;
   grid-template-columns: 60px 1fr;
   align-items: center;
@@ -40596,46 +40635,46 @@ input[type=checkbox]:disabled {
   font-weight: 500;
   text-align: left;
 }
-.action-button[data-v-c71d632f]:hover {
+.action-button[data-v-c713fcd5]:hover {
   background: var(--ib-hover);
 }
-.action-button.danger[data-v-c71d632f]:hover {
+.action-button.danger[data-v-c713fcd5]:hover {
   border-color: var(--ib-danger);
   color: var(--ib-danger-text);
 }
 
 /* Right-aligned, so that the labels of all rows start in one column */
-.action-icons[data-v-c71d632f] {
+.action-icons[data-v-c713fcd5] {
   display: flex;
   justify-content: flex-end;
   gap: 2px;
 }
-.action-text[data-v-c71d632f] {
+.action-text[data-v-c713fcd5] {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.action-text small[data-v-c71d632f] {
+.action-text small[data-v-c713fcd5] {
   font-size: 12px;
   font-weight: 400;
   color: var(--ib-muted);
 }
 
 /* Transitions */
-.fade-enter-active[data-v-c71d632f],
-.fade-leave-active[data-v-c71d632f] {
+.fade-enter-active[data-v-c713fcd5],
+.fade-leave-active[data-v-c713fcd5] {
   transition: opacity 0.2s;
 }
-.fade-enter-from[data-v-c71d632f],
-.fade-leave-to[data-v-c71d632f] {
+.fade-enter-from[data-v-c713fcd5],
+.fade-leave-to[data-v-c713fcd5] {
   opacity: 0;
 }
-.zoom-enter-active[data-v-c71d632f],
-.zoom-leave-active[data-v-c71d632f] {
+.zoom-enter-active[data-v-c713fcd5],
+.zoom-leave-active[data-v-c713fcd5] {
   transition: transform 0.2s, opacity 0.2s;
 }
-.zoom-enter-from[data-v-c71d632f],
-.zoom-leave-to[data-v-c71d632f] {
+.zoom-enter-from[data-v-c713fcd5],
+.zoom-leave-to[data-v-c713fcd5] {
   transform: scale(0.9);
   opacity: 0;
 }
@@ -41335,14 +41374,14 @@ header[data-v-a74578d3] {
 .bg15[data-v-a74578d3] { background: var(--ansi-15);
 }
 
-.tab-container[data-v-bb80c78e] {
+.tab-container[data-v-97690351] {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     background: var(--ib-bg);
 }
-.tabs[data-v-bb80c78e] {
+.tabs[data-v-97690351] {
     display: flex;
     align-items: center;
     width: 100%;
@@ -41352,7 +41391,7 @@ header[data-v-a74578d3] {
     background: var(--ib-surface);
     border-bottom: 1px solid var(--ib-border);
 }
-.tab[data-v-bb80c78e] {
+.tab[data-v-97690351] {
     height: 36px;
     padding: 0 12px;
     display: inline-flex;
@@ -41367,35 +41406,35 @@ header[data-v-a74578d3] {
 }
 
   /* Settings: icon only, the tab bar is full at 1200 px */
-.tab.icon-tab[data-v-bb80c78e] {
+.tab.icon-tab[data-v-97690351] {
     padding: 0 8px;
 }
-.tab[data-v-bb80c78e]:hover {
+.tab[data-v-97690351]:hover {
     color: var(--ib-text);
     background: rgba(255, 255, 255, 0.03);
 }
-.tab.router-link-exact-active[data-v-bb80c78e] {
+.tab.router-link-exact-active[data-v-97690351] {
     color: #fff;
     border-bottom-color: var(--ib-accent);
 }
-.tab.drop-target[data-v-bb80c78e] {
+.tab.drop-target[data-v-97690351] {
     color: var(--ib-text);
     background: var(--ib-accent-soft);
     box-shadow: inset 0 0 0 1px var(--ib-accent-border);
 }
-.tab-spacer[data-v-bb80c78e] {
+.tab-spacer[data-v-97690351] {
     flex-grow: 1;
 }
-#tab-content[data-v-bb80c78e] {
+#tab-content[data-v-97690351] {
     position: relative;
     isolation: isolate;
     flex-grow: 1;
     min-height: 0;
 }
-.actions-button[data-v-bb80c78e] {
+.actions-button[data-v-97690351] {
     margin-left: 2px;
 }
-.manual-hint[data-v-bb80c78e] {
+.manual-hint[data-v-97690351] {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -41404,40 +41443,40 @@ header[data-v-a74578d3] {
     white-space: nowrap;
     text-decoration: none;
 }
-.manual-hint[data-v-bb80c78e]:hover {
+.manual-hint[data-v-97690351]:hover {
     text-decoration: underline;
 }
-.backend-down[data-v-bb80c78e] {
+.backend-down[data-v-97690351] {
     display: inline-flex;
     align-items: center;
     padding: 0 6px;
     color: var(--ib-warn);
     cursor: default;
 }
-.backend-down.restartable[data-v-bb80c78e] {
+.backend-down.restartable[data-v-97690351] {
     border: none;
     border-radius: 4px;
     background: none;
     cursor: pointer;
 }
-.backend-down.restartable[data-v-bb80c78e]:hover {
+.backend-down.restartable[data-v-97690351]:hover {
     background: var(--ib-accent-soft);
 }
-.backend-down.restarting[data-v-bb80c78e] {
+.backend-down.restarting[data-v-97690351] {
     cursor: progress;
-    animation: backend-restarting-bb80c78e 1.2s ease-in-out infinite alternate;
+    animation: backend-restarting-97690351 1.2s ease-in-out infinite alternate;
 }
-@keyframes backend-restarting-bb80c78e {
+@keyframes backend-restarting-97690351 {
 to { opacity: 0.35;
 }
 }
-.window-warning[data-v-bb80c78e] {
+.window-warning[data-v-97690351] {
     margin-right: 6px;
     background: #3a2a12;
     color: var(--ib-warn);
     cursor: default;
 }
-a.window-warning[data-v-bb80c78e] {
+a.window-warning[data-v-97690351] {
     text-decoration: none;
     cursor: pointer;
 }

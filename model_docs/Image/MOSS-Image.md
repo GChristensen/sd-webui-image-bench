@@ -200,3 +200,7 @@ best quality, highres, 1girl, solo, silver hair, short hair, red scarf, winter c
 - Layout boxes in top-left coordinates or `xyxy` order land in the wrong place with no error.
 - The official Diffusers pipeline runs the VAE and initial noise in fp32; forcing the VAE to bf16/fp16 may cost quality [?].
 - When training LoRAs, keep the text encoder frozen (official advice).
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*
