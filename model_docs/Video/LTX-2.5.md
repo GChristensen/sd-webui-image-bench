@@ -1,5 +1,14 @@
 # LTX 2.5 Reference
 
+## Overview
+
+- **Model:** Lightricks, 2026-08; successor of LTX-2 (2026-01) and LTX-2.3, whose LoRAs and IC-LoRAs mostly load
+- **Backbone:** asymmetric dual-stream DiT (video and audio streams with cross-attention) [?], 22B; rectified flow; dev and distilled checkpoints
+- **Text:** Gemma 4 12B with projection layers [?]
+- **Video:** 24 fps, 8n+1 frames, about 10 s per shot, several shots in one generation; images condition any frame index with a strength
+- **Audio:** joint generation in the same pass, own audio VAE and vocoder, 24 kHz stereo
+- **Strengths:** synchronized audio, native multishot with consistent characters, two-stage 2x latent upscaling
+
 ## Encoder/VAE
 
 - Repos: HF [Lightricks/LTX-2.5](https://huggingface.co/Lightricks/LTX-2.5) · ComfyUI: same repo (ships `comfy-int8` files), no Comfy-Org repack

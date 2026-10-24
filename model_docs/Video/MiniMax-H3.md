@@ -1,5 +1,14 @@
 # MiniMax H3 Reference
 
+## Overview
+
+- **Model:** MiniMax, announced 2026-07, open weights of the base transformer 2026-08
+- **Backbone:** dense single-stream transformer, 33B (about 13B in AdaLN branches), no modality-specific layers; 3D MM-RoPE; flow matching [?]
+- **Text:** Qwen3-VL-32B, hidden states of layer 50; reference images pass through it and the visual VAE
+- **Video:** 24 fps, 17n+5 frames, 4-15 s, short side 768; FL2VA takes 0-2 frames (first, last or both), Ref2VA images, videos and audio as in-context references
+- **Audio:** video and audio latents predicted jointly; audio VAE per stereo channel, 32 kHz
+- **Strengths:** omni-reference generation and editing with lip-synced dialogue in 11 languages
+
 The full "omni" system has three components, only one of which is open: H3-Context-IR (multimodal input preprocessor, API-only) and H3-Regenerate-2K (in-context upscaling to the marketed "2K" output, API-only) are not released. **H3-Base**, the 33B dense transformer, is what you download and run — locally you are capped at its native 768p output; the "native 2K" marketing claims describe the API pipeline, not the open weights.
 
 ## Encoder/VAE

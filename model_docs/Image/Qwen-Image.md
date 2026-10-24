@@ -1,5 +1,14 @@
 # Qwen-Image Reference
 
+## Overview
+
+- **Model:** Qwen team (Alibaba), 2025-08; 2512 (t2i) and Edit-2509 / 2511 are updates of the same weights
+- **Backbone:** MMDiT (dual-stream), 60 blocks, 20B; flow matching
+- **Text:** Qwen2.5-VL-7B (VLM) hidden states in joint attention; the edit models also feed it the reference images
+- **Latent:** Wan 2.1 VAE, 16 ch, 8x, 2x2 patches → multiples of 16
+- **Positions:** MSRoPE, text tokens placed on the image diagonal
+- **Strengths:** text rendering, especially Chinese and English; Apache-2.0
+
 ## Encoder/VAE
 - Repos: HF [Qwen/Qwen-Image-2512](https://huggingface.co/Qwen/Qwen-Image-2512), [Qwen/Qwen-Image-Edit-2511](https://huggingface.co/Qwen/Qwen-Image-Edit-2511) · ComfyUI [Comfy-Org/Qwen-Image_ComfyUI](https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI), [Comfy-Org/Qwen-Image-Edit_ComfyUI](https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI)
 - Text encoder: `Qwen2.5-VL-7B`

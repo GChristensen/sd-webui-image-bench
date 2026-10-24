@@ -1,5 +1,13 @@
 # MOSS-Image Reference
 
+## Overview
+
+- **Model:** OpenMOSS, 2026-10; trained from scratch on about 3.2B images, SFT fine-tuned from Base
+- **Backbone:** single-stream DiT, 42 blocks, hidden size 3072, 5.1B; flow matching, shift 5
+- **Text:** Qwen3.5-9B (LLM), frozen during training, prompts up to 4K tokens
+- **Latent:** FLUX.2 VAE (small decoder), 32 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** text rendering and native bounding-box JSON layouts; 0.25-4 MP without buckets; Apache-2.0
+
 ## Encoder/VAE
 
 - Repos: HF [OpenMOSS-Team/MOSS-Image-SFT](https://huggingface.co/OpenMOSS-Team/MOSS-Image-SFT) · [OpenMOSS-Team/MOSS-Image-Base](https://huggingface.co/OpenMOSS-Team/MOSS-Image-Base) · ComfyUI [Comfy-Org/MOSS-Image](https://huggingface.co/Comfy-Org/MOSS-Image)

@@ -1,5 +1,13 @@
 # WAN 2.2 Reference
 
+## Overview
+
+- **Model:** Wan team (Alibaba), 2025-07; successor of Wan 2.1, whose LoRAs load on the low-noise expert
+- **Backbone:** DiT with full 3D attention; A14B models are a pair of 14B experts (27B total, 14B active), high-noise for the early steps and low-noise for the rest, switched by SNR; TI2V-5B is dense; flow matching
+- **Text:** umT5-XXL by cross-attention
+- **Video:** A14B 16 fps, 81 frames (~5 s); TI2V-5B 24 fps, 121 frames; I2V concatenates the image latent and a mask by channel, TI2V-5B places the image as the first latent frame
+- **Strengths:** motion quality and camera control among open models, the widest Fun / VACE control ecosystem; Apache-2.0
+
 ## Encoder/VAE
 
 - Repos: HF [Wan-AI/Wan2.2-T2V-A14B](https://huggingface.co/Wan-AI/Wan2.2-T2V-A14B), [Wan-AI/Wan2.2-I2V-A14B](https://huggingface.co/Wan-AI/Wan2.2-I2V-A14B), [Wan-AI/Wan2.2-TI2V-5B](https://huggingface.co/Wan-AI/Wan2.2-TI2V-5B) · ComfyUI [Comfy-Org/Wan_2.2_ComfyUI_Repackaged](https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged)

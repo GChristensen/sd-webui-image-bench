@@ -1,5 +1,13 @@
 # FLUX.2 dev Reference
 
+## Overview
+
+- **Model:** Black Forest Labs, 2025-11; new architecture, shares nothing with FLUX.1 but the naming
+- **Backbone:** hybrid double/single-stream DiT, 32B; rectified flow
+- **Text:** Mistral Small 3.x 24B (VLM), hidden states of several layers stacked into the joint sequence
+- **Latent:** FLUX.2 VAE, 32 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** generation and up-to-10-reference editing in one checkpoint, typography, output up to 4 MP
+
 ## Encoder/VAE
 - Repos: HF [black-forest-labs/FLUX.2-dev](https://huggingface.co/black-forest-labs/FLUX.2-dev) · ComfyUI [Comfy-Org/flux2-dev](https://huggingface.co/Comfy-Org/flux2-dev)
 - Text encoder: `Mistral-Small-3.2-24B-Instruct`

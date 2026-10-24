@@ -1,5 +1,13 @@
 # Qwen-Image-2.1 Reference
 
+## Overview
+
+- **Model:** Qwen team (Alibaba), 2026-09; new architecture, not derived from the 20B Qwen-Image (its LoRAs and ControlNets do not load)
+- **Backbone:** single-stream DiT, 32 layers, 7B, mixed-granularity attention with a prefix KV cache of the text and references
+- **Text:** Qwen3-VL-8B (VLM), also sees the reference images
+- **Latent:** Qwen-Image 2.1 VAE, 64 ch, 16x, RGBA → multiples of 32
+- **Strengths:** native transparency (RGBA), 2K output, generation and up-to-10-reference editing in one checkpoint, typography
+
 ## Encoder/VAE
 - Repos: HF [Qwen/Qwen-Image-2.1](https://huggingface.co/Qwen/Qwen-Image-2.1) · ComfyUI [Comfy-Org/Qwen-Image-2.1](https://huggingface.co/Comfy-Org/Qwen-Image-2.1)
 - Text encoder: `qwen3vl_8b_int8_convrot.safetensors` (bf16: `qwen3vl_8b_bf16.safetensors`)

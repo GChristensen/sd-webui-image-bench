@@ -1,5 +1,14 @@
 # Krea 2 Reference
 
+## Overview
+
+- **Model:** Krea, 2026-06; Raw is the base checkpoint, Turbo its TDM-distilled post-train (Raw LoRAs load on Turbo)
+- **Backbone:** single-stream DiT, 28 blocks [?], 12-13B
+- **Text:** Qwen3-VL-4B, features of several layers aggregated
+- **Latent:** Qwen-Image VAE, 16 ch, 8x, 2x2 patches → multiples of 16 [?]
+- **Positions:** 3D axial RoPE [?]
+- **Strengths:** aesthetics and style control, 2K output in 8 Turbo steps
+
 ## Encoder/VAE
 - Repos: HF [krea/Krea-2-Raw](https://huggingface.co/krea/Krea-2-Raw), [krea/Krea-2-Turbo](https://huggingface.co/krea/Krea-2-Turbo) · ComfyUI [Comfy-Org/Krea-2](https://huggingface.co/Comfy-Org/Krea-2)
 - Text encoder: `Qwen3-VL-4B`

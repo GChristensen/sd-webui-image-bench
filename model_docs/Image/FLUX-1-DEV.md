@@ -1,5 +1,14 @@
 # FLUX.1 dev Reference
 
+## Overview
+
+- **Model:** Black Forest Labs, 2024-08; guidance-distilled from the closed FLUX.1 [pro]
+- **Backbone:** hybrid MMDiT, 19 double-stream + 38 single-stream blocks, 12B; rectified flow
+- **Text:** T5-XXL tokens in joint attention, CLIP-L pooled vector as modulation alongside the timestep and guidance embedding
+- **Latent:** FLUX.1 VAE `ae`, 16 ch, 8x, 2x2 patches → multiples of 16
+- **Positions:** 2D RoPE on image tokens, so any size near 1 MP works without buckets
+- **Strengths:** the largest open LoRA / ControlNet ecosystem after SDXL; Fill, Canny, Depth, Redux and Kontext variants on one architecture
+
 ## Encoder/VAE
 
 - Repos: HF [black-forest-labs/FLUX.1-dev](https://huggingface.co/black-forest-labs/FLUX.1-dev) · ComfyUI [Comfy-Org/flux1-dev](https://huggingface.co/Comfy-Org/flux1-dev)

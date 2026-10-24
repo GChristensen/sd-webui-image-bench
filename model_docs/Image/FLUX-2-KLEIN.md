@@ -1,5 +1,13 @@
 # FLUX.2 Klein Reference
 
+## Overview
+
+- **Model:** Black Forest Labs, 2026-01; compact members of the FLUX.2 family, same VAE as FLUX.2 dev but a different transformer (dev LoRAs and ControlNets do not load)
+- **Backbone:** hybrid double/single-stream DiT, 4B and 9B; rectified flow, distilled variants at 4 steps
+- **Text:** Qwen3 4B (klein 4B) or Qwen3 8B (klein 9B), LLM hidden states in the joint sequence
+- **Latent:** FLUX.2 VAE, 32 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** 4-step generation and multi-reference editing in one checkpoint; the 4B is Apache-2.0
+
 ## Encoder/VAE
 - Repos: HF [black-forest-labs/FLUX.2-klein-4B](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B), [black-forest-labs/FLUX.2-klein-9B](https://huggingface.co/black-forest-labs/FLUX.2-klein-9B) · ComfyUI [Comfy-Org/flux2-klein-4B](https://huggingface.co/Comfy-Org/flux2-klein-4B), [Comfy-Org/flux2-klein-9B](https://huggingface.co/Comfy-Org/flux2-klein-9B) (text encoders; diffusion models from the BFL `*-fp8` repos)
 - Text encoder: `qwen_3_8b` (`qwen_3_4b` for the klein 4b)

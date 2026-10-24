@@ -1,5 +1,13 @@
 # Z-Image Reference
 
+## Overview
+
+- **Model:** Tongyi-MAI (Alibaba), Turbo 2025-11, Base 2026-01 [?]; Turbo is DMD-distilled from Base
+- **Backbone:** S3-DiT (scalable single-stream DiT), 6B; flow matching
+- **Text:** Qwen3 4B (LLM) tokens in the joint sequence
+- **Latent:** FLUX.1 VAE `ae`, 16 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** photorealism in 8 steps on 16 GB cards, bilingual Chinese/English text; Apache-2.0
+
 ## Encoder/VAE
 - Repos: HF [Tongyi-MAI/Z-Image-Turbo](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo), [Tongyi-MAI/Z-Image](https://huggingface.co/Tongyi-MAI/Z-Image) · ComfyUI [Comfy-Org/z_image_turbo](https://huggingface.co/Comfy-Org/z_image_turbo), [Comfy-Org/z_image](https://huggingface.co/Comfy-Org/z_image)
 - Text encoder: `qwen_3_4b`

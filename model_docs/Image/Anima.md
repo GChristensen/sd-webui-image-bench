@@ -1,5 +1,13 @@
 # Anima Reference
 
+## Overview
+
+- **Model:** CircleStone Labs with Comfy Org; preview 2026-01, Base v1.0 2026-05, Turbo and Aesthetic 2026-07; a derivative of NVIDIA Cosmos-Predict2-2B
+- **Backbone:** Cosmos-Predict2 DiT with cross-attention, 2B; flow matching [?]
+- **Text:** Qwen3 0.6B base, its embeddings passed through a trained LLM adapter before the DiT
+- **Latent:** Qwen-Image VAE, 16 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** anime and illustration from millions of anime images (no synthetic data); Danbooru tags, `@artist` tags and prose in one prompt
+
 ## Encoder/VAE
 - Repos: HF [circlestone-labs/Anima](https://huggingface.co/circlestone-labs/Anima) · ComfyUI: same repo, `split_files/`
 - Text encoder: `qwen_3_06b_base.safetensors`

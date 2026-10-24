@@ -1,5 +1,13 @@
 # Ideogram 4 Reference
 
+## Overview
+
+- **Model:** Ideogram, 2026-06; trained from scratch, first open-weight Ideogram model
+- **Backbone:** single-stream DiT, 34 layers, 9.3B; flow matching; dual-branch guidance (separate conditional and unconditional branches)
+- **Text:** Qwen3-VL-8B-Instruct, hidden states of 13 intermediate layers concatenated
+- **Latent:** FLUX.2 VAE, 32 ch, 8x, 2x2 patches → multiples of 16
+- **Strengths:** typography, bounding-box layout and hex palettes from JSON captions (its only training format); up to 2048 px and 6:1
+
 ## Encoder/VAE
 - Repos: HF [ideogram-ai/ideogram-4-fp8](https://huggingface.co/ideogram-ai/ideogram-4-fp8), [ideogram-ai/ideogram-4-nf4](https://huggingface.co/ideogram-ai/ideogram-4-nf4) · ComfyUI [Comfy-Org/Ideogram-4](https://huggingface.co/Comfy-Org/Ideogram-4)
 - Text encoder: `Qwen3-VL-8B-Instruct`

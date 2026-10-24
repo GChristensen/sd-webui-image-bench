@@ -1,5 +1,13 @@
 # SDXL Reference
 
+## Overview
+
+- **Model:** Stability AI, 2023-07; successor of SD 1.5/2.1, base of Pony, Illustrious and NoobAI
+- **Backbone:** UNet, 2.6B, plus an optional 6.6B base+refiner pipeline; epsilon prediction (v-prediction in some fine-tunes)
+- **Text:** CLIP ViT-L + OpenCLIP ViT-bigG tokens by cross-attention, bigG pooled vector and size/crop micro-conditioning as embeddings
+- **Latent:** SDXL VAE, 4 ch, 8x → multiples of 8 (64 for the buckets)
+- **Strengths:** the largest ecosystem of fine-tunes, LoRAs, ControlNets and regional tools; (word:1.2) weighting works
+
 ## Encoder/VAE
 - Repos: HF [stabilityai/stable-diffusion-xl-base-1.0](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0), [stabilityai/stable-diffusion-xl-refiner-1.0](https://huggingface.co/stabilityai/stable-diffusion-xl-refiner-1.0) · ComfyUI: no Comfy-Org repack, loads the official single-file checkpoints
 - Text encoder: `CLIP ViT-L/14, OpenCLIP ViT-bigG/14`

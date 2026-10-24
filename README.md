@@ -15,6 +15,14 @@ The full manual is built in: **Library › Manual** in the Image Bench window.
 Note: This add-on is not designed to make SD WebUI less complicated.
 It automates repetitive tasks, not the creative process.
 
+## Prompting skill
+
+Image Bench also has a Claude skill, [diffusion-prompting](https://github.com/GChristensen/image-bench/tree/master/skills/diffusion-prompting).
+It writes, fixes and converts prompts and suggests sampler settings for the models described in the Library tab
+(SDXL, FLUX, Qwen-Image, Z-Image, WAN 2.2 and others), using the same model docs as its references.
+Download [diffusion-prompting.zip](https://github.com/GChristensen/image-bench/releases/download/skills/diffusion-prompting.zip) and upload it to claude.ai (Settings › Capabilities › Skills)
+or unpack it into `~/.claude/skills/`.
+
 ## Installation
 
 From the WebUI page:

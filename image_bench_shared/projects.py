@@ -837,7 +837,8 @@ def get_current(root: str, store_dir: str) -> Dict[str, Any]:
     except ProjectError:
         return {"path": path, "name": split_path(path)[-1] if split_path(path) else "", "exists": False}
 
-    saved = read_project_file(data_dir).get("trays") or {}
+    data = read_project_file(data_dir)
+    saved = data.get("trays") or {}
     hashes = current.get("trays") or {}
     trays = {}
 
@@ -847,7 +848,7 @@ def get_current(root: str, store_dir: str) -> Dict[str, Any]:
                        "changed": tray_hash != hashes.get(kind, "")}
 
     return {"path": relative(root, directory), "name": os.path.basename(directory), "exists": True,
-            "trays": trays, "changed": any(tray["changed"] for tray in trays.values())}
+            "savedAt": data.get("savedAt"), "trays": trays, "changed": any(tray["changed"] for tray in trays.values())}
 
 
 def set_current(root: str, store_dir: str, path: Optional[str]) -> Dict[str, Any]:
