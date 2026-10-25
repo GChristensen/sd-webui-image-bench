@@ -112,6 +112,38 @@ def read_media_infotext(path: str) -> Optional[str]:
     return comment if comment.strip() and not comment.strip().startswith("{") else None
 
 
+def probe(path: str) -> Dict[str, Any]:
+    """
+    {kind, duration, fps, frames, audio} of a video or audio file (seconds, frames per second, the frame count,
+    whether a video has a soundtrack); values the container does not tell are None. MediaError if PyAV cannot read it
+    """
+    try:
+        import av
+    except ImportError:
+        av = None
+
+    if av is None:
+        raise MediaError("PyAV is not available")
+
+    try:
+        with av.open(path) as container:
+            video = container.streams.video[0] if container.streams.video else None
+            duration = container.duration / av.time_base if container.duration else None
+            fps = float(video.average_rate) if video is not None and video.average_rate else None
+            frames = video.frames if video is not None and video.frames else None
+
+            if video is not None and video.duration and video.time_base:
+                duration = float(video.duration * video.time_base)
+
+            if frames is None and fps and duration:
+                frames = round(fps * duration)
+
+            return {"kind": "video" if video is not None else "audio", "duration": duration, "fps": fps,
+                    "frames": frames, "audio": bool(container.streams.audio)}
+    except Exception as e:
+        raise MediaError(f"PyAV could not read the file: {e}") from e
+
+
 def media_info(path: str) -> Dict[str, Any]:
     """{infotext, parameters} of a video or audio file, as pnginfo.image_info() gives them for an image"""
     from .pnginfo import parse_infotext

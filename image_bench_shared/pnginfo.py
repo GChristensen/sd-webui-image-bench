@@ -10,9 +10,13 @@ import re
 from typing import Any, Callable, Dict, Optional
 
 from PIL import Image
+from PIL.PngImagePlugin import PngInfo
 
 from .comfy_prompt import read_comfy_infotext
+from .persist import replace_file
 from .tray import pnginfo_to_dict, prompts_from_pnginfo
+
+PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 
 # A "key: value" pair of the parameter line, as WebUI matches it (modules/infotext_utils.py)
 RE_PARAM = re.compile(r'\s*(\w[\w \-/]+):\s*("(?:\\.|[^\\"])+"|[^,]*)(?:,|$)')
@@ -108,3 +112,47 @@ def image_info(file_data: bytes, reader: Callable[[Image.Image], Optional[str]] 
         "width": width,
         "height": height
     }
+
+
+def write_infotext(path: str, infotext: str) -> Dict[str, Any]:
+    """
+    Write the infotext into the "parameters" text chunk of a PNG file (Paste infotext of the image context menu), e.g.
+    of an image exported by an editor without it. The other text chunks (the prompt and workflow of ComfyUI), the color
+    profile, the resolution and EXIF are kept; the pixels are encoded again losslessly. Chunks are tEXt, as WebUI and
+    ComfyUI write them (iTXt for text outside Latin-1). An empty infotext removes the chunk.
+
+    Returns:
+        {infotext, parameters}
+
+    Raises:
+        ValueError: If the file is not a PNG image
+    """
+    with open(path, "rb") as f:
+        if f.read(len(PNG_SIGNATURE)) != PNG_SIGNATURE:
+            raise ValueError("Infotext can be written only into PNG images.")
+
+    infotext = (infotext or "").strip()
+
+    with Image.open(path) as image:
+        image.load()
+        chunks = PngInfo()
+
+        for key, value in (getattr(image, "text", None) or {}).items():
+            if key != "parameters":
+                chunks.add_text(key, str(value))
+
+        if infotext:
+            chunks.add_text("parameters", infotext)
+
+        options = {"pnginfo": chunks}
+
+        for key in ("icc_profile", "dpi", "exif", "transparency"):
+            if image.info.get(key) is not None:
+                options[key] = image.info[key]
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG", **options)
+
+    replace_file(path, buffer.getvalue())
+
+    return {"infotext": infotext, "parameters": parse_infotext(infotext) if infotext else {}}

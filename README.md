@@ -1,16 +1,18 @@
 # Image Bench for SD WebUI
 
-Image Bench automates the repetitive micro-tasks of working with SD WebUI.
-Basically, it is an image generation UI that works on top of SD WebUI by driving it.
-It is built so that you never have to touch the file manager or image browser during
-the whole process. Generated images are captured from WebUI, and you save
-the best ones into trays that allow you to perform common operations on them.
-For example, to upscale an image, you just click one button, without needing
-to manually extract image generation parameters, such as the generation seed.
-You can also send images to and from graphics editor with a single click,
-skipping copy-and-paste operations entirely. See more at the [extension site](https://gchristensen.github.io/image-bench).
+Image Bench is a generation workspace for SD WebUI, laid out so that the frequent steps
+of image generation take as few actions as possible. It runs in its own window and drives
+SD WebUI, which does the generation. Every image WebUI generates arrives in Image Bench
+with its parameters, and you keep the best ones in trays, where the common follow-up
+tasks are automated. For example, upscaling an image takes just one button click, 
+with no need to look up its seed
+or other parameters, and an image goes to a graphics editor and back in one click,
+without copying and pasting. You do not need the file manager or an image browser
+at any point. See more at the [extension site](https://gchristensen.github.io/image-bench).
 
-The full manual is built in: **Library › Manual** in the Image Bench window.
+The full manual is built in: **Library › Manual** in the Image Bench window. If you are new to Image Bench, start
+with the [tutorial](https://gchristensen.github.io/image-bench/tutorial/), which walks through the common workflows
+with screenshots.
 
 Note: This add-on is not designed to make SD WebUI less complicated.
 It automates repetitive tasks, not the creative process.
@@ -19,9 +21,9 @@ It automates repetitive tasks, not the creative process.
 
 Image Bench also has a Claude skill, [diffusion-prompting](https://github.com/GChristensen/image-bench/tree/master/skills/diffusion-prompting).
 It writes, fixes and converts prompts and suggests sampler settings for the models described in the Library tab
-(SDXL, FLUX, Qwen-Image, Z-Image, WAN 2.2 and others), using the same model docs as its references.
+(SDXL, FLUX, Qwen-Image, Z-Image, WAN 2.2 and others), using the Image Bench model docs as its references.
 Download [diffusion-prompting.zip](https://github.com/GChristensen/image-bench/releases/download/skills/diffusion-prompting.zip) and upload it to claude.ai (Settings › Capabilities › Skills)
-or unpack it into `~/.claude/skills/`.
+or unpack it into `~/.claude/skills/`. It may work with other agents that support skills.
 
 ## Installation
 

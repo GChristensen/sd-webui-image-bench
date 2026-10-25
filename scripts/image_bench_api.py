@@ -97,7 +97,9 @@ class ImageBenchApi():
         self.add_api_route("/compare", self.write_compare, methods=["POST"])
         self.add_api_route("/compare_upload", self.compare_upload, methods=["POST"])
         self.add_api_route("/png_info", self.png_info, methods=["POST"])
+        self.add_api_route("/infotext", self.write_infotext, methods=["POST"])
         self.add_api_route("/media/thumb", self.get_media_thumb, methods=["GET"])
+        self.add_api_route("/media/info", self.get_media_info, methods=["GET"])
         self.add_api_route("/config_presets", self.get_presets, methods=["GET"])
         self.add_api_route("/clear_outputs_dir", self.clear_outputs_dir, methods=["POST"])
         self.add_api_route("/download_image_tray", self.download_image_tray, methods=["GET"])
@@ -132,6 +134,9 @@ class ImageBenchApi():
         self.add_api_route("/editor/send", self.editor_send, methods=["POST"])
         self.add_api_route("/editor/image", self.get_editor_image, methods=["GET"])
         self.add_api_route("/editor/status", self.get_editor_status, methods=["GET"])
+        self.add_api_route("/generation_status", self.get_generation_status, methods=["GET"])
+        self.add_api_route("/interrupt", self.interrupt, methods=["POST"])
+        self.add_api_route("/skip", self.skip, methods=["POST"])
         self.app.add_websocket_route(self.BASE_PATH + "/editor/host-websocket", self.handle_editor_host_websocket)
         self.app.add_websocket_route(self.BASE_PATH + "/editor/websocket", self.handle_editor_websocket)
         # The routes of the Photoshop plugins installed before the editor bridge
@@ -298,6 +303,18 @@ class ImageBenchApi():
             raise HTTPException(status_code=404, detail=str(e))
 
         return FileResponse(thumb_path, media_type="image/jpeg", headers={"Cache-Control": "max-age=86400"})
+
+    async def get_media_info(self, url: str):
+        """Duration, frame rate, frame count and soundtrack of a video or audio file by its /file= URL"""
+        path = self.media_file_path(url)
+
+        if not path or media.media_kind(path) == "image" or not os.path.isfile(path):
+            raise HTTPException(status_code=400, detail="Not a video or audio file")
+
+        try:
+            return await asyncio.to_thread(media.probe, path)
+        except media.MediaError as e:
+            raise HTTPException(status_code=404, detail=str(e))
 
     def pnginfo_to_dict(self, prompt, negative_prompt, pnginfo):
         return tray.pnginfo_to_dict(prompt, negative_prompt, pnginfo)
@@ -506,6 +523,62 @@ class ImageBenchApi():
         """The name of the connected editor, or null"""
         return JSONResponse(self.editor.status())
 
+    def get_generation_status(self):
+        """Whether the server runs or queues a generation. The page may still show one that has ended here,
+        when Gradio lost its result (an interrupt just as the job ended); the popup then offers to reload it"""
+        from modules import call_queue, progress
+
+        # FIFOLock of Forge wraps a threading.Lock, older versions use one directly
+        lock = getattr(call_queue.queue_lock, "_lock", call_queue.queue_lock)
+        locked = lock.locked() if hasattr(lock, "locked") else False
+        busy = locked or progress.current_task is not None or bool(progress.pending_tasks) or bool(shared.state.job)
+
+        return JSONResponse({"busy": busy}, headers={"Cache-Control": "no-store"})
+
+    async def interrupt(self, request: Request):
+        """
+        Stop the generation of the page's tasks ({tasks: [ids]}, the ids of Forge's submit()) without its Interrupt
+        button, whose "Interrupting..." placeholder stays for good if a click comes after the job has ended.
+        A running task is interrupted as the button does; one not begun yet is interrupted as it begins, since
+        begin() clears an earlier interrupt (install_interrupt_hook()); a finished one is left alone, so that a late
+        Stop does not end the next generation. Without ids, the running job is interrupted
+        """
+        from modules import progress
+
+        body = await persist.read_request_body(request)
+        tasks = [task for task in (json.loads(body or b"{}").get("tasks") or []) if isinstance(task, str)]
+        interrupted = pending = False
+
+        if runs_task(tasks):
+            interrupt_like_button()
+            interrupted = True
+        else:
+            stops = getattr(shared.state.begin, "_image_bench_stops", None)
+
+            for task in tasks:
+                if stops is not None and task not in progress.finished_tasks:
+                    stops[task] = time.time()
+                    pending = True
+
+            prune_pending_stops(stops)
+
+        return JSONResponse({"interrupted": interrupted, "pending": pending}, headers={"Cache-Control": "no-store"})
+
+    async def skip(self, request: Request):
+        """
+        Skip the image being generated of the page's tasks ({tasks: [ids]}) without the Skip button, as its click
+        does (shared.state.skip); WebUI continues with the next image of the batch. Only a running task is skipped:
+        begin() clears the flag, and a late skip must not cut the next generation. Without ids, the running job
+        """
+        body = await persist.read_request_body(request)
+        tasks = [task for task in (json.loads(body or b"{}").get("tasks") or []) if isinstance(task, str)]
+        skipped = runs_task(tasks)
+
+        if skipped:
+            shared.state.skip()
+
+        return JSONResponse({"skipped": skipped}, headers={"Cache-Control": "no-store"})
+
     def get_editor_image(self, kind: str):
         image = self.editor_images.get(kind)
 
@@ -674,6 +747,19 @@ class ImageBenchApi():
                 return pnginfo.read_infotext(image)
 
         return JSONResponse(content=pnginfo.image_info(await file.read(), read_infotext))
+
+    async def write_infotext(self, request: Request):
+        """Write an infotext into a PNG image of the output directories (Paste infotext of the image context menu)"""
+        data = json.loads(await request.body())
+        path = data.get("imagePath")
+
+        if not explore_export.is_allowed_image(path, self.get_image_output_dirs()):
+            return JSONResponse(content={"error": "The image is not a file of the output directories."}, status_code=400)
+
+        try:
+            return JSONResponse(content=await asyncio.to_thread(pnginfo.write_infotext, path, data.get("infotext") or ""))
+        except (ValueError, OSError) as e:
+            return JSONResponse(content={"error": str(e)}, status_code=400)
 
     async def write_tray(self, request: Request, kind):
         tray_data = json.loads(await request.body())
@@ -969,9 +1055,82 @@ def install_video_hook(api):
     save_video._image_bench_api = api
 
 
+PENDING_STOP_AGE = 120
+PENDING_STOP_LIMIT = 16
+
+
+def runs_task(tasks):
+    """Whether one of the tasks (ids of Forge's submit()) is running; without ids, whether any job is"""
+    from modules import progress
+
+    # state.job is set by begin(), current_task just after it
+    return progress.current_task in tasks or shared.state.job in tasks or not tasks and bool(shared.state.job)
+
+
+def interrupt_like_button():
+    """The interrupt_function of the Interrupt button (modules/ui_toprow.py): with "Don't Interrupt in the middle",
+    the first stop of a batch ends it after the current image"""
+    state = shared.state
+
+    if not state.stopping_generation and state.job_count > 1 and getattr(shared.opts, "interrupt_after_current", False):
+        state.stop_generating()
+    else:
+        state.interrupt()
+
+
+def prune_pending_stops(stops):
+    """Drop the stops of tasks that never began: too old, or beyond the limit (the oldest first)"""
+    if stops is None:
+        return
+
+    now = time.time()
+
+    for task, added in list(stops.items()):
+        if now - added > PENDING_STOP_AGE:
+            del stops[task]
+
+    while len(stops) > PENDING_STOP_LIMIT:
+        del stops[next(iter(stops))]
+
+
+def install_interrupt_hook():
+    """
+    Wrap shared.state.begin once, so that a stop of a task that had not begun yet (/image-bench/interrupt) is applied
+    as it begins: begin() clears the interrupt flag. The pending stops live on the wrapper, so a reload of the scripts
+    keeps them
+    """
+    state = shared.state
+    begin = getattr(state, "begin", None)
+
+    if begin is None or getattr(begin, "_image_bench", False):
+        return
+
+    original = begin
+
+    def begin(*args, **kwargs):
+        original(*args, **kwargs)
+
+        try:
+            job = kwargs.get("job", args[0] if args else None)
+
+            if job is not None and begin._image_bench_stops.pop(job, None) is not None:
+                state.interrupt()
+        except Exception as e:
+            print(f"[Image Bench] Unable to apply a pending stop: {e}")
+
+    begin._image_bench = True
+    begin._image_bench_stops = {}
+    state.begin = begin
+
+
 try:
     # As early as possible: the console drawer shows the output from here on
     console.install_stream_tee()
+
+    # The Total progress bar writes to the stdout of the import of shared, and tqdm measures the terminal only for
+    # the current sys.stdout / sys.stderr: without this it keeps its narrow default width
+    if getattr(shared, "progress_print_out", None) is getattr(sys.stdout, "original", None):
+        shared.progress_print_out = sys.stdout
 except Exception as e:
     print(f"[Image Bench] Unable to capture the console output: {e}")
 
@@ -980,6 +1139,7 @@ try:
     script_callbacks.on_app_started(api.start)
     script_callbacks.on_image_saved(api.on_image_saved)
     install_video_hook(api)
+    install_interrupt_hook()
     script_callbacks.on_before_component(api.on_before_config_presets)
 except Exception as e:
     print(e)

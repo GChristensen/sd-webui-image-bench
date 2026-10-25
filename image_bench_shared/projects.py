@@ -745,6 +745,23 @@ def delete_file(root: str, path: str, name: str) -> Dict[str, Any]:
     return get_project(root, path)
 
 
+def write_file_infotext(root: str, path: str, name: str, infotext: str) -> Dict[str, Any]:
+    """Write the infotext into a PNG file of a project directory (Paste infotext); not in ib_project"""
+    from .pnginfo import write_infotext
+
+    if split_path(name)[:1] and split_path(name)[0].lower() == PROJECT_DIR:
+        raise ProjectError("Files of ib_project cannot be changed.")
+
+    file_path = project_file_path(root, path, name)
+
+    try:
+        info = write_infotext(file_path, infotext)
+    except ValueError as e:
+        raise ProjectError(str(e), 415)
+
+    return {**info, "project": get_project(root, path)}
+
+
 def reveal(root: str, path: str) -> Dict[str, Any]:
     """
     Show a folder or project in Windows Explorer of the server computer (the popup offers it when it is local and
@@ -1404,6 +1421,8 @@ def dispatch(action: str, args: Dict[str, Any], files: Dict[str, Any], config: D
         return update_project(root, path, args.get("changes") or {})
     if action == "delete_file":
         return delete_file(root, path, args.get("name") or "")
+    if action == "write_infotext":
+        return write_file_infotext(root, path, args.get("name") or "", str(args.get("infotext") or ""))
     if action == "add_file":
         upload = files.get("file")
         return add_file(root, path, upload[0] if upload else None, upload[1] if upload else None)
