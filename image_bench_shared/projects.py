@@ -54,7 +54,7 @@ INDEX_FILE = "project_index.json"
 CURRENT_FILE = "current_project.json"
 
 # Trays saved into a project, in this order
-TRAY_KINDS = ("image_tray", "concept_tray", "compare")
+TRAY_KINDS = ("image_tray", "concept_tray", "compare", "upscaled")
 
 # Marking of the final choice in the trays; a project saved without a final image takes the image marked with it
 FINAL_MARKING = "\U0001F3C1"
