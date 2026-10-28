@@ -162,6 +162,8 @@ export const SELECTORS = {
     FORGE_CANVAS_IMAGE: 'img.forge-image',
     FORGE_CANVAS_FILE_INPUT: 'input.forge-file-upload',
     FORGE_CANVAS_REMOVE: '[id^="removeButton_"]',
+    // Clear button of a Gradio image component (Gradio 4: "Remove Image", Gradio 3: "Clear")
+    IMAGE_CLEAR_BUTTON: 'button[aria-label="Remove Image"], button[aria-label="Clear"]',
     // gradio_rangeslider (the timestep range): number inputs of both ends
     RANGE_SLIDER_MIN: 'input[data-testid="min-input"]',
     RANGE_SLIDER_MAX: 'input[data-testid="max-input"]',

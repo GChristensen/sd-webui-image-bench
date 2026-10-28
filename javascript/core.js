@@ -334,6 +334,8 @@ async function onMessage(msg) {
         await mirror.setMode(payload.mode, payload.params)
     else if (payload.type === "SET_INPUT_IMAGE")
         await mirror.setInputImage(payload.kind, payload.file, payload.mode)
+    else if (payload.type === "CLEAR_INPUT_IMAGES")
+        await mirror.clearInputImages()
     else if (payload.type === "EDIT_REFERENCES")
         await mirror.editReferences(payload.edit)
     else if (payload.type === "SET_EDITOR_TARGET")

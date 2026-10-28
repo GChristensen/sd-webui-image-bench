@@ -555,6 +555,16 @@ export class SDWebuiAdapter extends DOMAdapter {
     }
 
     /**
+     * Remove the image of a Forge canvas or a Gradio image component through its own button, which is present only
+     * while it holds an image
+     * @param {string} selectorKey - Key of the canvas or image component
+     */
+    clearImage(selectorKey) {
+        const container = this.getElement(selectorKey);
+        container?.querySelector(`${SELECTORS.FORGE_CANVAS_REMOVE}, ${SELECTORS.IMAGE_CLEAR_BUTTON}`)?.click();
+    }
+
+    /**
      * Source of a shown image, null if there is none (a hidden image keeps its last or an empty source)
      * @param {string} selectorKey - Key of the image element
      * @returns {string|null}

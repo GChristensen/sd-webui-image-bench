@@ -213,6 +213,15 @@ export class UIOperations {
     }
 
     /**
+     * Remove the input images of img2img and inpaint: the img2img canvas image and the inpaint upload image and mask.
+     * The shown tab is kept
+     */
+    clearInputImages() {
+        for (const selectorKey of ['IMG2IMG_CANVAS', 'IMG2IMG_INPAINT_UPLOAD_IMAGE', 'IMG2IMG_INPAINT_UPLOAD_MASK'])
+            this.adapter.clearImage(selectorKey);
+    }
+
+    /**
      * Sources of the input images of a generation mode, null where there is none
      * @param {'txt2img'|'img2img'|'inpaint'|'other'} mode
      * @returns {{image: string|null, mask: string|null}}

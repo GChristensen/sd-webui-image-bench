@@ -525,7 +525,9 @@ class ImageBenchApi():
 
     def get_generation_status(self):
         """Whether the server runs or queues a generation. The page may still show one that has ended here,
-        when Gradio lost its result (an interrupt just as the job ended); the popup then offers to reload it"""
+        when Gradio lost its result (an interrupt just as the job ended); the popup then offers to reload it.
+        Also the sampling step of the image being generated and the image of the job (batch count): the page shows
+        only the whole job's progress, in whole percents"""
         from modules import call_queue, progress
 
         # FIFOLock of Forge wraps a threading.Lock, older versions use one directly
@@ -533,7 +535,9 @@ class ImageBenchApi():
         locked = lock.locked() if hasattr(lock, "locked") else False
         busy = locked or progress.current_task is not None or bool(progress.pending_tasks) or bool(shared.state.job)
 
-        return JSONResponse({"busy": busy}, headers={"Cache-Control": "no-store"})
+        state = shared.state
+        return JSONResponse({"busy": busy, "step": state.sampling_step, "steps": state.sampling_steps,
+                             "job": state.job_no, "jobs": state.job_count}, headers={"Cache-Control": "no-store"})
 
     async def interrupt(self, request: Request):
         """

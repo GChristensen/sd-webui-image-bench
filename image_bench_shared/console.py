@@ -8,6 +8,7 @@ Nothing here may print: the output would be fed back into the buffer.
 import asyncio
 import json
 import logging
+import re
 import sys
 import threading
 from collections import deque
@@ -22,21 +23,12 @@ BATCH_DELAY = 0.1
 MAX_MESSAGE = 256 * 1024
 
 
-def collapse_cr(text):
-    """
-    The part of a line shown after its carriage returns (progress bars redraw a line with them): the text after the
-    last one, or, while nothing follows it, the text before it with the carriage return kept for the next write
-    """
-    if "\r" not in text:
-        return text
+# Escape sequences, line feeds, carriage returns and text, as consoleText.js of the popup reads them
+TOKEN = re.compile(r"\x1b\[([0-9;?]*)([@-~])|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)|\x1b[()][\x20-\x7e]|\x1b[\x20-\x7e]"
+                   r"|\n|\r|[^\x1b\n\r]+")
 
-    parts = text.split("\r")
-
-    if parts[-1]:
-        return parts[-1]
-
-    shown = next((part for part in reversed(parts) if part), "")
-    return shown + "\r"
+# An escape sequence cut off by the end of a write, completed by the next one
+INCOMPLETE = re.compile(r"\x1b(?:\[[0-9;?]*|\][^\x07\x1b]*|[()])?$")
 
 
 class Subscriber:
@@ -69,9 +61,15 @@ class ConsoleBuffer:
 
     def __init__(self):
         self._lock = threading.Lock()
-        self._lines = deque(maxlen=MAX_LINES)
-        # The line being written (a progress bar), with the carriage returns collapsed
-        self._partial = ""
+        # The lines as a terminal shows them, the redraws of progress bars applied
+        self._lines = deque([""], maxlen=MAX_LINES)
+        # The line of the cursor: the last one, unless a cursor move went up (tqdm bars of a position other than 0
+        # are drawn on the following lines and the cursor goes back up)
+        self._row = 0
+        # A carriage return was written: the next text replaces the line
+        self._returned = False
+        # An escape sequence cut off by the end of a write
+        self._carry = ""
         self._subscribers = set()
         self._feeding = threading.local()
 
@@ -93,19 +91,55 @@ class ConsoleBuffer:
             self._feeding.active = False
 
     def _append(self, text):
-        pieces = (self._partial + text.replace("\r\n", "\n")).split("\n")
+        """Follow the output as consoleText.js does, so that the backlog shows what an open drawer shows"""
+        text = self._carry + text
+        self._carry = ""
+        incomplete = INCOMPLETE.search(text)
 
-        for piece in pieces[:-1]:
-            self._lines.append(collapse_cr(piece).rstrip("\r"))
+        if incomplete:
+            self._carry = incomplete.group(0)
+            text = text[:incomplete.start()]
 
-        self._partial = collapse_cr(pieces[-1])
+        for match in TOKEN.finditer(text):
+            token = match.group(0)
+
+            if token == "\n":
+                if self._row < len(self._lines) - 1:
+                    # Onto a line written before: the next text replaces it
+                    self._row += 1
+                    self._returned = True
+                else:
+                    self._returned = False
+                    self._lines.append("")
+                    self._row = len(self._lines) - 1
+            elif token == "\r":
+                self._returned = True
+            # Text and colors are kept, other escape sequences dropped
+            elif token[0] != "\x1b" or match.group(2) == "m":
+                if self._returned:
+                    self._lines[self._row] = ""
+                    self._returned = False
+
+                self._lines[self._row] += token
+            # Erase the whole line
+            elif match.group(2) == "K" and match.group(1) == "2":
+                self._lines[self._row] = ""
+            elif match.group(2) in ("A", "B"):
+                rows = int(match.group(1)) if match.group(1).isdigit() else 1
+                row = self._row - rows if match.group(2) == "A" else self._row + rows
+                self._row = min(max(row, 0), len(self._lines) - 1)
 
     def subscribe(self, loop):
         """Add a socket, returning it with the output so far, so that nothing is lost or sent twice"""
         subscriber = Subscriber(loop)
 
         with self._lock:
-            backlog = "".join(line + "\n" for line in self._lines) + self._partial.rstrip("\r")
+            backlog = "\n".join(self._lines)
+            above = len(self._lines) - 1 - self._row
+
+            # The cursor of a bar drawn above others, for the cursor moves of its next redraw
+            if above:
+                backlog += f"\x1b[{above}A"
             self._subscribers.add(subscriber)
 
         return subscriber, backlog

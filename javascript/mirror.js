@@ -391,6 +391,14 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         });
     }
 
+    // Remove the input images of img2img and inpaint
+    function clearInputImages() {
+        return enqueue(async () => {
+            uiOperations.clearInputImages();
+            setTimeout(pollIfActive, APPLY_SETTLE_DELAY);
+        });
+    }
+
     /**
      * Edit the reference images of the shown generation tab
      * @param {Object} edit - {add: File[]} | {remove: number} | {clear: true}
@@ -516,6 +524,6 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         return overlay;
     }
 
-    return {subscribe, watchProgress, applyParams, setMode, setInputImage, editReferences, settled, reuseSeed, setPromptsLocked,
+    return {subscribe, watchProgress, applyParams, setMode, setInputImage, clearInputImages, editReferences, settled, reuseSeed, setPromptsLocked,
             captureSnapshot, restoreSnapshot};
 }
