@@ -24,6 +24,7 @@ import {createHeaderButton} from "./utils_html.js";
 import {createWebUIMirror} from "./mirror.js";
 import {createControlNet} from "./controlnet.js";
 import {createControlNetRecorder} from "./controlnetRecorder.js";
+import {createHiresFixWatch} from "./shared/hiresFixWatch.js";
 
 // Create popup manager instance (no WebSocket integration for WebUI)
 const popupManager = createPopupManager({
@@ -54,6 +55,9 @@ const controlNet = createControlNet(uiOperations, adapter, {sendMessage: sendPop
     showAlert);
 // ControlNet inputs of each generation, read when Generate is clicked and carried by its images
 const controlNetRecorder = createControlNetRecorder(controlNet);
+// The Hires. fix checkbox of txt2img, shown as a badge on the Generate tab of the popup
+const hiresFixWatch = createHiresFixWatch(() => adapter.getElement('HIRES_CHECKBOX')?.checked ?? null,
+    {sendMessage: sendPopupMessage, isOpen: popupManager.isOpen});
 
 let appConfig;
 let modelInfoButton;
@@ -115,7 +119,8 @@ export async function init() {
 }
 
 /**
- * Save txt2img and img2img prompts and parameters when the user starts a generation or opens a project
+ * Save txt2img and img2img prompts and parameters when the user starts a generation (WebUI's Generate button,
+ * or a single image, batch or variations from the Generate tab of the popup) or opens a project
  * The config is reloaded, since the setting may be changed in the popup
  */
 async function saveGenerationParams() {
@@ -315,6 +320,10 @@ async function onMessage(msg) {
         await handleGenerateImage(payload.mode)
     else if (payload.type === "MIRROR_SUBSCRIBE")
         mirror.subscribe(payload.active)
+    else if (payload.type === "HIRES_FIX_SUBSCRIBE")
+        hiresFixWatch.subscribe()
+    else if (payload.type === "LIVE_PROGRESS_SUBSCRIBE")
+        mirror.watchProgress()
     else if (payload.type === "SET_WEBUI_PARAMS")
         await mirror.applyParams(payload.params)
     else if (payload.type === "REUSE_SEED")
@@ -484,6 +493,7 @@ async function handleBatchGenerate(options, config) {
     // Started from the Generate tab: its mode, or the shown WebUI tab if it is another one
     if (options.mode !== undefined) {
         await prepareMode(options.mode);
+        await saveGenerationParams();
 
         // The batch strategy randomizes the txt2img seed
         if (uiOperations.isImg2ImgTab())
@@ -530,8 +540,10 @@ async function handleGenerateVariations(options, config) {
     if (!checkReadyToGenerate())
         return;
 
-    if (options.mode !== undefined)
+    if (options.mode !== undefined) {
         await prepareMode(options.mode);
+        await saveGenerationParams();
+    }
 
     setGenerationState("BATCH_GENERATION");
     return await batchStrategy.process({...options, config});

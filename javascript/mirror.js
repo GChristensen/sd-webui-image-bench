@@ -76,6 +76,7 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
     let timer = null;
     let lastParams = null;
     let lastLive = null;
+    let progressTimer = null;
     let lastInputs = null;
     let locked = false;
     let lockCheckTimer = null;
@@ -100,6 +101,27 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         }
     }
 
+    /**
+     * Send the live progress while the popup is open, in any of its tabs (the run indicator of its tab bar)
+     */
+    function watchProgress() {
+        clearInterval(progressTimer);
+        // The popup may keep the progress of a generation that ended meanwhile
+        lastLive = {active: true};
+        progressTimer = setInterval(pollProgress, POLL_INTERVAL);
+        pollProgress();
+    }
+
+    function pollProgress() {
+        if (!popup.isOpen()) {
+            clearInterval(progressTimer);
+            progressTimer = null;
+            return;
+        }
+
+        sendLiveProgress(!uiOperations.isReadyToGenerate(), uiOperations.getGenerationMode());
+    }
+
     function poll() {
         if (!popup.isOpen()) {
             subscribe(false);
@@ -116,7 +138,10 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         }
 
         sendInputImages(state.mode);
-        sendLiveProgress(state.busy, state.mode);
+
+        // A popup of an older build does not watch the progress
+        if (!progressTimer)
+            sendLiveProgress(state.busy, state.mode);
     }
 
     /**
@@ -491,6 +516,6 @@ export function createWebUIMirror(uiOperations, adapter, popup) {
         return overlay;
     }
 
-    return {subscribe, applyParams, setMode, setInputImage, editReferences, settled, reuseSeed, setPromptsLocked,
+    return {subscribe, watchProgress, applyParams, setMode, setInputImage, editReferences, settled, reuseSeed, setPromptsLocked,
             captureSnapshot, restoreSnapshot};
 }

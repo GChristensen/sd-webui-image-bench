@@ -192,3 +192,7 @@ Thin but official for Large; almost nothing official for Medium.
 - Sizes not divisible by 16 crash or get cropped; off-bucket extremes repeat subjects.
 - Aesthetic biases: "AI-look" glossy portraits on photo prompts unless the film/camera style is spelled out; less photorealism than Flux by default.
 - Forge Neo will not load SD3.5 at all: an "unknown model" error there is not a corrupt file.
+
+---
+
+*This file was generated automatically. Do not edit it: all edits are lost on update.*
