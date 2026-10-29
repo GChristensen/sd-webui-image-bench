@@ -12105,7 +12105,7 @@ const _hoisted_7$N = {
 const _hoisted_8$E = { class: "words-header" };
 const _hoisted_9$A = /* @__PURE__ */ _withScopeId$A(() => /* @__PURE__ */ createBaseVNode("span", { class: "label-small" }, "Trained words", -1));
 const _hoisted_10$x = { class: "words" };
-const _hoisted_11$w = {
+const _hoisted_11$x = {
   key: 1,
   class: "no-words"
 };
@@ -12164,7 +12164,7 @@ const _sfc_main$1l = {
                 }, toDisplayString(word), 1);
               }), 128))
             ])
-          ], 64)) : (openBlock(), createElementBlock("div", _hoisted_11$w, "No trained words"))
+          ], 64)) : (openBlock(), createElementBlock("div", _hoisted_11$x, "No trained words"))
         ])
       ]);
     };
@@ -12193,7 +12193,7 @@ const _hoisted_9$z = {
   class: "details"
 };
 const _hoisted_10$w = { key: 1 };
-const _hoisted_11$v = { class: "node-header" };
+const _hoisted_11$w = { class: "node-header" };
 const _hoisted_12$u = { class: "node-title" };
 const _hoisted_13$u = {
   key: 0,
@@ -12275,7 +12275,7 @@ const _sfc_main$1k = {
               key: `${node.id}/${node.input ?? ""}`,
               class: "node"
             }, [
-              createBaseVNode("div", _hoisted_11$v, [
+              createBaseVNode("div", _hoisted_11$w, [
                 createBaseVNode("span", _hoisted_12$u, toDisplayString(node.title), 1),
                 node.type && node.type !== node.title ? (openBlock(), createElementBlock("span", _hoisted_13$u, toDisplayString(node.type), 1)) : createCommentVNode("", true),
                 createBaseVNode("button", {
@@ -12336,7 +12336,7 @@ const GESTURES = [
   {
     clause: "control",
     target: "Rim center",
-    does: "Show only this marking (middle click)",
+    does: "As a left click (middle click too): the marking filter, close the view, or the markings",
     source: ["components/ActionRim.vue"]
   },
   {
@@ -12588,13 +12588,13 @@ function useImageOperations() {
     window.open(imageLink, "_blank");
   };
   const sendToEditor2 = (image, newDocument = false) => sendUrlToEditor(createImageLink(image), image.imagePath || createImageLink(image), newDocument);
-  const sendImageFile = async (image, createMessage) => {
+  const sendImageFile = (image, createMessage) => sendUrlFile(createImageLink(image), (image.imagePath || "image.png").split(/[\\/]/).pop(), createMessage);
+  const sendUrlFile = async (url, name, createMessage) => {
     try {
-      const response = await fetch(createImageLink(image));
+      const response = await fetch(url);
       if (!response.ok)
         return `Unable to read the image: ${response.status}`;
       const blob = await response.blob();
-      const name = (image.imagePath || "image.png").split(/[\\/]/).pop();
       sendWebUIMessage(createMessage(new File([blob], name, { type: blob.type })));
       return null;
     } catch (error) {
@@ -12602,6 +12602,7 @@ function useImageOperations() {
     }
   };
   const sendToControlNet2 = (image) => sendImageFile(image, (file) => ({ type: "SET_CONTROLNET_IMAGE", unit: useControlNetStore().selectedUnit, kind: "image", file }));
+  const sendProcessedToControlNet = (url) => sendUrlFile(url, "control.png", (file) => ({ type: "SET_CONTROLNET_IMAGE", unit: useControlNetStore().selectedUnit, kind: "image", file, processed: true }));
   const sendToInpaint2 = (image) => sendImageFile(image, (file) => ({ type: "SET_INPUT_IMAGE", mode: "inpaint", kind: "image", file }));
   const sendToImg2Img2 = (image) => sendImageFile(image, (file) => ({ type: "SET_INPUT_IMAGE", mode: "img2img", kind: "image", file }));
   const canCopyImage = () => {
@@ -12639,6 +12640,7 @@ function useImageOperations() {
     openImageInNewWindow,
     sendToEditor: sendToEditor2,
     sendToControlNet: sendToControlNet2,
+    sendProcessedToControlNet,
     sendToInpaint: sendToInpaint2,
     sendToImg2Img: sendToImg2Img2,
     canCopyImage,
@@ -13079,7 +13081,7 @@ const _hoisted_8$C = /* @__PURE__ */ _withScopeId$z(() => /* @__PURE__ */ create
 ], -1));
 const _hoisted_9$y = { class: "key" };
 const _hoisted_10$v = { class: "kbd" };
-const _hoisted_11$u = { class: "label" };
+const _hoisted_11$v = { class: "label" };
 const _hoisted_12$t = { class: "alt-label" };
 const _hoisted_13$t = { class: "kbd" };
 const _hoisted_14$r = ["data-section"];
@@ -13172,7 +13174,7 @@ const _sfc_main$1j = {
                   createBaseVNode("td", _hoisted_9$y, [
                     createBaseVNode("span", _hoisted_10$v, toDisplayString(action.key), 1)
                   ]),
-                  createBaseVNode("td", _hoisted_11$u, toDisplayString(action.label), 1),
+                  createBaseVNode("td", _hoisted_11$v, toDisplayString(action.label), 1),
                   createBaseVNode("td", _hoisted_12$t, [
                     action.alt ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
                       createBaseVNode("span", _hoisted_13$t, "Shift+" + toDisplayString(action.key), 1),
@@ -13231,7 +13233,7 @@ const _hoisted_7$K = {
 const _hoisted_8$B = ["aria-checked", "title", "onClick"];
 const _hoisted_9$x = ["id", "rows", "placeholder"];
 const _hoisted_10$u = ["id", "list", "placeholder"];
-const _hoisted_11$t = ["id"];
+const _hoisted_11$u = ["id"];
 const _hoisted_12$s = ["value"];
 const _hoisted_13$s = {
   key: 10,
@@ -13446,7 +13448,7 @@ const _sfc_main$1i = {
                     value: item
                   }, null, 8, _hoisted_12$s);
                 }), 128))
-              ], 8, _hoisted_11$t)
+              ], 8, _hoisted_11$u)
             ], 64)) : createCommentVNode("", true),
             isPrompt.value && options.value.checkbox ? (openBlock(), createElementBlock("label", _hoisted_13$s, [
               withDirectives(createBaseVNode("input", {
@@ -14812,7 +14814,7 @@ const _hoisted_9$w = {
   class: "item-icon"
 };
 const _hoisted_10$t = { class: "item-label" };
-const _hoisted_11$s = {
+const _hoisted_11$t = {
   key: 2,
   class: "item-hint"
 };
@@ -14933,7 +14935,7 @@ const _sfc_main$1g = {
                           class: "item-icon"
                         }, null, 8, ["name"])) : (openBlock(), createElementBlock("span", _hoisted_9$w)),
                         createBaseVNode("span", _hoisted_10$t, toDisplayString(subitem.label), 1),
-                        subitem.hint ? (openBlock(), createElementBlock("span", _hoisted_11$s, toDisplayString(subitem.hint), 1)) : createCommentVNode("", true)
+                        subitem.hint ? (openBlock(), createElementBlock("span", _hoisted_11$t, toDisplayString(subitem.hint), 1)) : createCommentVNode("", true)
                       ], 8, _hoisted_8$A))
                     ], 64);
                   }), 128))
@@ -16574,7 +16576,7 @@ const _hoisted_10$s = /* @__PURE__ */ _withScopeId$w(() => /* @__PURE__ */ creat
   class: "tab-sep",
   "aria-hidden": "true"
 }, null, -1));
-const _hoisted_11$r = {
+const _hoisted_11$s = {
   key: 0,
   class: "count"
 };
@@ -17003,7 +17005,7 @@ const _sfc_main$1a = {
                 size: 14
               }),
               createTextVNode("Compare"),
-              unref(compareStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_11$r, toDisplayString(unref(compareStore).images.length), 1)) : createCommentVNode("", true)
+              unref(compareStore).images.length ? (openBlock(), createElementBlock("span", _hoisted_11$s, toDisplayString(unref(compareStore).images.length), 1)) : createCommentVNode("", true)
             ]),
             _: 1
           }, 8, ["class"]),
@@ -17226,7 +17228,7 @@ function useCtrlKey() {
   }
   return ctrlDown;
 }
-const _withScopeId$v = (n) => (pushScopeId("data-v-37411436"), n = n(), popScopeId(), n);
+const _withScopeId$v = (n) => (pushScopeId("data-v-906d74ec"), n = n(), popScopeId(), n);
 const _hoisted_1$18 = ["width", "height"];
 const _hoisted_2$15 = /* @__PURE__ */ _withScopeId$v(() => /* @__PURE__ */ createBaseVNode("feDropShadow", {
   dx: "0",
@@ -17245,7 +17247,7 @@ const _hoisted_7$F = ["x", "y", "font-size"];
 const _hoisted_8$y = ["transform", "filter", "innerHTML"];
 const _hoisted_9$u = ["d", "aria-label", "onPointerenter", "onPointerleave", "onClick", "onAuxclick"];
 const _hoisted_10$r = /* @__PURE__ */ _withScopeId$v(() => /* @__PURE__ */ createBaseVNode("span", { class: "rim-label-gap" }, null, -1));
-const _hoisted_11$q = { key: 0 };
+const _hoisted_11$r = { key: 0 };
 const _hoisted_12$p = {
   key: 1,
   class: "rim-label-note"
@@ -17667,8 +17669,8 @@ const _sfc_main$19 = {
       hoveredId.value = null;
     }
     function onCenterAuxClick(e) {
-      if (e.button === 1 && props.marking && props.filterable && mode.value === "actions")
-        emit2("filterMarking", props.marking);
+      if (e.button === 1)
+        onCenterClick();
     }
     function onPointerMove(e) {
       var _a;
@@ -17773,7 +17775,7 @@ const _sfc_main$19 = {
           centerHovered.value ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
             createBaseVNode("span", null, toDisplayString(centerText.value), 1),
             _hoisted_10$r,
-            centerKey.value ? (openBlock(), createElementBlock("kbd", _hoisted_11$q, toDisplayString(centerKey.value), 1)) : createCommentVNode("", true),
+            centerKey.value ? (openBlock(), createElementBlock("kbd", _hoisted_11$r, toDisplayString(centerKey.value), 1)) : createCommentVNode("", true),
             centerNote.value && !compact.value ? (openBlock(), createElementBlock("span", _hoisted_12$p, toDisplayString(centerNote.value), 1)) : createCommentVNode("", true)
           ], 64)) : hoveredItem.value ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
             createBaseVNode("span", null, toDisplayString(hoveredItem.value.label), 1),
@@ -17818,7 +17820,7 @@ const _sfc_main$19 = {
     };
   }
 };
-const ActionRim = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-37411436"]]);
+const ActionRim = /* @__PURE__ */ _export_sfc(_sfc_main$19, [["__scopeId", "data-v-906d74ec"]]);
 function useRimPress(rimRef, { show, hide, leave, element }) {
   let press = null;
   let handled = false;
@@ -18621,7 +18623,7 @@ const _sfc_main$15 = {
   }
 };
 const GenerationParametersHeader = /* @__PURE__ */ _export_sfc(_sfc_main$15, [["__scopeId", "data-v-c95f8b3c"]]);
-const _withScopeId$t = (n) => (pushScopeId("data-v-c4d31446"), n = n(), popScopeId(), n);
+const _withScopeId$t = (n) => (pushScopeId("data-v-5e1e64b5"), n = n(), popScopeId(), n);
 const _hoisted_1$13 = {
   key: 0,
   class: "controlnet-container"
@@ -18634,7 +18636,8 @@ const _hoisted_6$G = { class: "controlnet-images" };
 const _hoisted_7$C = ["href", "title"];
 const _hoisted_8$w = ["src", "alt"];
 const _hoisted_9$s = { class: "controlnet-image-label" };
-const _hoisted_10$p = {
+const _hoisted_10$p = ["onClick"];
+const _hoisted_11$q = {
   key: 0,
   class: "controlnet-note"
 };
@@ -18649,6 +18652,7 @@ const _sfc_main$14 = {
   setup(__props) {
     const props = __props;
     const UNIT_IMAGES = [["image", "Image"], ["mask", "Mask"], ["preview", "Preview"]];
+    const CONTROL_IMAGES = /* @__PURE__ */ new Set(["image", "preview"]);
     const controlnetUnits = computed(() => {
       var _a;
       return ((_a = props.image.controlnet) == null ? void 0 : _a.units) ?? [];
@@ -18663,7 +18667,18 @@ const _sfc_main$14 = {
       return parts.filter((part, index) => parts.indexOf(part) === index).join(" · ");
     }
     function unitImages(unit) {
-      return UNIT_IMAGES.filter(([kind]) => unit[kind]).map(([kind, label]) => ({ url: `/image-bench/controlnet/input?hash=${unit[kind]}`, label }));
+      return UNIT_IMAGES.filter(([kind]) => unit[kind]).map(([kind, label]) => ({
+        url: `/image-bench/controlnet/input?hash=${unit[kind]}`,
+        label,
+        sendable: CONTROL_IMAGES.has(kind) && hostHas("images", "sendToControlNet")
+      }));
+    }
+    async function sendToControlNet2(url) {
+      const error = await useImageOperations().sendProcessedToControlNet(url);
+      if (error)
+        toastError(error, { title: "Send to ControlNet" });
+      else
+        flashTrayTab("controlnet-tab");
     }
     return (_ctx, _cache) => {
       return controlnetUnits.value.length ? (openBlock(), createElementBlock("div", _hoisted_1$13, [
@@ -18680,22 +18695,38 @@ const _sfc_main$14 = {
             ]),
             createBaseVNode("div", _hoisted_6$G, [
               (openBlock(true), createElementBlock(Fragment, null, renderList(unitImages(unit), (item) => {
-                return openBlock(), createElementBlock("a", {
+                return openBlock(), createElementBlock("div", {
                   key: item.label,
-                  href: item.url,
-                  target: "_blank",
-                  class: "controlnet-image-link",
-                  title: item.label
+                  class: "controlnet-image-item"
                 }, [
-                  createBaseVNode("img", {
-                    class: "controlnet-image",
-                    src: item.url,
-                    alt: item.label
-                  }, null, 8, _hoisted_8$w),
-                  createBaseVNode("span", _hoisted_9$s, toDisplayString(item.label), 1)
-                ], 8, _hoisted_7$C);
+                  createBaseVNode("a", {
+                    href: item.url,
+                    target: "_blank",
+                    class: "controlnet-image-link",
+                    title: item.label
+                  }, [
+                    createBaseVNode("img", {
+                      class: "controlnet-image",
+                      src: item.url,
+                      alt: item.label
+                    }, null, 8, _hoisted_8$w),
+                    createBaseVNode("span", _hoisted_9$s, toDisplayString(item.label), 1)
+                  ], 8, _hoisted_7$C),
+                  item.sendable ? (openBlock(), createElementBlock("button", {
+                    key: 0,
+                    type: "button",
+                    class: "controlnet-send",
+                    title: "Send to ControlNet as the control image, without a preprocessor",
+                    onClick: ($event) => sendToControlNet2(item.url)
+                  }, [
+                    createVNode(AppIcon, {
+                      name: "controlnet",
+                      size: 14
+                    })
+                  ], 8, _hoisted_10$p)) : createCommentVNode("", true)
+                ]);
               }), 128)),
-              !unit.image && ((_a = unit.params) == null ? void 0 : _a.independent) === false ? (openBlock(), createElementBlock("span", _hoisted_10$p, "Uses the img2img image")) : createCommentVNode("", true)
+              !unit.image && ((_a = unit.params) == null ? void 0 : _a.independent) === false ? (openBlock(), createElementBlock("span", _hoisted_11$q, "Uses the img2img image")) : createCommentVNode("", true)
             ])
           ]);
         }), 128))
@@ -18703,7 +18734,7 @@ const _sfc_main$14 = {
     };
   }
 };
-const ControlNetUnits = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-c4d31446"]]);
+const ControlNetUnits = /* @__PURE__ */ _export_sfc(_sfc_main$14, [["__scopeId", "data-v-5e1e64b5"]]);
 const _hoisted_1$12 = ["src", "autoplay"];
 const _hoisted_2$$ = ["src"];
 const _hoisted_3$U = ["src", "autoplay"];
@@ -20723,7 +20754,7 @@ const _sfc_main$X = {
     };
   }
 };
-const ProgressIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$X, [["__scopeId", "data-v-2906e1bc"]]);
+const ProgressIndicator = /* @__PURE__ */ _export_sfc(_sfc_main$X, [["__scopeId", "data-v-d515e639"]]);
 const _hoisted_1$V = { class: "toolbar-group run-control" };
 const _hoisted_2$S = ["disabled", "title"];
 const _hoisted_3$M = { class: "toolbar-group-label" };
@@ -22916,7 +22947,7 @@ const _hoisted_24$a = /* @__PURE__ */ _withScopeId$m(() => /* @__PURE__ */ creat
 const _hoisted_25$9 = ["value", "aria-label", "onChange"];
 const _hoisted_26$9 = ["value"];
 const _hoisted_27$8 = { class: "setting-label generate-setting" };
-const _hoisted_28$8 = /* @__PURE__ */ _withScopeId$m(() => /* @__PURE__ */ createBaseVNode("span", null, "Images set by the count button", -1));
+const _hoisted_28$7 = /* @__PURE__ */ _withScopeId$m(() => /* @__PURE__ */ createBaseVNode("span", null, "Images set by the count button", -1));
 const _hoisted_29$7 = ["value"];
 const _hoisted_30$7 = /* @__PURE__ */ _withScopeId$m(() => /* @__PURE__ */ createBaseVNode("span", {
   class: "help",
@@ -23219,7 +23250,7 @@ const _sfc_main$O = {
               }), 128))
             ]),
             createBaseVNode("label", _hoisted_27$8, [
-              _hoisted_28$8,
+              _hoisted_28$7,
               createBaseVNode("input", {
                 type: "number",
                 min: "2",
@@ -23641,7 +23672,7 @@ const _hoisted_26$8 = {
   class: "input-actions"
 };
 const _hoisted_27$7 = ["aria-pressed"];
-const _hoisted_28$7 = /* @__PURE__ */ _withScopeId$l(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
+const _hoisted_28$6 = /* @__PURE__ */ _withScopeId$l(() => /* @__PURE__ */ createBaseVNode("span", { class: "spacer" }, null, -1));
 const _hoisted_29$6 = {
   key: 1,
   class: "input-actions"
@@ -24099,7 +24130,7 @@ const _sfc_main$N = {
               title: "Show the mask over the image",
               onClick: _cache[5] || (_cache[5] = ($event) => maskOverlay.value = !maskOverlay.value)
             }, "Mask overlay", 10, _hoisted_27$7)) : createCommentVNode("", true),
-            _hoisted_28$7,
+            _hoisted_28$6,
             createBaseVNode("button", {
               type: "button",
               class: "overlay-button",
@@ -24501,7 +24532,7 @@ const _hoisted_24$8 = { class: "name" };
 const _hoisted_25$7 = ["title"];
 const _hoisted_26$7 = { class: "row editor" };
 const _hoisted_27$6 = { class: "ps" };
-const _hoisted_28$6 = { class: "select-wrap" };
+const _hoisted_28$5 = { class: "select-wrap" };
 const _hoisted_29$5 = ["value", "aria-label"];
 const _hoisted_30$5 = /* @__PURE__ */ _withScopeId$k(() => /* @__PURE__ */ createBaseVNode("option", { value: "input" }, "Input image", -1));
 const _hoisted_31$5 = /* @__PURE__ */ _withScopeId$k(() => /* @__PURE__ */ createBaseVNode("option", { value: "reference" }, "New reference", -1));
@@ -24813,7 +24844,7 @@ const _sfc_main$L = {
         createBaseVNode("label", _hoisted_26$7, [
           createBaseVNode("span", _hoisted_27$6, toDisplayString(unref(editorShortName)()), 1),
           createTextVNode("sends to "),
-          createBaseVNode("span", _hoisted_28$6, [
+          createBaseVNode("span", _hoisted_28$5, [
             createBaseVNode("select", {
               value: __props.editorTarget,
               "aria-label": `Where images from ${unref(editorName)} go`,
@@ -26869,7 +26900,7 @@ const _hoisted_26$6 = {
   "aria-label": "Parameters to apply"
 };
 const _hoisted_27$5 = ["title"];
-const _hoisted_28$5 = ["checked", "disabled", "onChange"];
+const _hoisted_28$4 = ["checked", "disabled", "onChange"];
 const _hoisted_29$4 = {
   key: 0,
   class: "notes"
@@ -27102,7 +27133,7 @@ const _sfc_main$w = {
                       checked: !unchecked.value.has(item.id),
                       disabled: !item.available,
                       onChange: ($event) => toggleGroup(item.id)
-                    }, null, 40, _hoisted_28$5),
+                    }, null, 40, _hoisted_28$4),
                     createTextVNode(toDisplayString(item.label), 1)
                   ], 10, _hoisted_27$5);
                 }), 128))
@@ -28826,7 +28857,7 @@ const _hoisted_27$4 = {
   key: 0,
   class: "spinner"
 };
-const _hoisted_28$4 = ["title", "aria-label"];
+const _hoisted_28$3 = ["title", "aria-label"];
 const _hoisted_29$3 = {
   key: 7,
   class: "inline-field"
@@ -30249,7 +30280,7 @@ Click for the details`,
                     name: sizeInputs.value ? "ruler" : "list",
                     size: 14
                   }, null, 8, ["name"])
-                ], 8, _hoisted_28$4),
+                ], 8, _hoisted_28$3),
                 sizeInputs.value ? (openBlock(), createBlock(ResizeToInput, {
                   key: 0,
                   ref_key: "sizeInput",
@@ -31650,7 +31681,7 @@ const _hoisted_24$4 = ["src"];
 const _hoisted_25$4 = /* @__PURE__ */ _withScopeId$7(() => /* @__PURE__ */ createBaseVNode("span", { class: "label-small" }, "Preview", -1));
 const _hoisted_26$4 = ["disabled", "title"];
 const _hoisted_27$3 = ["disabled", "title"];
-const _hoisted_28$3 = ["disabled"];
+const _hoisted_28$2 = ["disabled"];
 const _hoisted_29$2 = ["disabled"];
 const _hoisted_30$2 = ["disabled"];
 const _hoisted_31$2 = ["disabled"];
@@ -32181,7 +32212,7 @@ const _sfc_main$j = {
                     name: "copy",
                     size: 14
                   })
-                ], 8, _hoisted_28$3),
+                ], 8, _hoisted_28$2),
                 createBaseVNode("button", {
                   class: "ib flat",
                   disabled: !unref(images).preview,
@@ -38021,7 +38052,7 @@ const _sfc_main$7 = {
   }
 };
 const PluginCard = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__scopeId", "data-v-1fe5c9db"]]);
-const _withScopeId$4 = (n) => (pushScopeId("data-v-8cab9ea0"), n = n(), popScopeId(), n);
+const _withScopeId$4 = (n) => (pushScopeId("data-v-c9494c96"), n = n(), popScopeId(), n);
 const _hoisted_1$6 = { class: "manual" };
 const _hoisted_2$6 = { id: "manual-overview" };
 const _hoisted_3$6 = { class: "lead" };
@@ -38036,7 +38067,7 @@ const _hoisted_5$6 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
   /* @__PURE__ */ createTextVNode(", which walks through the common workflows with screenshots. ")
 ], -1));
 const _hoisted_6$6 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The tabs of the window are grouped by task, with a thin line between the groups:", -1));
-const _hoisted_7$6 = /* @__PURE__ */ createStaticVNode("<li data-v-8cab9ea0><b data-v-8cab9ea0>Create</b>: <b data-v-8cab9ea0>Generate</b> and <b data-v-8cab9ea0>ControlNet</b> are compact editors for the generation parameters and the ControlNet units; <b data-v-8cab9ea0>Explore</b> runs one prompt on many checkpoints and LoRAs and shows the results side by side.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Results</b>: <b data-v-8cab9ea0>Generated</b> receives the images of batches, variations and endless generation as they finish; <b data-v-8cab9ea0>Upscaled</b> holds upscaled (Hires. fix) versions of the images you choose.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Curate</b>: <b data-v-8cab9ea0>Compare</b> shows chosen images side by side, and the same region of each of them, so you can pick the best of several variants; <b data-v-8cab9ea0>Concept tray</b> and <b data-v-8cab9ea0>Image tray</b> are permanent collections of the images worth keeping.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Library</b> holds docs (your Markdown notes), snippets (prompt text inserted from the Generate tab) and this manual.</li>", 4);
+const _hoisted_7$6 = /* @__PURE__ */ createStaticVNode("<li data-v-c9494c96><b data-v-c9494c96>Create</b>: <b data-v-c9494c96>Generate</b> and <b data-v-c9494c96>ControlNet</b> are compact editors for the generation parameters and the ControlNet units; <b data-v-c9494c96>Explore</b> runs one prompt on many checkpoints and LoRAs and shows the results side by side.</li><li data-v-c9494c96><b data-v-c9494c96>Results</b>: <b data-v-c9494c96>Generated</b> receives the images of batches, variations and endless generation as they finish; <b data-v-c9494c96>Upscaled</b> holds upscaled (Hires. fix) versions of the images you choose.</li><li data-v-c9494c96><b data-v-c9494c96>Curate</b>: <b data-v-c9494c96>Compare</b> shows chosen images side by side, and the same region of each of them, so you can pick the best of several variants; <b data-v-c9494c96>Concept tray</b> and <b data-v-c9494c96>Image tray</b> are permanent collections of the images worth keeping.</li><li data-v-c9494c96><b data-v-c9494c96>Library</b> holds docs (your Markdown notes), snippets (prompt text inserted from the Generate tab) and this manual.</li>", 4);
 const _hoisted_11$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Project", -1));
 const _hoisted_12$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings", -1));
 const _hoisted_13$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
@@ -38060,7 +38091,7 @@ const _hoisted_24$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ creat
 const _hoisted_25$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "badge", -1));
 const _hoisted_26$3 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "?", -1));
 const _hoisted_27$2 = { id: "manual-workflow" };
-const _hoisted_28$2 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Typical workflow", -1));
+const _hoisted_28$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Typical workflow", -1));
 const _hoisted_29$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h3", { id: "manual-workflow-edit" }, "Editing an image", -1));
 const _hoisted_30$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " An image can be changed in three ways, which differ in what the prompt says and in how much of the image stays. ", -1));
 const _hoisted_31$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
@@ -38089,7 +38120,7 @@ const _hoisted_36$1 = [
   _hoisted_35$1
 ];
 const _hoisted_37$1 = { key: 1 };
-const _hoisted_38$1 = /* @__PURE__ */ createStaticVNode('<li data-v-8cab9ea0>Load a workflow with reference slots (<code data-v-8cab9ea0>ib:ref:N</code>). The bundled ones are <code data-v-8cab9ea0>image_flux2_klein_full</code>, <code data-v-8cab9ea0>image_flux2_dev_full</code>, <code data-v-8cab9ea0>image_qwen_image_2_1_full</code> and <code data-v-8cab9ea0>image_fibo2_edit_turbo</code>.</li><li data-v-8cab9ea0>Add the image in the <b data-v-8cab9ea0>References</b> panel (browse, paste or drag a card), or set <span class="kbd" data-v-8cab9ea0>Ps</span> <b data-v-8cab9ea0>sends to</b> to references for images from the editor. The prompt refers to the images in slot order: Image 1, Image 2, ...</li><li data-v-8cab9ea0>The Generate tab stays in txt2img mode, and the size controls set the size of the result: set them to the aspect ratio of the image.</li>', 3);
+const _hoisted_38$1 = /* @__PURE__ */ createStaticVNode('<li data-v-c9494c96>Load a workflow with reference slots (<code data-v-c9494c96>ib:ref:N</code>). The bundled ones are <code data-v-c9494c96>image_flux2_klein_txt2img</code>, <code data-v-c9494c96>image_flux2_dev_txt2img</code>, <code data-v-c9494c96>image_qwen_image_2_1_txt2img</code> and <code data-v-c9494c96>image_fibo2_edit_turbo</code>.</li><li data-v-c9494c96>Add the image in the <b data-v-c9494c96>References</b> panel (browse, paste or drag a card), or set <span class="kbd" data-v-c9494c96>Ps</span> <b data-v-c9494c96>sends to</b> to references for images from the editor. The prompt refers to the images in slot order: Image 1, Image 2, ...</li><li data-v-c9494c96>The Generate tab stays in txt2img mode, and the size controls set the size of the result: set them to the aspect ratio of the image.</li>', 3);
 const _hoisted_41$1 = [
   _hoisted_38$1
 ];
@@ -38107,7 +38138,7 @@ const _hoisted_45$1 = [
   _hoisted_44$1
 ];
 const _hoisted_46$1 = { key: 3 };
-const _hoisted_47$1 = /* @__PURE__ */ createStaticVNode('<li data-v-8cab9ea0>Load one of the <code data-v-8cab9ea0>image_*_img2img</code> workflows and send the image to the input image (<span class="kbd" data-v-8cab9ea0>B</span>). They pass the image of the Load Image marked <code data-v-8cab9ea0>ib:img</code> through <b data-v-8cab9ea0>Resize to</b> (Image Scale, the Resize to size of the Generate tab; <b data-v-8cab9ea0>Use size</b> in the Input cell takes the size of the image) and VAE Encode into the latent of the sampler, at denoising 0.6. They have no Hires. fix pass: upscale the result with the <code data-v-8cab9ea0>_full</code> workflow.</li><li data-v-8cab9ea0>In your own workflow, mark a Load Image <code data-v-8cab9ea0>ib:img</code> (and no node <code data-v-8cab9ea0>ib:mask</code>) and feed its image through VAE Encode into the latent of the sampler, with a denoise below 1.</li>', 2);
+const _hoisted_47$1 = /* @__PURE__ */ createStaticVNode('<li data-v-c9494c96>Load one of the <code data-v-c9494c96>image_*_img2img</code> workflows and send the image to the input image (<span class="kbd" data-v-c9494c96>B</span>). They pass the image of the Load Image marked <code data-v-c9494c96>ib:img</code> through <b data-v-c9494c96>Resize to</b> (Image Scale, the Resize to size of the Generate tab; <b data-v-c9494c96>Use size</b> in the Input cell takes the size of the image) and VAE Encode into the latent of the sampler, at denoising 0.6. They have no Hires. fix pass: upscale the result with the <code data-v-c9494c96>_txt2img</code> workflow.</li><li data-v-c9494c96>In your own workflow, mark a Load Image <code data-v-c9494c96>ib:img</code> (and no node <code data-v-c9494c96>ib:mask</code>) and feed its image through VAE Encode into the latent of the sampler, with a denoise below 1.</li>', 2);
 const _hoisted_49$1 = [
   _hoisted_47$1
 ];
@@ -38131,7 +38162,7 @@ const _hoisted_57$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ creat
 const _hoisted_58$1 = { id: "manual-images" };
 const _hoisted_59$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Working with images", -1));
 const _hoisted_60$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "Ctrl", -1));
-const _hoisted_61$1 = /* @__PURE__ */ createStaticVNode('<p data-v-8cab9ea0> With <b data-v-8cab9ea0>Show the action rim of an image on hover</b> turned on in the Settings tab, hovering alone opens the ring. Holding <span class="kbd" data-v-8cab9ea0>Ctrl</span> hides it too, with the other controls, and a middle click hides it until the pointer leaves the card. </p><p data-v-8cab9ea0> The markings are an arc above the ring (pick a set one again to remove it), and reusing the seed or all parameters of the image an arc below it; the button in the middle hides the ring. The marking also appears at the bottom right of the image, where a click shows only the images with that marking and a middle click removes it. Keys act on the image under the pointer: <span class="kbd" data-v-8cab9ea0>1</span>–<span class="kbd" data-v-8cab9ea0>9</span> set its marking (<span class="kbd" data-v-8cab9ea0>0</span> removes it) and <span class="kbd" data-v-8cab9ea0>V</span> views it large. </p><p data-v-8cab9ea0><b data-v-8cab9ea0>Remove</b> (the red sector, <span class="kbd" data-v-8cab9ea0>Del</span> or the menu) takes the image out of the tab at once; the file stays on disk. Removing and clearing never ask first: the notice at the bottom of the window has <b data-v-8cab9ea0>Undo</b> for a few seconds, which puts the images back where they were. </p><h3 data-v-8cab9ea0>The menu actions</h3>', 4);
+const _hoisted_61$1 = /* @__PURE__ */ createStaticVNode('<p data-v-c9494c96> With <b data-v-c9494c96>Show the action rim of an image on hover</b> turned on in the Settings tab, hovering alone opens the ring. Holding <span class="kbd" data-v-c9494c96>Ctrl</span> hides it too, with the other controls, and a middle click hides it until the pointer leaves the card. </p><p data-v-c9494c96> The markings are an arc above the ring (pick a set one again to remove it), and reusing the seed or all parameters of the image an arc below it; the button in the middle hides the ring. The marking also appears at the bottom right of the image, where a click shows only the images with that marking and a middle click removes it. Keys act on the image under the pointer: <span class="kbd" data-v-c9494c96>1</span>–<span class="kbd" data-v-c9494c96>9</span> set its marking (<span class="kbd" data-v-c9494c96>0</span> removes it) and <span class="kbd" data-v-c9494c96>V</span> views it large. </p><p data-v-c9494c96><b data-v-c9494c96>Remove</b> (the red sector, <span class="kbd" data-v-c9494c96>Del</span> or the menu) takes the image out of the tab at once; the file stays on disk. Removing and clearing never ask first: the notice at the bottom of the window has <b data-v-c9494c96>Undo</b> for a few seconds, which puts the images back where they were. </p><h3 data-v-c9494c96>The menu actions</h3>', 4);
 const _hoisted_65$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "I", -1));
 const _hoisted_66$1 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("td", null, [
   /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "C"),
@@ -38349,7 +38380,7 @@ const _hoisted_200 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_201 = { key: 0 };
 const _hoisted_202 = { key: 3 };
 const _hoisted_203 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Upload independent control image", -1));
-const _hoisted_204 = /* @__PURE__ */ createStaticVNode("<h3 data-v-8cab9ea0>Sweep</h3><p data-v-8cab9ea0> A sweep generates the same prompt with the same seed for every combination of control weight and ending step of the selected unit. To set one up, switch the top of the right column from <b data-v-8cab9ea0>Parameters</b> to <b data-v-8cab9ea0>Sweep</b>, enter <b data-v-8cab9ea0>From</b>, <b data-v-8cab9ea0>To</b> and <b data-v-8cab9ea0>Step</b> for both axes (by default 0.5 to 1 in steps of 0.1) and press <b data-v-8cab9ea0>Sweep</b>. A matrix replaces the image panes. Weights run down the rows and ending steps across the columns, with the lowest values at the top left. </p><ul data-v-8cab9ea0><li data-v-8cab9ea0>The first image is generated with the unit&#39;s current values. It is shown at the left of the matrix next to the control image, as a reference for the other cells.</li><li data-v-8cab9ea0>The diagonals are generated first. Weak and short to strong and long shows how much control you need; strong and short to weak and long compares kinds of control at roughly the same strength. The cells between them follow. If you have seen enough, stop the sweep and leave the rest of the matrix empty.</li><li data-v-8cab9ea0>Hovering an image shows <b data-v-8cab9ea0>Apply</b>, which copies its weight and ending step into the unit. Clicking a row or column header applies just that one value. The cell that matches the unit&#39;s current values is outlined.</li><li data-v-8cab9ea0>Sweep images have no action rim. Their overlay shows the values with an <b data-v-8cab9ea0>Apply</b> button at the top. The arrow keys move between images and skip empty cells: ←/→ go to the previous or next image in reading order and wrap into the next row, so you can step through the diagonals while the rest is still generating; ↑/↓ move within the column.</li><li data-v-8cab9ea0>When <b data-v-8cab9ea0>Use seed</b> is checked, every image uses the seed in the field next to it (the dice button picks a random one). When it is unchecked, the sweep takes the seed of the generation tab, or picks one random seed for all images if that seed is -1. The generation tab gets its seed back after the sweep.</li><li data-v-8cab9ea0>If the unit is disabled, the sweep enables it. When the sweep ends, the unit returns to the values it had before. Each image keeps its ControlNet values in its parameters.</li></ul>", 3);
+const _hoisted_204 = /* @__PURE__ */ createStaticVNode("<h3 data-v-c9494c96>Sweep</h3><p data-v-c9494c96> A sweep generates the same prompt with the same seed for every combination of control weight and ending step of the selected unit. To set one up, switch the top of the right column from <b data-v-c9494c96>Parameters</b> to <b data-v-c9494c96>Sweep</b>, enter <b data-v-c9494c96>From</b>, <b data-v-c9494c96>To</b> and <b data-v-c9494c96>Step</b> for both axes (by default 0.5 to 1 in steps of 0.1) and press <b data-v-c9494c96>Sweep</b>. A matrix replaces the image panes. Weights run down the rows and ending steps across the columns, with the lowest values at the top left. </p><ul data-v-c9494c96><li data-v-c9494c96>The first image is generated with the unit&#39;s current values. It is shown at the left of the matrix next to the control image, as a reference for the other cells.</li><li data-v-c9494c96>The diagonals are generated first. Weak and short to strong and long shows how much control you need; strong and short to weak and long compares kinds of control at roughly the same strength. The cells between them follow. If you have seen enough, stop the sweep and leave the rest of the matrix empty.</li><li data-v-c9494c96>Hovering an image shows <b data-v-c9494c96>Apply</b>, which copies its weight and ending step into the unit. Clicking a row or column header applies just that one value. The cell that matches the unit&#39;s current values is outlined.</li><li data-v-c9494c96>Sweep images have no action rim. Their overlay shows the values with an <b data-v-c9494c96>Apply</b> button at the top. The arrow keys move between images and skip empty cells: ←/→ go to the previous or next image in reading order and wrap into the next row, so you can step through the diagonals while the rest is still generating; ↑/↓ move within the column.</li><li data-v-c9494c96>When <b data-v-c9494c96>Use seed</b> is checked, every image uses the seed in the field next to it (the dice button picks a random one). When it is unchecked, the sweep takes the seed of the generation tab, or picks one random seed for all images if that seed is -1. The generation tab gets its seed back after the sweep.</li><li data-v-c9494c96>If the unit is disabled, the sweep enables it. When the sweep ends, the unit returns to the values it had before. Each image keeps its ControlNet values in its parameters.</li></ul>", 3);
 const _hoisted_207 = { id: "manual-explore" };
 const _hoisted_208 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " Explore runs the current prompt on every checked checkpoint with every checked LoRA, and groups the results by model, so that you can compare models and LoRAs. ", -1));
 const _hoisted_209 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "To run an exploration:", -1));
@@ -38392,11 +38423,11 @@ const _hoisted_223 = {
   key: 0,
   class: "note"
 };
-const _hoisted_224 = /* @__PURE__ */ createStaticVNode("<div data-v-8cab9ea0> Model exploration switches the <b data-v-8cab9ea0>UI Preset</b> for each model automatically, based on the model&#39;s folder and file name. A preset is chosen when its name appears in them (<code data-v-8cab9ea0>flux</code>, <code data-v-8cab9ea0>klein</code>, <code data-v-8cab9ea0>qwen</code>, ...), and <code data-v-8cab9ea0>sd</code>, <code data-v-8cab9ea0>xl</code> and <code data-v-8cab9ea0>zit</code> are recognised by <code data-v-8cab9ea0>sd/</code>, <code data-v-8cab9ea0>sdxl</code> and <code data-v-8cab9ea0>z-image</code>. When several presets match, the longest match wins, so <code data-v-8cab9ea0>flux/klein/model.safetensors</code> selects <code data-v-8cab9ea0>klein</code>, not <code data-v-8cab9ea0>flux</code>. Models that match nothing keep the current preset. To make this reliable, sort checkpoints into folders named after their family (<code data-v-8cab9ea0>sdxl/</code>, <code data-v-8cab9ea0>flux/</code>, <code data-v-8cab9ea0>klein/</code>, ...). </div>", 1);
+const _hoisted_224 = /* @__PURE__ */ createStaticVNode("<div data-v-c9494c96> Model exploration switches the <b data-v-c9494c96>UI Preset</b> for each model automatically, based on the model&#39;s folder and file name. A preset is chosen when its name appears in them (<code data-v-c9494c96>flux</code>, <code data-v-c9494c96>klein</code>, <code data-v-c9494c96>qwen</code>, ...), and <code data-v-c9494c96>sd</code>, <code data-v-c9494c96>xl</code> and <code data-v-c9494c96>zit</code> are recognised by <code data-v-c9494c96>sd/</code>, <code data-v-c9494c96>sdxl</code> and <code data-v-c9494c96>z-image</code>. When several presets match, the longest match wins, so <code data-v-c9494c96>flux/klein/model.safetensors</code> selects <code data-v-c9494c96>klein</code>, not <code data-v-c9494c96>flux</code>. Models that match nothing keep the current preset. To make this reliable, sort checkpoints into folders named after their family (<code data-v-c9494c96>sdxl/</code>, <code data-v-c9494c96>flux/</code>, <code data-v-c9494c96>klein/</code>, ...). </div>", 1);
 const _hoisted_225 = { id: "manual-generated" };
 const _hoisted_226 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The toolbar and the results offer the following:", -1));
 const _hoisted_227 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Clear automatically when a new batch starts", -1));
-const _hoisted_228 = /* @__PURE__ */ createStaticVNode('<li data-v-8cab9ea0><b data-v-8cab9ea0>Clear</b>, at the right end of the toolbar of the Generated, Upscaled, tray and Compare tabs, removes all images from the tab. Its arrow, or a middle click on it, lists what else it can remove, with counts: the checked images, the unmarked or marked ones, or those of one marking. The files stay on disk, and the notice that follows has <b data-v-8cab9ea0>Undo</b>.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Selecting images</b>: check images with the circle at the top left of the thumbnail, or all of them with <b data-v-8cab9ea0>Select all</b> in the toolbar. While images are checked, the toolbar shows the image actions that work on many images, in every image tab the same and colored as on the action rim: <b data-v-8cab9ea0>Add to compare</b>, the trays, <b data-v-8cab9ea0>Upscale</b> where the tab offers it, then <b data-v-8cab9ea0>Remove</b> (with Undo). An action that does not apply to some of the checked images (a video, for one) skips them, and its tooltip tells how many it takes. Dragging a checked thumbnail takes them all along. <span class="kbd" data-v-8cab9ea0>Ctrl</span>+<span class="kbd" data-v-8cab9ea0>U</span> unchecks them.</li>', 2);
+const _hoisted_228 = /* @__PURE__ */ createStaticVNode('<li data-v-c9494c96><b data-v-c9494c96>Clear</b>, at the right end of the toolbar of the Generated, Upscaled, tray and Compare tabs, removes all images from the tab. Its arrow, or a middle click on it, lists what else it can remove, with counts: the checked images, the unmarked or marked ones, or those of one marking. The files stay on disk, and the notice that follows has <b data-v-c9494c96>Undo</b>.</li><li data-v-c9494c96><b data-v-c9494c96>Selecting images</b>: check images with the circle at the top left of the thumbnail, or all of them with <b data-v-c9494c96>Select all</b> in the toolbar. While images are checked, the toolbar shows the image actions that work on many images, in every image tab the same and colored as on the action rim: <b data-v-c9494c96>Add to compare</b>, the trays, <b data-v-c9494c96>Upscale</b> where the tab offers it, then <b data-v-c9494c96>Remove</b> (with Undo). An action that does not apply to some of the checked images (a video, for one) skips them, and its tooltip tells how many it takes. Dragging a checked thumbnail takes them all along. <span class="kbd" data-v-c9494c96>Ctrl</span>+<span class="kbd" data-v-c9494c96>U</span> unchecks them.</li>', 2);
 const _hoisted_230 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Filtering by markings", -1));
 const _hoisted_231 = { id: "manual-compare" };
 const _hoisted_232 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("span", { class: "kbd" }, "A", -1));
@@ -38495,7 +38526,7 @@ const _hoisted_291 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_292 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, ".md", -1));
 const _hoisted_293 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings › Library › Docs root", -1));
 const _hoisted_294 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "model_docs", -1));
-const _hoisted_295 = /* @__PURE__ */ createStaticVNode('<p data-v-8cab9ea0> Extension updates replace the documents shipped in <code data-v-8cab9ea0>model_docs</code>, so keep your own documents in a separate folder (you can copy the shipped ones there to start with) and set it as the docs root. </p><p data-v-8cab9ea0> Tag lists (<code data-v-8cab9ea0>.csv</code> files for tag autocompletion, such as the Anima or Danbooru tags: tag, category, post count, aliases) are shown with a search field instead. Type part of a tag or of one of its aliases to find it (spaces and underscores are treated the same). Exact and leading matches come first, then the more frequently used tags. Click a tag to copy it with spaces instead of underscores, as it is written in prompts. </p><h3 id="manual-library-snippets" data-v-8cab9ea0>Snippets</h3><p data-v-8cab9ea0> Snippets are pieces of prompt text with an optional negative part, organised in folders. You insert them from the Snippets panel of the Generate tab. <code data-v-8cab9ea0>{}</code> or <code data-v-8cab9ea0>{prompt}</code> (as in WebUI styles) in a snippet stands for the selected prompt text, which the snippet wraps. For example, with the snippet <code data-v-8cab9ea0>watercolor painting of {}, soft pastel colors</code>, selecting <code data-v-8cab9ea0>a cat on a windowsill</code> in the prompt and clicking the snippet turns the selection into <code data-v-8cab9ea0>watercolor painting of a cat on a windowsill, soft pastel colors</code>. Edit a snippet in the right pane; changes are saved as you type. Drag snippets to reorder them or to move them into a folder. </p><p data-v-8cab9ea0> Badges after the name show what a snippet does: <span class="snippet-badge negative" data-v-8cab9ea0>−</span> marks a snippet with a negative part, which is added to the negative prompt when the snippet is inserted, and <span class="snippet-badge wrap" data-v-8cab9ea0>{}</span> marks one that wraps the selected text. Hover over the name to see the whole text of the snippet, including the negative part. The <span class="snippet-badge negative" data-v-8cab9ea0>−</span> badge also appears in the Snippets panel of the Generate tab. </p>', 5);
+const _hoisted_295 = /* @__PURE__ */ createStaticVNode('<p data-v-c9494c96> Extension updates replace the documents shipped in <code data-v-c9494c96>model_docs</code>, so keep your own documents in a separate folder (you can copy the shipped ones there to start with) and set it as the docs root. </p><p data-v-c9494c96> Tag lists (<code data-v-c9494c96>.csv</code> files for tag autocompletion, such as the Anima or Danbooru tags: tag, category, post count, aliases) are shown with a search field instead. Type part of a tag or of one of its aliases to find it (spaces and underscores are treated the same). Exact and leading matches come first, then the more frequently used tags. Click a tag to copy it with spaces instead of underscores, as it is written in prompts. </p><h3 id="manual-library-snippets" data-v-c9494c96>Snippets</h3><p data-v-c9494c96> Snippets are pieces of prompt text with an optional negative part, organised in folders. You insert them from the Snippets panel of the Generate tab. <code data-v-c9494c96>{}</code> or <code data-v-c9494c96>{prompt}</code> (as in WebUI styles) in a snippet stands for the selected prompt text, which the snippet wraps. For example, with the snippet <code data-v-c9494c96>watercolor painting of {}, soft pastel colors</code>, selecting <code data-v-c9494c96>a cat on a windowsill</code> in the prompt and clicking the snippet turns the selection into <code data-v-c9494c96>watercolor painting of a cat on a windowsill, soft pastel colors</code>. Edit a snippet in the right pane; changes are saved as you type. Drag snippets to reorder them or to move them into a folder. </p><p data-v-c9494c96> Badges after the name show what a snippet does: <span class="snippet-badge negative" data-v-c9494c96>−</span> marks a snippet with a negative part, which is added to the negative prompt when the snippet is inserted, and <span class="snippet-badge wrap" data-v-c9494c96>{}</span> marks one that wraps the selected text. Hover over the name to see the whole text of the snippet, including the negative part. The <span class="snippet-badge negative" data-v-c9494c96>−</span> badge also appears in the Snippets panel of the Generate tab. </p>', 5);
 const _hoisted_300 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, "styles.csv", -1));
 const _hoisted_301 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h3", { id: "manual-library-manual" }, "Manual", -1));
 const _hoisted_302 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, " This manual. ", -1));
@@ -38531,7 +38562,7 @@ const _hoisted_322 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_323 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Show in Projects", -1));
 const _hoisted_324 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "All projects…", -1));
 const _hoisted_325 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Close and start a blank workspace", -1));
-const _hoisted_326 = /* @__PURE__ */ createStaticVNode('<li data-v-8cab9ea0><b data-v-8cab9ea0>The project reminder</b>: while a project is current, a cube in the project color is joined to the Generate button. Click it for <b data-v-8cab9ea0>Save project</b> and <b data-v-8cab9ea0>New workspace…</b>. The cube turns striped and pulses when the work may be starting anew: when the Image Bench window opens with a project current (not when it is reloaded), after clearing the prompts, and after applying PNG Info. The next <b data-v-8cab9ea0>Generate</b> or <b data-v-8cab9ea0>Variations…</b> then asks first: <b data-v-8cab9ea0>Continue project</b> (<span class="kbd" data-v-8cab9ea0>Enter</span>) generates, <b data-v-8cab9ea0>New workspace</b> clears the images and trays and closes the project but keeps the prompts and parameters, then generates, and <span class="kbd" data-v-8cab9ea0>Esc</span> generates nothing. Ctrl+click on Generate skips the question; <b data-v-8cab9ea0>Don&#39;t ask again for this project</b> silences it until the window is opened again. To turn the question off for good (the cube stays), uncheck <b data-v-8cab9ea0>Settings › Generate Tab › Ask whether to continue the current project</b>.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>New project</b> creates the folder and, unless unchecked, saves the workspace into it and makes it current.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Open</b> (or double-click) restores the trays and parameters of a project and makes it current. If the current project has unsaved changes, you are asked to save or discard them first. The menu next to <b data-v-8cab9ea0>Open</b> restores <b data-v-8cab9ea0>Trays only</b> or <b data-v-8cab9ea0>Parameters only</b>, or offers <b data-v-8cab9ea0>Merge trays into the workspace</b>. <b data-v-8cab9ea0>Save</b> (<b data-v-8cab9ea0>Save here</b> on a project that is not current) saves the workspace into the project shown; the menu next to it saves it as a new project in the same folder (<b data-v-8cab9ea0>Save as new project…</b>), which becomes current. <b data-v-8cab9ea0>Revert</b> restores the saved state of the current project.</li>', 3);
+const _hoisted_326 = /* @__PURE__ */ createStaticVNode('<li data-v-c9494c96><b data-v-c9494c96>The project reminder</b>: while a project is current, a cube in the project color is joined to the Generate button. Click it for <b data-v-c9494c96>Save project</b> and <b data-v-c9494c96>New workspace…</b>. The cube turns striped and pulses when the work may be starting anew: when the Image Bench window opens with a project current (not when it is reloaded), after clearing the prompts, and after applying PNG Info. The next <b data-v-c9494c96>Generate</b> or <b data-v-c9494c96>Variations…</b> then asks first: <b data-v-c9494c96>Continue project</b> (<span class="kbd" data-v-c9494c96>Enter</span>) generates, <b data-v-c9494c96>New workspace</b> clears the images and trays and closes the project but keeps the prompts and parameters, then generates, and <span class="kbd" data-v-c9494c96>Esc</span> generates nothing. Ctrl+click on Generate skips the question; <b data-v-c9494c96>Don&#39;t ask again for this project</b> silences it until the window is opened again. To turn the question off for good (the cube stays), uncheck <b data-v-c9494c96>Settings › Generate Tab › Ask whether to continue the current project</b>.</li><li data-v-c9494c96><b data-v-c9494c96>New project</b> creates the folder and, unless unchecked, saves the workspace into it and makes it current.</li><li data-v-c9494c96><b data-v-c9494c96>Open</b> (or double-click) restores the trays and parameters of a project and makes it current. If the current project has unsaved changes, you are asked to save or discard them first. The menu next to <b data-v-c9494c96>Open</b> restores <b data-v-c9494c96>Trays only</b> or <b data-v-c9494c96>Parameters only</b>, or offers <b data-v-c9494c96>Merge trays into the workspace</b>. <b data-v-c9494c96>Save</b> (<b data-v-c9494c96>Save here</b> on a project that is not current) saves the workspace into the project shown; the menu next to it saves it as a new project in the same folder (<b data-v-c9494c96>Save as new project…</b>), which becomes current. <b data-v-c9494c96>Revert</b> restores the saved state of the current project.</li>', 3);
 const _hoisted_329 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Parameters", -1));
 const _hoisted_330 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Apply to Generate", -1));
 const _hoisted_331 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Final image", -1));
@@ -38691,7 +38722,7 @@ const _hoisted_389 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
   /* @__PURE__ */ createBaseVNode("b", null, "ControlNet: image"),
   /* @__PURE__ */ createTextVNode(" uses the image as the control image unchanged, without a preprocessor, and "),
   /* @__PURE__ */ createBaseVNode("b", null, "ControlNet: mask"),
-  /* @__PURE__ */ createTextVNode(" sends the selection as the unit's mask.")
+  /* @__PURE__ */ createTextVNode(" sends the selection as the unit's mask after a confirmation, since it also checks Use Mask.")
 ], -1));
 const _hoisted_390 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Keep", -1));
 const _hoisted_391 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Compare", -1));
@@ -38719,7 +38750,7 @@ const _hoisted_406 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_407 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, '"name": "Canny Edges"', -1));
 const _hoisted_408 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("code", null, '"pluginId": "image-bench.canny"', -1));
 const _hoisted_409 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Plugins › Canny Edges", -1));
-const _hoisted_410 = /* @__PURE__ */ createStaticVNode('<ul data-v-8cab9ea0><li data-v-8cab9ea0><b data-v-8cab9ea0>Threshold 1</b> and <b data-v-8cab9ea0>Threshold 2</b> are the hysteresis thresholds: lines start at edges stronger than the higher one and continue down to the lower one.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Blur</b> is the size of a Gaussian blur applied first (1 means no blur). It removes fine texture.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Merged</b> or <b data-v-8cab9ea0>Active layer</b> selects the image the edges are computed from. The plugin reads it again when another document or layer is selected, when you press <b data-v-8cab9ea0>Refresh</b> after editing it, and before each apply.</li><li data-v-8cab9ea0>The preview updates live and shows the full-size result zoomed out. <b data-v-8cab9ea0>Fast preview</b> computes it from a smaller copy instead, which is quicker for full images but does not show exactly the edges that are applied.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Selection only</b> keeps the edges inside the selection.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>As layer</b> puts white-on-black edges into a layer named after the parameters, as one history step; applying again in the same document overwrites that layer. <b data-v-8cab9ea0>As document</b> opens them as a new document.</li></ul><h3 id="manual-editor-krita" data-v-8cab9ea0>Krita</h3><p data-v-8cab9ea0> The <b data-v-8cab9ea0>Image Bench</b> plugin for Krita (5.2 or newer) works like the Photoshop plugin. </p>', 3);
+const _hoisted_410 = /* @__PURE__ */ createStaticVNode('<ul data-v-c9494c96><li data-v-c9494c96><b data-v-c9494c96>Threshold 1</b> and <b data-v-c9494c96>Threshold 2</b> are the hysteresis thresholds: lines start at edges stronger than the higher one and continue down to the lower one.</li><li data-v-c9494c96><b data-v-c9494c96>Blur</b> is the size of a Gaussian blur applied first (1 means no blur). It removes fine texture.</li><li data-v-c9494c96><b data-v-c9494c96>Merged</b> or <b data-v-c9494c96>Active layer</b> selects the image the edges are computed from. The plugin reads it again when another document or layer is selected, when you press <b data-v-c9494c96>Refresh</b> after editing it, and before each apply.</li><li data-v-c9494c96>The preview updates live and shows the full-size result zoomed out. <b data-v-c9494c96>Fast preview</b> computes it from a smaller copy instead, which is quicker for full images but does not show exactly the edges that are applied.</li><li data-v-c9494c96><b data-v-c9494c96>Selection only</b> keeps the edges inside the selection.</li><li data-v-c9494c96><b data-v-c9494c96>As layer</b> puts white-on-black edges into a layer named after the parameters, as one history step; applying again in the same document overwrites that layer. <b data-v-c9494c96>As document</b> opens them as a new document.</li></ul><h3 id="manual-editor-krita" data-v-c9494c96>Krita</h3><p data-v-c9494c96> The <b data-v-c9494c96>Image Bench</b> plugin for Krita (5.2 or newer) works like the Photoshop plugin. </p>', 3);
 const _hoisted_413 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("li", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Download .zip"),
   /* @__PURE__ */ createTextVNode(", then in Krita choose "),
@@ -38735,7 +38766,7 @@ const _hoisted_414 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 ], -1));
 const _hoisted_415 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h4", null, "Connecting", -1));
 const _hoisted_416 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Settings › Dockers › Image Bench", -1));
-const _hoisted_417 = /* @__PURE__ */ createStaticVNode("<p data-v-8cab9ea0> The docker has the commands of the Photoshop panel: <b data-v-8cab9ea0>Input / Inpaint</b> (<b data-v-8cab9ea0>Image</b>, <b data-v-8cab9ea0>Mask</b>, <b data-v-8cab9ea0>Image + Mask</b>), <b data-v-8cab9ea0>ControlNet</b> (<b data-v-8cab9ea0>Preprocess</b>, <b data-v-8cab9ea0>Image</b>, <b data-v-8cab9ea0>Mask</b>) and <b data-v-8cab9ea0>Keep</b> (<b data-v-8cab9ea0>Compare</b>, <b data-v-8cab9ea0>File</b>, <b data-v-8cab9ea0>Final</b>). The image is the merged document, converted to 8-bit sRGB regardless of the document&#39;s color space; the mask is the selection. The same commands are in <b data-v-8cab9ea0>Tools › Scripts › Image Bench</b>, and you can assign shortcuts to them in <b data-v-8cab9ea0>Settings › Configure Krita › Keyboard Shortcuts</b>. </p>", 1);
+const _hoisted_417 = /* @__PURE__ */ createStaticVNode("<p data-v-c9494c96> The docker has the commands of the Photoshop panel: <b data-v-c9494c96>Input / Inpaint</b> (<b data-v-c9494c96>Image</b>, <b data-v-c9494c96>Mask</b>, <b data-v-c9494c96>Image + Mask</b>), <b data-v-c9494c96>ControlNet</b> (<b data-v-c9494c96>Preprocess</b>, <b data-v-c9494c96>Image</b>, <b data-v-c9494c96>Mask</b>) and <b data-v-c9494c96>Keep</b> (<b data-v-c9494c96>Compare</b>, <b data-v-c9494c96>File</b>, <b data-v-c9494c96>Final</b>). The image is the merged document, converted to 8-bit sRGB regardless of the document&#39;s color space; the mask is the selection. The same commands are in <b data-v-c9494c96>Tools › Scripts › Image Bench</b>, and you can assign shortcuts to them in <b data-v-c9494c96>Settings › Configure Krita › Keyboard Shortcuts</b>. </p>", 1);
 const _hoisted_418 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Send to Krita"),
   /* @__PURE__ */ createTextVNode(" opens the image as a new document. Middle-click or Shift+click places it as a new paint layer above the active one, centered on the canvas and converted to the color space of the document. ")
@@ -38769,7 +38800,7 @@ const _hoisted_423 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 const _hoisted_424 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Tools › Image Bench › Panel", -1));
 const _hoisted_425 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Tools › Image Bench › Panel", -1));
 const _hoisted_426 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("b", null, "Quit", -1));
-const _hoisted_427 = /* @__PURE__ */ createStaticVNode("<p data-v-8cab9ea0> The panel has the commands of the Photoshop panel: <b data-v-8cab9ea0>Input / Inpaint</b> (<b data-v-8cab9ea0>Image</b>, <b data-v-8cab9ea0>Mask</b>, <b data-v-8cab9ea0>Image + Mask</b>), <b data-v-8cab9ea0>ControlNet</b> (<b data-v-8cab9ea0>Preprocess</b>, <b data-v-8cab9ea0>Image</b>, <b data-v-8cab9ea0>Mask</b>) and <b data-v-8cab9ea0>Keep</b> (<b data-v-8cab9ea0>Compare</b>, <b data-v-8cab9ea0>File</b>, <b data-v-8cab9ea0>Final</b>). They send the image chosen in the panel&#39;s <b data-v-8cab9ea0>Image</b> list, because GIMP does not tell plugins which image window is active; opening the panel from an image window selects that image. The image is the visible layers merged and converted to 8-bit sRGB regardless of the image&#39;s mode and precision; the mask is the selection. The same commands are in the <b data-v-8cab9ea0>Tools › Image Bench</b> menu. There they send the image of the window they are chosen in, also while the panel is closed, and you can assign shortcuts to them in <b data-v-8cab9ea0>Edit › Keyboard Shortcuts</b>. </p>", 1);
+const _hoisted_427 = /* @__PURE__ */ createStaticVNode("<p data-v-c9494c96> The panel has the commands of the Photoshop panel: <b data-v-c9494c96>Input / Inpaint</b> (<b data-v-c9494c96>Image</b>, <b data-v-c9494c96>Mask</b>, <b data-v-c9494c96>Image + Mask</b>), <b data-v-c9494c96>ControlNet</b> (<b data-v-c9494c96>Preprocess</b>, <b data-v-c9494c96>Image</b>, <b data-v-c9494c96>Mask</b>) and <b data-v-c9494c96>Keep</b> (<b data-v-c9494c96>Compare</b>, <b data-v-c9494c96>File</b>, <b data-v-c9494c96>Final</b>). They send the image chosen in the panel&#39;s <b data-v-c9494c96>Image</b> list, because GIMP does not tell plugins which image window is active; opening the panel from an image window selects that image. The image is the visible layers merged and converted to 8-bit sRGB regardless of the image&#39;s mode and precision; the mask is the selection. The same commands are in the <b data-v-c9494c96>Tools › Image Bench</b> menu. There they send the image of the window they are chosen in, also while the panel is closed, and you can assign shortcuts to them in <b data-v-c9494c96>Edit › Keyboard Shortcuts</b>. </p>", 1);
 const _hoisted_428 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, [
   /* @__PURE__ */ createBaseVNode("b", null, "Send to GIMP"),
   /* @__PURE__ */ createTextVNode(" opens the image as a new image. Middle-click or Shift+click places it as a new layer of the image chosen in the panel, above its selected layer and centered on the canvas. Images are received only while the panel runs. ")
@@ -38896,8 +38927,8 @@ const _hoisted_454 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
   /* @__PURE__ */ createBaseVNode("b", null, "ComfyUI-Advanced-ControlNet"),
   /* @__PURE__ */ createTextVNode(" enables ControlNet masks.")
 ], -1));
-const _hoisted_455 = /* @__PURE__ */ createStaticVNode("<li data-v-8cab9ea0>To support custom loader or sampler nodes, add them to <code data-v-8cab9ea0>store/node_config.json</code> in the extension folder and reload the page. Image Bench merges this file over the shipped <code data-v-8cab9ea0>node_config.json</code>, which is replaced on every update, so your file only needs the additions. <code data-v-8cab9ea0>NODE_CONFIG.md</code> in the extension folder describes the format.</li><li data-v-8cab9ea0>The workflow must have an output node (Save Image or Preview Image). Without one, no images reach Image Bench.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Errors</b> appear in the status slot of the Generate toolbar. If ComfyUI refuses the workflow (a model file that is not installed, a missing node, an invalid input) or a run fails, a red pill names the node and the error. It stays until the next run begins. In other tabs a notice is shown instead, and a running batch or exploration stops. Click the pill for the details: every node with its errors, and <b data-v-8cab9ea0>Show in ComfyUI</b>, which selects the node and switches to ComfyUI. While the Generate tab is shown, a yellow pill also lists active nodes that are not installed and model files that are not in their lists. These are only warnings, and you can still generate. A file added after the ComfyUI page was loaded is listed until you click the pill&#39;s refresh button, which rescans the model lists.</li>", 3);
-const _hoisted_458 = /* @__PURE__ */ createStaticVNode('<h3 id="manual-comfy-markers" data-v-8cab9ea0>Markers in detail</h3><ul data-v-8cab9ea0><li data-v-8cab9ea0>Markers are case-insensitive and can appear anywhere in the title, but each one must be a separate word: <code data-v-8cab9ea0>Main model ib:cp</code> and <code data-v-8cab9ea0>IB:CP - base</code> work, while <code data-v-8cab9ea0>xib:cp</code> does not.</li><li data-v-8cab9ea0>A title can hold several markers, e.g. <code data-v-8cab9ea0>Text to Image ib:pp ib:smp ib:cp</code>.</li><li data-v-8cab9ea0>An omitted index counts as 0, so <code data-v-8cab9ea0>ib:smp</code> is the same as <code data-v-8cab9ea0>ib:smp:0</code>. The index matters for <code data-v-8cab9ea0>ib:smp</code> (0 is the main sampler, 1 the Hires. fix sampler), <code data-v-8cab9ea0>ib:ref</code> and <code data-v-8cab9ea0>ib:cn</code>. For all other markers, Image Bench uses the first marked node in the graph, so mark only one node of each kind.</li><li data-v-8cab9ea0>Mark the node that holds the prompt text: if an encoder takes its text from a String Literal node, mark the String Literal. A node that holds both prompts (Text Encode Qwen Image 2.1) can carry both <code data-v-8cab9ea0>ib:pp</code> and <code data-v-8cab9ea0>ib:np</code>. In every other case, <code data-v-8cab9ea0>ib:np</code> skips the node marked <code data-v-8cab9ea0>ib:pp</code>, and <code data-v-8cab9ea0>ib:mask</code> skips the node marked <code data-v-8cab9ea0>ib:img</code>.</li></ul><p data-v-8cab9ea0> During LoRA exploration, the <code data-v-8cab9ea0>ib:lora</code> loader receives each explored LoRA, with its weight applied to both strengths. For the images without a LoRA, both strengths are set to 0. If the loader is bypassed or muted, it is enabled for the run, and its LoRA, strengths and mode are restored afterwards. </p><h3 id="manual-comfy-prompt" data-v-8cab9ea0>Image Bench Prompt node</h3><p data-v-8cab9ea0> Wire it as <b data-v-8cab9ea0>Load Checkpoint</b> → <code data-v-8cab9ea0>model</code> / <code data-v-8cab9ea0>clip</code> → <b data-v-8cab9ea0>Image Bench Prompt</b> (titled <code data-v-8cab9ea0>ib:pp</code>) → <code data-v-8cab9ea0>model</code> to the sampler, <code data-v-8cab9ea0>clip</code> and <code data-v-8cab9ea0>text</code> to a CLIPTextEncode whose <code data-v-8cab9ea0>text</code> is converted to an input. Feed the <code data-v-8cab9ea0>clip</code> of the negative prompt encoder from the prompt node too, so that both encoders use the same CLIP. For model-only LoRAs, leave the <code data-v-8cab9ea0>clip</code> input unconnected. </p><ul data-v-8cab9ea0><li data-v-8cab9ea0><code data-v-8cab9ea0>&lt;lora:name&gt;</code> uses weight 1. <code data-v-8cab9ea0>&lt;lora:name:0.8&gt;</code> applies 0.8 to both the model and the text encoder, and <code data-v-8cab9ea0>&lt;lora:name:0.5:1&gt;</code> applies 0.5 to the text encoder and 1 to the model.</li><li data-v-8cab9ea0><code data-v-8cab9ea0>name</code> is the path inside the <code data-v-8cab9ea0>loras</code> folder, with or without the extension, or the bare file name: <code data-v-8cab9ea0>styles/ink.safetensors</code>, <code data-v-8cab9ea0>styles/ink</code> and <code data-v-8cab9ea0>ink</code> all match.</li><li data-v-8cab9ea0>Unknown names are skipped and reported in the ComfyUI console (&quot;LoRA ... is not found&quot;). A LoRA with both weights at 0 is not loaded.</li></ul><h3 id="manual-comfy-params" data-v-8cab9ea0>Generation parameters</h3><p data-v-8cab9ea0> Image Bench finds the sampling fields of the Generate tab by starting at the sampler marked <code data-v-8cab9ea0>ib:smp</code>, so both sampler styles work without additional markers. It follows links through Reroutes and out of subgraphs. A field whose node cannot be found is hidden. </p><table data-v-8cab9ea0><tr data-v-8cab9ea0><th data-v-8cab9ea0>Field</th><th data-v-8cab9ea0>KSampler</th><th data-v-8cab9ea0>SamplerCustomAdvanced</th></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Seed</td><td data-v-8cab9ea0><code data-v-8cab9ea0>seed</code></td><td data-v-8cab9ea0>RandomNoise</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Steps, schedule type, denoising</td><td data-v-8cab9ea0>The sampler</td><td data-v-8cab9ea0>BasicScheduler (or Flux2Scheduler)</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>CFG scale</td><td data-v-8cab9ea0><code data-v-8cab9ea0>cfg</code></td><td data-v-8cab9ea0>CFGGuider</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Sampling method</td><td data-v-8cab9ea0><code data-v-8cab9ea0>sampler_name</code></td><td data-v-8cab9ea0>KSamplerSelect</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Distilled CFG</td><td colspan="2" data-v-8cab9ea0>FluxGuidance on the positive conditioning or in front of the guider</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Shift</td><td colspan="2" data-v-8cab9ea0>ModelSamplingSD3 / ModelSamplingAuraFlow along the model path (if there is no FluxGuidance)</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Width × height</td><td colspan="2" data-v-8cab9ea0>The empty latent, or the integer primitives that feed it</td></tr></table><ul data-v-8cab9ea0><li data-v-8cab9ea0><b data-v-8cab9ea0>Hires. fix</b> (<code data-v-8cab9ea0>ib:smp:1</code>) edits the steps and denoising of the second sampler (or of its scheduler and Split Sigmas Denoise), the <i data-v-8cab9ea0>Upscale by</i> value of the Upscale Latent By / Upscale Image By node in front of it, and the upscaler, which is the Load Upscale Model node if there is one and otherwise the method of the scale node. For the checkbox, place an <b data-v-8cab9ea0>If/Else Switch</b> titled <code data-v-8cab9ea0>ib:hr</code> before the save node, with the first-pass image on <code data-v-8cab9ea0>on_false</code> and the Hires. fix image on <code data-v-8cab9ea0>on_true</code>. The switch evaluates its inputs lazily, so the Hires. fix nodes do not run while it is off.</li><li data-v-8cab9ea0>The checkpoint, sampler, scheduler and upscaler lists are taken from the choices of the workflow&#39;s widgets, so a UNETLoader lists diffusion models and a GGUF loader lists <code data-v-8cab9ea0>.gguf</code> files. <b data-v-8cab9ea0>Model exploration lists only the <code data-v-8cab9ea0>checkpoints</code> folder</b>, so it has no usable models when <code data-v-8cab9ea0>ib:cp</code> is on a UNETLoader or GGUF loader. Switch those models in the Generate tab instead.</li><li data-v-8cab9ea0>A seed of −1 sets the seed widget&#39;s <i data-v-8cab9ea0>control after generate</i> to <i data-v-8cab9ea0>randomize</i>, and any other value sets it to <i data-v-8cab9ea0>fixed</i>. A batch sets −1.</li></ul><h3 id="manual-comfy-images" data-v-8cab9ea0>Input images and inpainting</h3><p data-v-8cab9ea0> Image Bench only selects the file in the marked loader. What happens to the image and the mask after that is up to the workflow (Set Latent Noise Mask, VAE Encode (for Inpainting), InpaintModelConditioning, ...). Mask files store the mask in their color channels and its inverse in alpha, so Load Image (as Mask) with any channel and the <code data-v-8cab9ea0>MASK</code> output of Load Image both read it correctly. </p><table data-v-8cab9ea0><tr data-v-8cab9ea0><th data-v-8cab9ea0><code data-v-8cab9ea0>ib:img</code></th><th data-v-8cab9ea0><code data-v-8cab9ea0>ib:mask</code></th><th data-v-8cab9ea0></th></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Load Image</td><td data-v-8cab9ea0>Load Image (as Mask)</td><td data-v-8cab9ea0>The usual setup.</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Load Image</td><td data-v-8cab9ea0>Another Load Image</td><td data-v-8cab9ea0>Use the <code data-v-8cab9ea0>MASK</code> output of the mask node.</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Load Image</td><td data-v-8cab9ea0>—</td><td data-v-8cab9ea0>img2img. A mask sent from the editor is reported.</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>—</td><td data-v-8cab9ea0>Either</td><td data-v-8cab9ea0>Mask only. The image comes from elsewhere in the workflow, and the Generate tab stays in txt2img mode.</td></tr></table><ul data-v-8cab9ea0><li data-v-8cab9ea0>The mask never goes to the <code data-v-8cab9ea0>ib:img</code> node, so a single Load Image marked <code data-v-8cab9ea0>ib:img ib:mask</code> receives only the image.</li><li data-v-8cab9ea0>A marked node that is bypassed or muted still receives the file, but stays bypassed.</li><li data-v-8cab9ea0>Other loaders that select a file from the <code data-v-8cab9ea0>input</code> folder by name can be added to <code data-v-8cab9ea0>store/node_config.json</code>.</li></ul><p data-v-8cab9ea0> The bundled inpaint workflows (<code data-v-8cab9ea0>Image Bench/image_*_inpaint</code>) require <a href="https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" target="_blank" rel="noopener" data-v-8cab9ea0>ComfyUI-Inpaint-CropAndStitch</a>, which you can install with the ComfyUI Manager. They inpaint the way WebUI&#39;s Inpaint upload does: <b data-v-8cab9ea0>Inpaint Crop</b> cuts the masked area and its padding out of the image and scales it to the size set in the Generate tab, and <b data-v-8cab9ea0>Inpaint Stitch</b> blends the result back in through the blurred mask. The Generate tab controls these nodes through its Inpaint group, which shows only the options the workflow has: </p><table data-v-8cab9ea0><tr data-v-8cab9ea0><th data-v-8cab9ea0>Generate tab</th><th data-v-8cab9ea0>Node</th></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Size</td><td data-v-8cab9ea0>Inpaint Crop: <code data-v-8cab9ea0>output_target_width</code> / <code data-v-8cab9ea0>output_target_height</code></td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Mask blur</td><td data-v-8cab9ea0>Inpaint Crop: <code data-v-8cab9ea0>mask_blend_pixels</code> (widens the mask and blurs it)</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Mask mode</td><td data-v-8cab9ea0>Inpaint Crop: <code data-v-8cab9ea0>mask_invert</code></td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Inpaint area</td><td data-v-8cab9ea0>The Solid Mask of the context mask: 0 Only masked, 1 Whole picture</td></tr><tr data-v-8cab9ea0><td data-v-8cab9ea0>Padding</td><td data-v-8cab9ea0>The Grow Mask of the context mask (Only masked padding, in pixels)</td></tr></table><h3 id="manual-comfy-references" data-v-8cab9ea0>References</h3><p data-v-8cab9ea0> Title the Load Image nodes of the reference images <code data-v-8cab9ea0>ib:ref:0</code>, <code data-v-8cab9ea0>ib:ref:1</code>, ... in the order the prompt refers to them (Image 1, Image 2, ...). An added image goes into the first free slot, or replaces the last one if every slot is taken. Removing an image bypasses its Load Image along with the nodes that cannot run without it (a VAE Encode, for example). The bypass stops at a node that passes its other input through (Reference Latent) or takes the image as an optional input. When you use a new workflow, check the bypassed nodes once. Slots inside a subgraph cannot be bypassed and always count as used. </p><p data-v-8cab9ea0> Video and audio references work the same way: title the Load Video nodes <code data-v-8cab9ea0>ib:vref:0</code>, <code data-v-8cab9ea0>ib:vref:1</code>, ... and the Load Audio nodes <code data-v-8cab9ea0>ib:aref:0</code>, ... An added file goes into a slot of its kind. The clip checks of the References panel come from <code data-v-8cab9ea0>limits</code> in <code data-v-8cab9ea0>node_config.json</code>, keyed by the node that takes the clip. A Load Video titled <code data-v-8cab9ea0>ib:ext</code> receives the video of <b data-v-8cab9ea0>Extend video</b>; the bundled video workflows feed its last frames to a guide node at frame 0, so the new clip continues the old one (it begins with those frames). A node that fails without any of its optional inputs (MiniMax H3 Add Guide) is listed under <code data-v-8cab9ea0>bypass_when_empty</code> and is bypassed with its last slot. </p><p data-v-8cab9ea0> The <b data-v-8cab9ea0>Image Bench</b> folder of the Workflows sidebar has video workflows for MiniMax H3 (text or frames to video, and Ref2VA with image, video and audio references) and LTX-2.5 (two stages, and an IC-LoRA guide video). Their notes list the models. </p><h3 id="manual-comfy-controlnet" data-v-8cab9ea0>ControlNet units</h3><p data-v-8cab9ea0> Image Bench finds the other nodes of a unit by following the inputs of the apply node titled <code data-v-8cab9ea0>ib:cn:N</code>. The ControlNet loader on <code data-v-8cab9ea0>control_net</code> is the Model, and the Load Image on <code data-v-8cab9ea0>image</code>, connected directly or through an AIO Aux Preprocessor, is the control image. For the Advanced-ControlNet apply nodes, the mask loader on <code data-v-8cab9ea0>mask_optional</code> is used as well. Weight and the starting and ending steps map to the apply node&#39;s <code data-v-8cab9ea0>strength</code>, <code data-v-8cab9ea0>start_percent</code> and <code data-v-8cab9ea0>end_percent</code>. <b data-v-8cab9ea0>Enable</b> and <b data-v-8cab9ea0>Use Mask</b> work by bypassing the apply node and the mask loader. </p><ul data-v-8cab9ea0><li data-v-8cab9ea0>If the unit contains an AIO Aux Preprocessor, the <b data-v-8cab9ea0>Preprocessor</b> field is that node&#39;s widget, and the workflow preprocesses the image on every generation. Without one, the field only selects the preprocessor for <b data-v-8cab9ea0>Run preprocessor</b>, and the control image is used as it is.</li><li data-v-8cab9ea0><b data-v-8cab9ea0>Run preprocessor</b> puts a small prompt of its own at the front of the queue; your workflow does not run. Its images do not appear in the Generated tab.</li><li data-v-8cab9ea0>Without <b data-v-8cab9ea0>Pixel Perfect</b>, the preprocessor resolution is 512. ComfyUI has no control types, so every preprocessor and model is listed.</li></ul><h3 id="manual-comfy-subgraphs" data-v-8cab9ea0>Subgraphs</h3><p data-v-8cab9ea0> A marker on a <b data-v-8cab9ea0>subgraph node</b> works through the widgets promoted to it. For each marker, Image Bench looks for a promoted widget of an accepted inner node (e.g. the <code data-v-8cab9ea0>text</code> of a CLIPTextEncode) and writes to it. Nested subgraphs are followed, but markers on nodes <i data-v-8cab9ea0>inside</i> a subgraph are not searched. </p><ul data-v-8cab9ea0><li data-v-8cab9ea0>Promote every widget that Image Bench should change. A widget that is not promoted (e.g. <i data-v-8cab9ea0>control after generate</i>) is written on the inner node, which changes the subgraph for all of its instances.</li><li data-v-8cab9ea0>Nodes linked to the marked node, such as the RandomNoise of a sampler or the loader of a ControlNet, are found inside the subgraph, and links from the subgraph&#39;s inputs are followed out to the parent graph.</li><li data-v-8cab9ea0>On a subgraph node marked both <code data-v-8cab9ea0>ib:pp</code> and <code data-v-8cab9ea0>ib:np</code>, the first promoted text widget receives the positive prompt. On one marked <code data-v-8cab9ea0>ib:img ib:mask</code>, the image goes to the first promoted Load Image and the mask to the next promoted loader.</li><li data-v-8cab9ea0>Reference slots and ControlNet units inside a subgraph cannot be bypassed.</li></ul><h3 id="manual-comfy-files" data-v-8cab9ea0>Files written</h3><p data-v-8cab9ea0> Images for the marked nodes are saved under fixed names in the ComfyUI <code data-v-8cab9ea0>input</code> folder, and each file is overwritten by the next image of the same kind: <code data-v-8cab9ea0>image_bench_input_*.png</code> (Input and Mask panes), <code data-v-8cab9ea0>image_bench_reference_N.png</code> (references), <code data-v-8cab9ea0>image_bench_reference_video_N.*</code> / <code data-v-8cab9ea0>image_bench_reference_audio_N.*</code> (video and audio references), <code data-v-8cab9ea0>image_bench_continuation.*</code> (Extend video), <code data-v-8cab9ea0>image_bench_cn_N_*.png</code> (ControlNet units) and <code data-v-8cab9ea0>image_bench_photoshop_*.png</code> (the editor). The trays, presets, model hashes and Civitai lookups are stored in <code data-v-8cab9ea0>store/</code> in the extension folder. </p>', 28);
+const _hoisted_455 = /* @__PURE__ */ createStaticVNode("<li data-v-c9494c96>To support custom loader or sampler nodes, add them to <code data-v-c9494c96>store/node_config.json</code> in the extension folder and reload the page. Image Bench merges this file over the shipped <code data-v-c9494c96>node_config.json</code>, which is replaced on every update, so your file only needs the additions. <code data-v-c9494c96>NODE_CONFIG.md</code> in the extension folder describes the format.</li><li data-v-c9494c96>The workflow must have an output node (Save Image or Preview Image). Without one, no images reach Image Bench.</li><li data-v-c9494c96><b data-v-c9494c96>Errors</b> appear in the status slot of the Generate toolbar. If ComfyUI refuses the workflow (a model file that is not installed, a missing node, an invalid input) or a run fails, a red pill names the node and the error. It stays until the next run begins. In other tabs a notice is shown instead, and a running batch or exploration stops. Click the pill for the details: every node with its errors, and <b data-v-c9494c96>Show in ComfyUI</b>, which selects the node and switches to ComfyUI. While the Generate tab is shown, a yellow pill also lists active nodes that are not installed and model files that are not in their lists. These are only warnings, and you can still generate. A file added after the ComfyUI page was loaded is listed until you click the pill&#39;s refresh button, which rescans the model lists.</li>", 3);
+const _hoisted_458 = /* @__PURE__ */ createStaticVNode('<h3 id="manual-comfy-markers" data-v-c9494c96>Markers in detail</h3><ul data-v-c9494c96><li data-v-c9494c96>Markers are case-insensitive and can appear anywhere in the title, but each one must be a separate word: <code data-v-c9494c96>Main model ib:cp</code> and <code data-v-c9494c96>IB:CP - base</code> work, while <code data-v-c9494c96>xib:cp</code> does not.</li><li data-v-c9494c96>A title can hold several markers, e.g. <code data-v-c9494c96>Text to Image ib:pp ib:smp ib:cp</code>.</li><li data-v-c9494c96>An omitted index counts as 0, so <code data-v-c9494c96>ib:smp</code> is the same as <code data-v-c9494c96>ib:smp:0</code>. The index matters for <code data-v-c9494c96>ib:smp</code> (0 is the main sampler, 1 the Hires. fix sampler), <code data-v-c9494c96>ib:ref</code> and <code data-v-c9494c96>ib:cn</code>. For all other markers, Image Bench uses the first marked node in the graph, so mark only one node of each kind.</li><li data-v-c9494c96>Mark the node that holds the prompt text: if an encoder takes its text from a String Literal node, mark the String Literal. A node that holds both prompts (Text Encode Qwen Image 2.1) can carry both <code data-v-c9494c96>ib:pp</code> and <code data-v-c9494c96>ib:np</code>. In every other case, <code data-v-c9494c96>ib:np</code> skips the node marked <code data-v-c9494c96>ib:pp</code>, and <code data-v-c9494c96>ib:mask</code> skips the node marked <code data-v-c9494c96>ib:img</code>.</li></ul><p data-v-c9494c96> During LoRA exploration, the <code data-v-c9494c96>ib:lora</code> loader receives each explored LoRA, with its weight applied to both strengths. For the images without a LoRA, both strengths are set to 0. If the loader is bypassed or muted, it is enabled for the run, and its LoRA, strengths and mode are restored afterwards. </p><h3 id="manual-comfy-prompt" data-v-c9494c96>Image Bench Prompt node</h3><p data-v-c9494c96> Wire it as <b data-v-c9494c96>Load Checkpoint</b> → <code data-v-c9494c96>model</code> / <code data-v-c9494c96>clip</code> → <b data-v-c9494c96>Image Bench Prompt</b> (titled <code data-v-c9494c96>ib:pp</code>) → <code data-v-c9494c96>model</code> to the sampler, <code data-v-c9494c96>clip</code> and <code data-v-c9494c96>text</code> to a CLIPTextEncode whose <code data-v-c9494c96>text</code> is converted to an input. Feed the <code data-v-c9494c96>clip</code> of the negative prompt encoder from the prompt node too, so that both encoders use the same CLIP. For model-only LoRAs, leave the <code data-v-c9494c96>clip</code> input unconnected. </p><ul data-v-c9494c96><li data-v-c9494c96><code data-v-c9494c96>&lt;lora:name&gt;</code> uses weight 1. <code data-v-c9494c96>&lt;lora:name:0.8&gt;</code> applies 0.8 to both the model and the text encoder, and <code data-v-c9494c96>&lt;lora:name:0.5:1&gt;</code> applies 0.5 to the text encoder and 1 to the model.</li><li data-v-c9494c96><code data-v-c9494c96>name</code> is the path inside the <code data-v-c9494c96>loras</code> folder, with or without the extension, or the bare file name: <code data-v-c9494c96>styles/ink.safetensors</code>, <code data-v-c9494c96>styles/ink</code> and <code data-v-c9494c96>ink</code> all match.</li><li data-v-c9494c96>Unknown names are skipped and reported in the ComfyUI console (&quot;LoRA ... is not found&quot;). A LoRA with both weights at 0 is not loaded.</li></ul><h3 id="manual-comfy-params" data-v-c9494c96>Generation parameters</h3><p data-v-c9494c96> Image Bench finds the sampling fields of the Generate tab by starting at the sampler marked <code data-v-c9494c96>ib:smp</code>, so both sampler styles work without additional markers. It follows links through Reroutes and out of subgraphs. A field whose node cannot be found is hidden. </p><table data-v-c9494c96><tr data-v-c9494c96><th data-v-c9494c96>Field</th><th data-v-c9494c96>KSampler</th><th data-v-c9494c96>SamplerCustomAdvanced</th></tr><tr data-v-c9494c96><td data-v-c9494c96>Seed</td><td data-v-c9494c96><code data-v-c9494c96>seed</code></td><td data-v-c9494c96>RandomNoise</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Steps, schedule type, denoising</td><td data-v-c9494c96>The sampler</td><td data-v-c9494c96>BasicScheduler (or Flux2Scheduler)</td></tr><tr data-v-c9494c96><td data-v-c9494c96>CFG scale</td><td data-v-c9494c96><code data-v-c9494c96>cfg</code></td><td data-v-c9494c96>CFGGuider</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Sampling method</td><td data-v-c9494c96><code data-v-c9494c96>sampler_name</code></td><td data-v-c9494c96>KSamplerSelect</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Distilled CFG</td><td colspan="2" data-v-c9494c96>FluxGuidance on the positive conditioning or in front of the guider</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Shift</td><td colspan="2" data-v-c9494c96>ModelSamplingSD3 / ModelSamplingAuraFlow along the model path (if there is no FluxGuidance)</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Width × height</td><td colspan="2" data-v-c9494c96>The empty latent, or the integer primitives that feed it</td></tr></table><ul data-v-c9494c96><li data-v-c9494c96><b data-v-c9494c96>Hires. fix</b> (<code data-v-c9494c96>ib:smp:1</code>) edits the steps and denoising of the second sampler (or of its scheduler and Split Sigmas Denoise), the <i data-v-c9494c96>Upscale by</i> value of the Upscale Latent By / Upscale Image By node in front of it, and the upscaler, which is the Load Upscale Model node if there is one and otherwise the method of the scale node. For the checkbox, place an <b data-v-c9494c96>If/Else Switch</b> titled <code data-v-c9494c96>ib:hr</code> before the save node, with the first-pass image on <code data-v-c9494c96>on_false</code> and the Hires. fix image on <code data-v-c9494c96>on_true</code>. The switch evaluates its inputs lazily, so the Hires. fix nodes do not run while it is off.</li><li data-v-c9494c96>The checkpoint, sampler, scheduler and upscaler lists are taken from the choices of the workflow&#39;s widgets, so a UNETLoader lists diffusion models and a GGUF loader lists <code data-v-c9494c96>.gguf</code> files. <b data-v-c9494c96>Model exploration lists only the <code data-v-c9494c96>checkpoints</code> folder</b>, so it has no usable models when <code data-v-c9494c96>ib:cp</code> is on a UNETLoader or GGUF loader. Switch those models in the Generate tab instead.</li><li data-v-c9494c96>A seed of −1 sets the seed widget&#39;s <i data-v-c9494c96>control after generate</i> to <i data-v-c9494c96>randomize</i>, and any other value sets it to <i data-v-c9494c96>fixed</i>. A batch sets −1.</li></ul><h3 id="manual-comfy-images" data-v-c9494c96>Input images and inpainting</h3><p data-v-c9494c96> Image Bench only selects the file in the marked loader. What happens to the image and the mask after that is up to the workflow (Set Latent Noise Mask, VAE Encode (for Inpainting), InpaintModelConditioning, ...). Mask files store the mask in their color channels and its inverse in alpha, so Load Image (as Mask) with any channel and the <code data-v-c9494c96>MASK</code> output of Load Image both read it correctly. </p><table data-v-c9494c96><tr data-v-c9494c96><th data-v-c9494c96><code data-v-c9494c96>ib:img</code></th><th data-v-c9494c96><code data-v-c9494c96>ib:mask</code></th><th data-v-c9494c96></th></tr><tr data-v-c9494c96><td data-v-c9494c96>Load Image</td><td data-v-c9494c96>Load Image (as Mask)</td><td data-v-c9494c96>The usual setup.</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Load Image</td><td data-v-c9494c96>Another Load Image</td><td data-v-c9494c96>Use the <code data-v-c9494c96>MASK</code> output of the mask node.</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Load Image</td><td data-v-c9494c96>—</td><td data-v-c9494c96>img2img. A mask sent from the editor is reported.</td></tr><tr data-v-c9494c96><td data-v-c9494c96>—</td><td data-v-c9494c96>Either</td><td data-v-c9494c96>Mask only. The image comes from elsewhere in the workflow, and the Generate tab stays in txt2img mode.</td></tr></table><ul data-v-c9494c96><li data-v-c9494c96>The mask never goes to the <code data-v-c9494c96>ib:img</code> node, so a single Load Image marked <code data-v-c9494c96>ib:img ib:mask</code> receives only the image.</li><li data-v-c9494c96>A marked node that is bypassed or muted still receives the file, but stays bypassed.</li><li data-v-c9494c96>Other loaders that select a file from the <code data-v-c9494c96>input</code> folder by name can be added to <code data-v-c9494c96>store/node_config.json</code>.</li></ul><p data-v-c9494c96> The bundled inpaint workflows (<code data-v-c9494c96>Image Bench/image_*_inpaint</code>) require <a href="https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch" target="_blank" rel="noopener" data-v-c9494c96>ComfyUI-Inpaint-CropAndStitch</a>, which you can install with the ComfyUI Manager. They inpaint the way WebUI&#39;s Inpaint upload does: <b data-v-c9494c96>Inpaint Crop</b> cuts the masked area and its padding out of the image and scales it to the size set in the Generate tab, and <b data-v-c9494c96>Inpaint Stitch</b> blends the result back in through the blurred mask. The Generate tab controls these nodes through its Inpaint group, which shows only the options the workflow has: </p><table data-v-c9494c96><tr data-v-c9494c96><th data-v-c9494c96>Generate tab</th><th data-v-c9494c96>Node</th></tr><tr data-v-c9494c96><td data-v-c9494c96>Size</td><td data-v-c9494c96>Inpaint Crop: <code data-v-c9494c96>output_target_width</code> / <code data-v-c9494c96>output_target_height</code></td></tr><tr data-v-c9494c96><td data-v-c9494c96>Mask blur</td><td data-v-c9494c96>Inpaint Crop: <code data-v-c9494c96>mask_blend_pixels</code> (widens the mask and blurs it)</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Mask mode</td><td data-v-c9494c96>Inpaint Crop: <code data-v-c9494c96>mask_invert</code></td></tr><tr data-v-c9494c96><td data-v-c9494c96>Inpaint area</td><td data-v-c9494c96>The Solid Mask of the context mask: 0 Only masked, 1 Whole picture</td></tr><tr data-v-c9494c96><td data-v-c9494c96>Padding</td><td data-v-c9494c96>The Grow Mask of the context mask (Only masked padding, in pixels)</td></tr></table><h3 id="manual-comfy-references" data-v-c9494c96>References</h3><p data-v-c9494c96> Title the Load Image nodes of the reference images <code data-v-c9494c96>ib:ref:0</code>, <code data-v-c9494c96>ib:ref:1</code>, ... in the order the prompt refers to them (Image 1, Image 2, ...). An added image goes into the first free slot, or replaces the last one if every slot is taken. Removing an image bypasses its Load Image along with the nodes that cannot run without it (a VAE Encode, for example). The bypass stops at a node that passes its other input through (Reference Latent) or takes the image as an optional input. When you use a new workflow, check the bypassed nodes once. Slots inside a subgraph cannot be bypassed and always count as used. </p><p data-v-c9494c96> Video and audio references work the same way: title the Load Video nodes <code data-v-c9494c96>ib:vref:0</code>, <code data-v-c9494c96>ib:vref:1</code>, ... and the Load Audio nodes <code data-v-c9494c96>ib:aref:0</code>, ... An added file goes into a slot of its kind. The clip checks of the References panel come from <code data-v-c9494c96>limits</code> in <code data-v-c9494c96>node_config.json</code>, keyed by the node that takes the clip. A Load Video titled <code data-v-c9494c96>ib:ext</code> receives the video of <b data-v-c9494c96>Extend video</b>; the bundled video workflows feed its last frames to a guide node at frame 0, so the new clip continues the old one (it begins with those frames). A node that fails without any of its optional inputs (MiniMax H3 Add Guide) is listed under <code data-v-c9494c96>bypass_when_empty</code> and is bypassed with its last slot. </p><p data-v-c9494c96> The <b data-v-c9494c96>Image Bench</b> folder of the Workflows sidebar has video workflows for MiniMax H3 (text or frames to video, and Ref2VA with image, video and audio references) and LTX-2.5 (two stages, and an IC-LoRA guide video). Their notes list the models. </p><h3 id="manual-comfy-controlnet" data-v-c9494c96>ControlNet units</h3><p data-v-c9494c96> Image Bench finds the other nodes of a unit by following the inputs of the apply node titled <code data-v-c9494c96>ib:cn:N</code>. The ControlNet loader on <code data-v-c9494c96>control_net</code> is the Model, and the Load Image on <code data-v-c9494c96>image</code>, connected directly or through an AIO Aux Preprocessor, is the control image. For the Advanced-ControlNet apply nodes, the mask loader on <code data-v-c9494c96>mask_optional</code> is used as well. Weight and the starting and ending steps map to the apply node&#39;s <code data-v-c9494c96>strength</code>, <code data-v-c9494c96>start_percent</code> and <code data-v-c9494c96>end_percent</code>. <b data-v-c9494c96>Enable</b> and <b data-v-c9494c96>Use Mask</b> work by bypassing the apply node and the mask loader. </p><ul data-v-c9494c96><li data-v-c9494c96>If the unit contains an AIO Aux Preprocessor, the <b data-v-c9494c96>Preprocessor</b> field is that node&#39;s widget, and the workflow preprocesses the image on every generation. Without one, the field only selects the preprocessor for <b data-v-c9494c96>Run preprocessor</b>, and the control image is used as it is.</li><li data-v-c9494c96><b data-v-c9494c96>Run preprocessor</b> puts a small prompt of its own at the front of the queue; your workflow does not run. Its images do not appear in the Generated tab.</li><li data-v-c9494c96>Without <b data-v-c9494c96>Pixel Perfect</b>, the preprocessor resolution is 512. ComfyUI has no control types, so every preprocessor and model is listed.</li></ul><h3 id="manual-comfy-subgraphs" data-v-c9494c96>Subgraphs</h3><p data-v-c9494c96> A marker on a <b data-v-c9494c96>subgraph node</b> works through the widgets promoted to it. For each marker, Image Bench looks for a promoted widget of an accepted inner node (e.g. the <code data-v-c9494c96>text</code> of a CLIPTextEncode) and writes to it. Nested subgraphs are followed, but markers on nodes <i data-v-c9494c96>inside</i> a subgraph are not searched. </p><ul data-v-c9494c96><li data-v-c9494c96>Promote every widget that Image Bench should change. A widget that is not promoted (e.g. <i data-v-c9494c96>control after generate</i>) is written on the inner node, which changes the subgraph for all of its instances.</li><li data-v-c9494c96>Nodes linked to the marked node, such as the RandomNoise of a sampler or the loader of a ControlNet, are found inside the subgraph, and links from the subgraph&#39;s inputs are followed out to the parent graph.</li><li data-v-c9494c96>On a subgraph node marked both <code data-v-c9494c96>ib:pp</code> and <code data-v-c9494c96>ib:np</code>, the first promoted text widget receives the positive prompt. On one marked <code data-v-c9494c96>ib:img ib:mask</code>, the image goes to the first promoted Load Image and the mask to the next promoted loader.</li><li data-v-c9494c96>Reference slots and ControlNet units inside a subgraph cannot be bypassed.</li></ul><h3 id="manual-comfy-files" data-v-c9494c96>Files written</h3><p data-v-c9494c96> Images for the marked nodes are saved under fixed names in the ComfyUI <code data-v-c9494c96>input</code> folder, and each file is overwritten by the next image of the same kind: <code data-v-c9494c96>image_bench_input_*.png</code> (Input and Mask panes), <code data-v-c9494c96>image_bench_reference_N.png</code> (references), <code data-v-c9494c96>image_bench_reference_video_N.*</code> / <code data-v-c9494c96>image_bench_reference_audio_N.*</code> (video and audio references), <code data-v-c9494c96>image_bench_continuation.*</code> (Extend video), <code data-v-c9494c96>image_bench_cn_N_*.png</code> (ControlNet units) and <code data-v-c9494c96>image_bench_photoshop_*.png</code> (the editor). The trays, presets, model hashes and Civitai lookups are stored in <code data-v-c9494c96>store/</code> in the extension folder. </p>', 28);
 const _hoisted_486 = { id: "manual-shortcuts" };
 const _hoisted_487 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("h2", null, "Keyboard and mouse", -1));
 const _hoisted_488 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("p", null, "The window has these shortcuts:", -1));
@@ -38962,7 +38993,7 @@ const _hoisted_496 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ create
 ], -1));
 const _hoisted_497 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, "Middle click"),
-  /* @__PURE__ */ createBaseVNode("td", null, "In the image view, open the action rim at the pointer. Release the button on a sector to run it; the button in the center closes the image view. On an image card, show or hide its action rim (with the rim on hover: hide it), as on a Compare image and a project file. On a button, perform its alternative action (place as a new layer in the editor). On a marking, remove it")
+  /* @__PURE__ */ createBaseVNode("td", null, "In the image view, open the action rim at the pointer. Release the button on a sector to run it; the button in the center closes the image view on a left or a middle click. On an image card, show or hide its action rim (with the rim on hover: hide it), as on a Compare image and a project file. On a button, perform its alternative action (place as a new layer in the editor). On a marking, remove it")
 ], -1));
 const _hoisted_498 = /* @__PURE__ */ _withScopeId$4(() => /* @__PURE__ */ createBaseVNode("tr", null, [
   /* @__PURE__ */ createBaseVNode("td", null, [
@@ -39150,7 +39181,7 @@ const _sfc_main$6 = {
             createVNode(ShortcutTables)
           ]),
           createBaseVNode("section", _hoisted_27$2, [
-            _hoisted_28$2,
+            _hoisted_28$1,
             createBaseVNode("p", null, [
               createTextVNode(" Small images generate faster, so drafts are usually made at about 1 megapixel (1024×1024) or 0.5 megapixel, and the good ones are upscaled 2× or 4×. The more pixels an image has, the more detail it can hold. Some models can generate at 2 megapixels directly. The "),
               createBaseVNode("a", {
@@ -39244,6 +39275,12 @@ const _sfc_main$6 = {
                 createBaseVNode("td", null, [
                   _hoisted_65$1,
                   createTextVNode(" Shows the generation parameters, with buttons for the Civitai information of the image's checkpoint and LoRAs, and the ControlNet units the image was made with: the settings of each enabled unit with its control image, mask and preprocessor preview as they were when the generation started. The "),
+                  createVNode(AppIcon, {
+                    name: "controlnet",
+                    size: 13,
+                    class: "inline-icon"
+                  }),
+                  createTextVNode(" button at the top left of a control image or preview sends it to the ControlNet tab's unit as an already processed control image (preprocessor None). The "),
                   createVNode(AppIcon, {
                     name: "seed",
                     size: 13,
@@ -39417,7 +39454,7 @@ const _sfc_main$6 = {
               _hoisted_86,
               createTextVNode(" button at the top left shows the parameters over the image (a second click hides them; they stay shown while paging), and "),
               _hoisted_87,
-              createTextVNode(" closes the view. "),
+              createTextVNode(" closes the view. The mouse closes it in three ways: a left click or a middle click on the close button in the center of the action rim (a middle click opens the rim at the pointer), or a right drag down, released far enough down. "),
               _hoisted_88,
               createTextVNode(" of the image menu opens it in a new browser tab. ")
             ]),
@@ -40504,7 +40541,7 @@ const _sfc_main$6 = {
                 _hoisted_314,
                 createTextVNode(" (WebUI) or "),
                 _hoisted_315,
-                createTextVNode(" (ComfyUI). Select a folder (or nothing, for the root) to see its page: its subfolders and its projects with their final images. Click a project there to show it and double-click it to open it.")
+                createTextVNode(" (ComfyUI). Select a folder (or nothing, for the root) to see its page: its subfolders and its projects with their final images, then the projects of all its subfolders, each with its folder. Click a project there to show it and double-click it to open it.")
               ]),
               _hoisted_316,
               createBaseVNode("li", null, [
@@ -41043,7 +41080,7 @@ const _sfc_main$6 = {
     };
   }
 };
-const ManualViewer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-8cab9ea0"]]);
+const ManualViewer = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__scopeId", "data-v-c9494c96"]]);
 const _withScopeId$3 = (n) => (pushScopeId("data-v-d474331a"), n = n(), popScopeId(), n);
 const _hoisted_1$5 = { class: "view-container library" };
 const _hoisted_2$5 = {
@@ -41992,7 +42029,7 @@ const _hoisted_26$1 = {
   "aria-label": "Final image"
 };
 const _hoisted_27$1 = ["src"];
-const _hoisted_28$1 = {
+const _hoisted_28 = {
   key: 1,
   class: "final-empty"
 };
@@ -42688,7 +42725,7 @@ const _sfc_main$2 = {
                   kind: finalKind.value,
                   onOpen: openFinal
                 }, null, 8, ["src", "kind"])) : createCommentVNode("", true)
-              ], 64)) : (openBlock(), createElementBlock("div", _hoisted_28$1, [
+              ], 64)) : (openBlock(), createElementBlock("div", _hoisted_28, [
                 createVNode(AppIcon, {
                   name: "star",
                   size: 22
@@ -43016,31 +43053,27 @@ const _hoisted_14 = { class: "folder-name" };
 const _hoisted_15 = { class: "folder-count" };
 const _hoisted_16 = {
   key: 1,
-  class: "section-label"
-};
-const _hoisted_17 = {
-  key: 2,
   class: "project-grid"
 };
-const _hoisted_18 = ["onClick", "onDblclick"];
-const _hoisted_19 = { class: "thumb" };
-const _hoisted_20 = ["src"];
-const _hoisted_21 = { class: "name-line" };
-const _hoisted_22 = { class: "name" };
-const _hoisted_23 = {
+const _hoisted_17 = ["onClick", "onDblclick"];
+const _hoisted_18 = { class: "thumb" };
+const _hoisted_19 = ["src"];
+const _hoisted_20 = { class: "name-line" };
+const _hoisted_21 = { class: "name" };
+const _hoisted_22 = {
   key: 0,
   class: "unsaved-dot",
   title: "Unsaved changes"
 };
+const _hoisted_23 = ["title"];
 const _hoisted_24 = ["title"];
-const _hoisted_25 = ["title"];
-const _hoisted_26 = { class: "saved" };
-const _hoisted_27 = {
+const _hoisted_25 = { class: "saved" };
+const _hoisted_26 = {
   key: 1,
   class: "tags"
 };
-const _hoisted_28 = {
-  key: 3,
+const _hoisted_27 = {
+  key: 2,
   class: "empty"
 };
 const _sfc_main$1 = {
@@ -43069,8 +43102,7 @@ const _sfc_main$1 = {
     function collectProjects(list2) {
       return list2.flatMap((entry) => entry.type === "project" ? [entry] : collectProjects(entry.children ?? []));
     }
-    const nested = computed(() => !projects.value.length && total.value > 0);
-    const shownProjects = computed(() => nested.value ? collectProjects(entries2.value) : projects.value);
+    const shownProjects = computed(() => [...projects.value, ...collectProjects(folders.value)]);
     function subfolder(entry) {
       const parts = entry.path.split("/").slice(props.path ? props.path.split("/").length : 0, -1);
       return parts.join(" › ");
@@ -43155,8 +43187,7 @@ const _sfc_main$1 = {
             ], 8, _hoisted_13);
           }), 128))
         ])) : createCommentVNode("", true),
-        nested.value ? (openBlock(), createElementBlock("div", _hoisted_16, "All projects in the subfolders")) : createCommentVNode("", true),
-        shownProjects.value.length ? (openBlock(), createElementBlock("div", _hoisted_17, [
+        shownProjects.value.length ? (openBlock(), createElementBlock("div", _hoisted_16, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(shownProjects.value, (entry) => {
             var _a, _b, _c, _d, _e, _f;
             return openBlock(), createElementBlock("button", {
@@ -43166,28 +43197,28 @@ const _sfc_main$1 = {
               onClick: ($event) => unref(store).select(entry.path),
               onDblclick: ($event) => unref(store).open(entry.path)
             }, [
-              createBaseVNode("span", _hoisted_19, [
+              createBaseVNode("span", _hoisted_18, [
                 preview(entry) ? (openBlock(), createElementBlock("img", {
                   key: 0,
                   src: preview(entry),
                   alt: "",
                   loading: "lazy",
                   draggable: "false"
-                }, null, 8, _hoisted_20)) : (openBlock(), createBlock(AppIcon, {
+                }, null, 8, _hoisted_19)) : (openBlock(), createBlock(AppIcon, {
                   key: 1,
                   name: "box",
                   size: 28
                 }))
               ]),
-              createBaseVNode("span", _hoisted_21, [
-                createBaseVNode("span", _hoisted_22, toDisplayString(entry.name), 1),
-                isCurrent(entry) && unref(store).unsaved ? (openBlock(), createElementBlock("span", _hoisted_23)) : createCommentVNode("", true),
+              createBaseVNode("span", _hoisted_20, [
+                createBaseVNode("span", _hoisted_21, toDisplayString(entry.name), 1),
+                isCurrent(entry) && unref(store).unsaved ? (openBlock(), createElementBlock("span", _hoisted_22)) : createCommentVNode("", true),
                 createBaseVNode("span", {
                   class: normalizeClass(["host", (_a = entry.project) == null ? void 0 : _a.host]),
                   title: `Saved in ${unref(HOST_LABELS)[(_b = entry.project) == null ? void 0 : _b.host] ?? "WebUI"}`
-                }, toDisplayString(((_c = entry.project) == null ? void 0 : _c.host) === "comfy" ? "C" : "W"), 11, _hoisted_24)
+                }, toDisplayString(((_c = entry.project) == null ? void 0 : _c.host) === "comfy" ? "C" : "W"), 11, _hoisted_23)
               ]),
-              nested.value ? (openBlock(), createElementBlock("span", {
+              subfolder(entry) ? (openBlock(), createElementBlock("span", {
                 key: 0,
                 class: "subfolder",
                 title: entry.path
@@ -43197,18 +43228,18 @@ const _sfc_main$1 = {
                   size: 11
                 }),
                 createTextVNode(toDisplayString(subfolder(entry)), 1)
-              ], 8, _hoisted_25)) : createCommentVNode("", true),
-              createBaseVNode("span", _hoisted_26, toDisplayString(unref(formatSavedAt)((_d = entry.project) == null ? void 0 : _d.savedAt) ?? "Not saved yet"), 1),
-              ((_f = (_e = entry.project) == null ? void 0 : _e.tags) == null ? void 0 : _f.length) ? (openBlock(), createElementBlock("span", _hoisted_27, toDisplayString(entry.project.tags.map((tag2) => "#" + tag2).join(" ")), 1)) : createCommentVNode("", true)
-            ], 42, _hoisted_18);
+              ], 8, _hoisted_24)) : createCommentVNode("", true),
+              createBaseVNode("span", _hoisted_25, toDisplayString(unref(formatSavedAt)((_d = entry.project) == null ? void 0 : _d.savedAt) ?? "Not saved yet"), 1),
+              ((_f = (_e = entry.project) == null ? void 0 : _e.tags) == null ? void 0 : _f.length) ? (openBlock(), createElementBlock("span", _hoisted_26, toDisplayString(entry.project.tags.map((tag2) => "#" + tag2).join(" ")), 1)) : createCommentVNode("", true)
+            ], 42, _hoisted_17);
           }), 128))
         ])) : createCommentVNode("", true),
-        !folders.value.length && !projects.value.length ? (openBlock(), createElementBlock("p", _hoisted_28, "No projects or folders here yet.")) : createCommentVNode("", true)
+        !folders.value.length && !projects.value.length ? (openBlock(), createElementBlock("p", _hoisted_27, "No projects or folders here yet.")) : createCommentVNode("", true)
       ]);
     };
   }
 };
-const FolderDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-cb6ddf19"]]);
+const FolderDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__scopeId", "data-v-6d442c16"]]);
 const _withScopeId = (n) => (pushScopeId("data-v-b6cb77da"), n = n(), popScopeId(), n);
 const _hoisted_1 = { class: "view-container projects" };
 const _hoisted_2 = ["aria-valuenow"];
@@ -45072,7 +45103,7 @@ to { opacity: 0.25;
 }
 }
 
-.action-rim[data-v-37411436] {
+.action-rim[data-v-906d74ec] {
   --marking-ring: conic-gradient(#4ade80, #fb7185, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #a855f7, #e5e7eb, #4ade80);
   position: absolute;
   left: 50%;
@@ -45082,30 +45113,30 @@ to { opacity: 0.25;
   transition: opacity 0.12s ease-out, transform 0.12s ease-out;
 }
 @media (prefers-reduced-motion: reduce) {
-.action-rim[data-v-37411436] {
+.action-rim[data-v-906d74ec] {
     transition: none;
 }
 }
-.action-rim.far[data-v-37411436] {
+.action-rim.far[data-v-906d74ec] {
   opacity: 0.42;
 }
-.rim-ring[data-v-37411436] {
+.rim-ring[data-v-906d74ec] {
   position: absolute;
   left: 0;
   top: 0;
   overflow: visible;
 }
-.rim-glass[data-v-37411436] {
+.rim-glass[data-v-906d74ec] {
   position: absolute;
   border-radius: 50%;
   background: rgba(12, 14, 20, 0.46);
   backdrop-filter: blur(6px) saturate(1.15);
 }
-.rim-hit[data-v-37411436] {
+.rim-hit[data-v-906d74ec] {
   pointer-events: all;
   cursor: pointer;
 }
-.rim-label[data-v-37411436] {
+.rim-label[data-v-906d74ec] {
   position: absolute;
   display: none;
   flex-direction: column;
@@ -45125,7 +45156,7 @@ to { opacity: 0.25;
 }
 
 /* Clipped by the circle rather than spilling over the sectors */
-.rim-label.compact[data-v-37411436] {
+.rim-label.compact[data-v-906d74ec] {
   gap: 2px;
   padding: 4px;
   overflow: hidden;
@@ -45133,27 +45164,27 @@ to { opacity: 0.25;
   line-height: 1.15;
   overflow-wrap: anywhere;
 }
-.action-rim.labelled .rim-label[data-v-37411436] {
+.action-rim.labelled .rim-label[data-v-906d74ec] {
   display: flex;
 }
-.rim-label kbd[data-v-37411436] {
+.rim-label kbd[data-v-906d74ec] {
   padding: 0 4px;
   border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 3px;
   font-family: inherit;
   font-size: 9.5px;
 }
-.rim-label-note[data-v-37411436] {
+.rim-label-note[data-v-906d74ec] {
   font-size: 9.5px;
   opacity: 0.75;
 }
-.rim-label-gap[data-v-37411436] {
+.rim-label-gap[data-v-906d74ec] {
   flex: none;
   height: 36px;
 }
 
 /* Ringed with the marking colors, so that it reads as the markings */
-.rim-center[data-v-37411436] {
+.rim-center[data-v-906d74ec] {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -45174,34 +45205,34 @@ to { opacity: 0.25;
   pointer-events: auto;
   transition: opacity 0.1s, transform 0.1s;
 }
-.rim-center[data-v-37411436]:hover {
+.rim-center[data-v-906d74ec]:hover {
   transform: scale(1.12);
   background: radial-gradient(circle closest-side, rgba(10, 12, 18, 0.85) calc(100% - 3px), transparent calc(100% - 2.5px)),
     var(--marking-ring);
 }
-.rim-center.back[data-v-37411436] {
+.rim-center.back[data-v-906d74ec] {
   border: 1.5px dashed rgba(255, 255, 255, 0.8);
   background: rgba(10, 12, 18, 0.6);
 }
-.rim-center.back[data-v-37411436]:hover {
+.rim-center.back[data-v-906d74ec]:hover {
   background: rgba(10, 12, 18, 0.85);
 }
 
 /* Closes the image overlay: larger, plain */
-.rim-center.close[data-v-37411436] {
+.rim-center.close[data-v-906d74ec] {
   width: 40px;
   height: 40px;
   margin: -20px 0 0 -20px;
   border: 1.5px solid rgba(255, 255, 255, 0.75);
   background: rgba(10, 12, 18, 0.7);
 }
-.rim-center.close[data-v-37411436]:hover {
+.rim-center.close[data-v-906d74ec]:hover {
   background: rgba(10, 12, 18, 0.9);
 }
-.action-rim.labelled:not(.center-hovered) .rim-center[data-v-37411436] {
+.action-rim.labelled:not(.center-hovered) .rim-center[data-v-906d74ec] {
   opacity: 0;
 }
-.rim-center-marking[data-v-37411436] {
+.rim-center-marking[data-v-906d74ec] {
   font-size: 15px;
   line-height: 1;
 }
@@ -45661,12 +45692,12 @@ to { opacity: 0.25;
   margin-left: auto;
 }
 
-.controlnet-container[data-v-c4d31446] {
+.controlnet-container[data-v-5e1e64b5] {
   margin-top: 12px;
   padding-top: 10px;
   border-top: 1px solid var(--ib-border);
 }
-.controlnet-title[data-v-c4d31446] {
+.controlnet-title[data-v-5e1e64b5] {
   margin-bottom: 6px;
   color: var(--ib-muted);
   font-size: 11px;
@@ -45674,33 +45705,57 @@ to { opacity: 0.25;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
-.controlnet-unit + .controlnet-unit[data-v-c4d31446] {
+.controlnet-unit + .controlnet-unit[data-v-5e1e64b5] {
   margin-top: 10px;
 }
-.controlnet-unit-header[data-v-c4d31446] {
+.controlnet-unit-header[data-v-5e1e64b5] {
   display: flex;
   align-items: baseline;
   gap: 8px;
   margin-bottom: 4px;
   font-size: 13px;
 }
-.controlnet-unit-name[data-v-c4d31446] {
+.controlnet-unit-name[data-v-5e1e64b5] {
   flex: none;
   color: var(--ib-text-2);
 }
-.controlnet-unit-summary[data-v-c4d31446] {
+.controlnet-unit-summary[data-v-5e1e64b5] {
   min-width: 0;
   font-family: var(--ib-mono);
   font-size: 12px;
   overflow-wrap: anywhere;
 }
-.controlnet-images[data-v-c4d31446] {
+.controlnet-images[data-v-5e1e64b5] {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
   gap: 10px;
 }
-.controlnet-image-link[data-v-c4d31446] {
+.controlnet-image-item[data-v-5e1e64b5] {
+  position: relative;
+}
+.controlnet-send[data-v-5e1e64b5] {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--ib-border);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.75;
+}
+.controlnet-send[data-v-5e1e64b5]:hover {
+  border-color: var(--ib-accent-border);
+  opacity: 1;
+}
+.controlnet-image-link[data-v-5e1e64b5] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45709,16 +45764,16 @@ to { opacity: 0.25;
   font-size: 11px;
   text-decoration: none;
 }
-.controlnet-image[data-v-c4d31446] {
+.controlnet-image[data-v-5e1e64b5] {
   max-height: 100px;
   border: 1px solid var(--ib-border);
   border-radius: 4px;
   background: #000;
 }
-.controlnet-image-link:hover .controlnet-image[data-v-c4d31446] {
+.controlnet-image-link:hover .controlnet-image[data-v-5e1e64b5] {
   border-color: var(--ib-accent-border);
 }
-.controlnet-note[data-v-c4d31446] {
+.controlnet-note[data-v-5e1e64b5] {
   color: var(--ib-muted);
   font-size: 12px;
 }
@@ -46586,7 +46641,7 @@ to { opacity: 0.25;
   background: var(--ib-hover);
 }
 
-.progress-text[data-v-2906e1bc] {
+.progress-text[data-v-d515e639] {
   min-width: 15ch;
   margin-left: 6px;
   font-family: var(--ib-mono);
@@ -46597,7 +46652,7 @@ to { opacity: 0.25;
 }
 
 /* Over the bottom border of the toolbar, as wide as the toolbar */
-.run-edge[data-v-2906e1bc] {
+.run-edge[data-v-d515e639] {
   position: absolute;
   left: 0;
   right: 0;
@@ -46605,32 +46660,31 @@ to { opacity: 0.25;
   height: 3px;
   pointer-events: none;
 }
-.run-edge i[data-v-2906e1bc] {
+.run-edge i[data-v-d515e639] {
   display: block;
   height: 100%;
   background: var(--ib-accent);
   transition: width 0.3s linear;
 }
 
-/* The image being generated: 1px above the run */
-.run-edge.image[data-v-2906e1bc] {
+/* The image being generated: 1px above the run, in the project color (the accent's pair) */
+.run-edge.image[data-v-d515e639] {
   bottom: 2px;
   height: 1px;
 }
-.run-edge.image i[data-v-2906e1bc] {
-  background: var(--ib-text-2);
-  opacity: 0.55;
+.run-edge.image i[data-v-d515e639] {
+  background: var(--ib-project);
   transition: width 0.25s linear;
 }
 
 /* Until stopped: no proportion, a slow sweep */
-.run-edge.forever i[data-v-2906e1bc] {
+.run-edge.forever i[data-v-d515e639] {
   width: 100% !important;
   background: linear-gradient(90deg, transparent, var(--ib-accent) 45%, var(--ib-accent) 55%, transparent) no-repeat;
   background-size: 40% 100%;
-  animation: run-sweep-2906e1bc 2.4s ease-in-out infinite;
+  animation: run-sweep-d515e639 2.4s ease-in-out infinite;
 }
-@keyframes run-sweep-2906e1bc {
+@keyframes run-sweep-d515e639 {
 from {
     background-position: -40% 0;
 }
@@ -46639,16 +46693,16 @@ to {
 }
 }
 @media (prefers-reduced-motion: reduce) {
-.run-edge.forever i[data-v-2906e1bc] {
+.run-edge.forever i[data-v-d515e639] {
     animation: none;
     background: var(--ib-accent);
     opacity: 0.5;
 }
 }
-.run-edge-enter-active[data-v-2906e1bc] {
+.run-edge-enter-active[data-v-d515e639] {
   transition: opacity 0.4s;
 }
-.run-edge-enter-from[data-v-2906e1bc] {
+.run-edge-enter-from[data-v-d515e639] {
   opacity: 0;
 }
 
@@ -51589,33 +51643,33 @@ mark[data-v-6a99e282] {
   font-size: 12.5px;
 }
 
-.manual[data-v-8cab9ea0] {
+.manual[data-v-c9494c96] {
   display: flex;
   height: 100%;
   min-height: 0;
 }
-.manual-content[data-v-8cab9ea0] {
+.manual-content[data-v-c9494c96] {
   flex-grow: 1;
   min-width: 0;
   overflow-y: auto;
   padding: 18px 28px 60px;
   line-height: 1.55;
 }
-.manual-content section[data-v-8cab9ea0] {
+.manual-content section[data-v-c9494c96] {
   max-width: 820px;
   padding-bottom: 22px;
   margin-bottom: 22px;
   border-bottom: 1px solid var(--ib-border);
 }
-.manual-content section[data-v-8cab9ea0]:last-child {
+.manual-content section[data-v-c9494c96]:last-child {
   border-bottom: none;
 }
-h1[data-v-8cab9ea0] {
+h1[data-v-c9494c96] {
   margin: 0 0 10px;
   font-size: 22px;
   font-weight: 600;
 }
-h2[data-v-8cab9ea0] {
+h2[data-v-c9494c96] {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -51623,44 +51677,44 @@ h2[data-v-8cab9ea0] {
   font-size: 17px;
   font-weight: 600;
 }
-h3[data-v-8cab9ea0] {
+h3[data-v-c9494c96] {
   margin: 16px 0 6px;
   font-size: 14px;
   font-weight: 600;
 }
-h4[data-v-8cab9ea0] {
+h4[data-v-c9494c96] {
   margin: 12px 0 6px;
   font-size: 13px;
   font-weight: 600;
 }
-p[data-v-8cab9ea0], ul[data-v-8cab9ea0], ol[data-v-8cab9ea0], dl[data-v-8cab9ea0], table[data-v-8cab9ea0] {
+p[data-v-c9494c96], ul[data-v-c9494c96], ol[data-v-c9494c96], dl[data-v-c9494c96], table[data-v-c9494c96] {
   margin: 0 0 10px;
 }
 
 /* The global reset sets font-weight: normal on every element */
-b[data-v-8cab9ea0] {
+b[data-v-c9494c96] {
   font-weight: 600;
 }
-ul[data-v-8cab9ea0], ol[data-v-8cab9ea0] {
+ul[data-v-c9494c96], ol[data-v-c9494c96] {
   padding-left: 22px;
 }
-li[data-v-8cab9ea0] {
+li[data-v-c9494c96] {
   margin-bottom: 4px;
 }
-.lead[data-v-8cab9ea0] {
+.lead[data-v-c9494c96] {
   color: var(--ib-text);
 }
-.muted[data-v-8cab9ea0] {
+.muted[data-v-c9494c96] {
   color: var(--ib-text-2);
 }
-a[data-v-8cab9ea0] {
+a[data-v-c9494c96] {
   color: var(--ib-accent);
   text-decoration: none;
 }
-a[data-v-8cab9ea0]:hover {
+a[data-v-c9494c96]:hover {
   text-decoration: underline;
 }
-code[data-v-8cab9ea0] {
+code[data-v-c9494c96] {
   font-family: var(--ib-mono);
   font-size: 12px;
   padding: 1px 4px;
@@ -51668,7 +51722,7 @@ code[data-v-8cab9ea0] {
   background: var(--ib-elev);
   color: var(--ib-accent);
 }
-pre[data-v-8cab9ea0] {
+pre[data-v-c9494c96] {
   margin: 6px 0;
   padding: 8px 10px;
   border-radius: 4px;
@@ -51678,7 +51732,7 @@ pre[data-v-8cab9ea0] {
   white-space: pre;
   overflow-x: auto;
 }
-.kbd[data-v-8cab9ea0] {
+.kbd[data-v-c9494c96] {
   display: inline-block;
   padding: 0 5px;
   border: 1px solid var(--ib-border-2);
@@ -51688,41 +51742,41 @@ pre[data-v-8cab9ea0] {
   font-size: 11.5px;
   line-height: 1.5;
 }
-.kbd.warn[data-v-8cab9ea0] {
+.kbd.warn[data-v-c9494c96] {
   color: var(--ib-warn);
 }
-.inline-icon[data-v-8cab9ea0] {
+.inline-icon[data-v-c9494c96] {
   display: inline-block;
   vertical-align: -2px;
 }
-table[data-v-8cab9ea0] {
+table[data-v-c9494c96] {
   border-collapse: collapse;
 }
-td[data-v-8cab9ea0], th[data-v-8cab9ea0] {
+td[data-v-c9494c96], th[data-v-c9494c96] {
   padding: 5px 12px 5px 0;
   vertical-align: top;
   text-align: left;
   border-bottom: 1px solid var(--ib-border);
 }
-th[data-v-8cab9ea0] {
+th[data-v-c9494c96] {
   color: var(--ib-text-2);
   font-weight: 600;
 }
-td[data-v-8cab9ea0]:first-child {
+td[data-v-c9494c96]:first-child {
   white-space: nowrap;
 }
-td[data-v-8cab9ea0] .app-icon {
+td[data-v-c9494c96] .app-icon {
   display: inline-block;
 }
-dt[data-v-8cab9ea0] {
+dt[data-v-c9494c96] {
   font-weight: 600;
   margin-top: 8px;
 }
-dd[data-v-8cab9ea0] {
+dd[data-v-c9494c96] {
   margin: 2px 0 0 16px;
   color: var(--ib-text-2);
 }
-.note[data-v-8cab9ea0] {
+.note[data-v-c9494c96] {
   display: flex;
   gap: 10px;
   padding: 10px 12px;
@@ -51731,18 +51785,18 @@ dd[data-v-8cab9ea0] {
   border-radius: 6px;
   background: var(--ib-accent-soft);
 }
-.note .app-icon[data-v-8cab9ea0] {
+.note .app-icon[data-v-c9494c96] {
   margin-top: 3px;
   color: var(--ib-accent);
 }
-.note.warn[data-v-8cab9ea0] {
+.note.warn[data-v-c9494c96] {
   border-color: color-mix(in srgb, var(--ib-warn) 40%, transparent);
   background: color-mix(in srgb, var(--ib-warn) 10%, transparent);
 }
-.note.warn > .app-icon[data-v-8cab9ea0] {
+.note.warn > .app-icon[data-v-c9494c96] {
   color: var(--ib-warn);
 }
-.snippet-badge[data-v-8cab9ea0] {
+.snippet-badge[data-v-c9494c96] {
   display: inline-block;
   padding: 0 4px;
   border-radius: 3px;
@@ -51751,19 +51805,19 @@ dd[data-v-8cab9ea0] {
   line-height: 14px;
   vertical-align: 1px;
 }
-.snippet-badge.negative[data-v-8cab9ea0] {
+.snippet-badge.negative[data-v-c9494c96] {
   border: 1px solid rgba(255, 122, 125, 0.4);
   color: var(--ib-danger-text);
 }
-.snippet-badge.wrap[data-v-8cab9ea0] {
+.snippet-badge.wrap[data-v-c9494c96] {
   border: 1px solid var(--ib-border-2);
   color: var(--ib-muted);
   font-family: var(--ib-mono);
 }
-.note p[data-v-8cab9ea0]:last-child {
+.note p[data-v-c9494c96]:last-child {
   margin-bottom: 0;
 }
-.note .inline-icon[data-v-8cab9ea0] {
+.note .inline-icon[data-v-c9494c96] {
   margin-top: 0;
   color: inherit;
 }
@@ -52707,22 +52761,22 @@ h2[data-v-8475c862] {
   transform: scale(0.92);
 }
 
-.folder-detail[data-v-cb6ddf19] {
+.folder-detail[data-v-6d442c16] {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 14px 18px 18px;
 }
-.header[data-v-cb6ddf19] {
+.header[data-v-6d442c16] {
   display: flex;
   align-items: flex-start;
   gap: 12px;
 }
-.title[data-v-cb6ddf19] {
+.title[data-v-6d442c16] {
   flex: 1;
   min-width: 0;
 }
-.crumbs[data-v-cb6ddf19] {
+.crumbs[data-v-6d442c16] {
   display: flex;
   align-items: baseline;
   gap: 6px;
@@ -52730,7 +52784,7 @@ h2[data-v-8475c862] {
   overflow: hidden;
   white-space: nowrap;
 }
-.crumb[data-v-cb6ddf19] {
+.crumb[data-v-6d442c16] {
   padding: 0;
   border: 0;
   background: none;
@@ -52739,35 +52793,35 @@ h2[data-v-8475c862] {
   font-size: 13px;
   cursor: pointer;
 }
-.crumb[data-v-cb6ddf19]:hover {
+.crumb[data-v-6d442c16]:hover {
   color: var(--ib-text);
   text-decoration: underline;
 }
-.crumb-sep[data-v-cb6ddf19] {
+.crumb-sep[data-v-6d442c16] {
   color: var(--ib-muted);
 }
-h2[data-v-cb6ddf19] {
+h2[data-v-6d442c16] {
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 19px;
   font-weight: 600;
 }
-.count[data-v-cb6ddf19] {
+.count[data-v-6d442c16] {
   margin-top: 2px;
   color: var(--ib-muted);
   font-size: 11.5px;
 }
-.buttons[data-v-cb6ddf19] {
+.buttons[data-v-6d442c16] {
   display: flex;
   gap: 6px;
 }
-.folders[data-v-cb6ddf19] {
+.folders[data-v-6d442c16] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 8px;
 }
-.folder[data-v-cb6ddf19] {
+.folder[data-v-6d442c16] {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -52781,28 +52835,28 @@ h2[data-v-cb6ddf19] {
   text-align: left;
   cursor: pointer;
 }
-.folder[data-v-cb6ddf19]:hover {
+.folder[data-v-6d442c16]:hover {
   border-color: var(--ib-border-2);
   background: var(--ib-hover);
   color: var(--ib-text);
 }
-.folder-name[data-v-cb6ddf19] {
+.folder-name[data-v-6d442c16] {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.folder-count[data-v-cb6ddf19] {
+.folder-count[data-v-6d442c16] {
   color: var(--ib-muted);
   font-size: 11px;
 }
-.project-grid[data-v-cb6ddf19] {
+.project-grid[data-v-6d442c16] {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 12px;
 }
-.project[data-v-cb6ddf19] {
+.project[data-v-6d442c16] {
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -52816,13 +52870,13 @@ h2[data-v-cb6ddf19] {
   text-align: left;
   cursor: pointer;
 }
-.project[data-v-cb6ddf19]:hover {
+.project[data-v-6d442c16]:hover {
   background: var(--ib-hover);
 }
-.project.current[data-v-cb6ddf19] {
+.project.current[data-v-6d442c16] {
   border-color: var(--ib-accent-border);
 }
-.thumb[data-v-cb6ddf19] {
+.thumb[data-v-6d442c16] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52833,18 +52887,18 @@ h2[data-v-cb6ddf19] {
   color: var(--ib-border-2);
   overflow: hidden;
 }
-.thumb img[data-v-cb6ddf19] {
+.thumb img[data-v-6d442c16] {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.name-line[data-v-cb6ddf19] {
+.name-line[data-v-6d442c16] {
   display: flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
 }
-.name[data-v-cb6ddf19] {
+.name[data-v-6d442c16] {
   flex: 1;
   min-width: 0;
   overflow: hidden;
@@ -52853,17 +52907,17 @@ h2[data-v-cb6ddf19] {
   color: var(--ib-text);
   font-weight: 600;
 }
-.project.current .name[data-v-cb6ddf19] {
+.project.current .name[data-v-6d442c16] {
   color: var(--ib-accent);
 }
-.unsaved-dot[data-v-cb6ddf19] {
+.unsaved-dot[data-v-6d442c16] {
   width: 6px;
   height: 6px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--ib-warn);
 }
-.host[data-v-cb6ddf19] {
+.host[data-v-6d442c16] {
   flex-shrink: 0;
   padding: 0 4px;
   border: 1px solid rgba(90, 169, 255, 0.45);
@@ -52873,16 +52927,11 @@ h2[data-v-cb6ddf19] {
   font-weight: 700;
   line-height: 14px;
 }
-.host.comfy[data-v-cb6ddf19] {
+.host.comfy[data-v-6d442c16] {
   border-color: rgba(196, 166, 255, 0.45);
   color: #c4a6ff;
 }
-.section-label[data-v-cb6ddf19] {
-  margin-bottom: -8px;
-  color: var(--ib-muted);
-  font-size: 11.5px;
-}
-.subfolder[data-v-cb6ddf19] {
+.subfolder[data-v-6d442c16] {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -52892,18 +52941,18 @@ h2[data-v-cb6ddf19] {
   color: var(--ib-text-2);
   font-size: 11px;
 }
-.saved[data-v-cb6ddf19],
-.tags[data-v-cb6ddf19] {
+.saved[data-v-6d442c16],
+.tags[data-v-6d442c16] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--ib-muted);
   font-size: 11px;
 }
-.tags[data-v-cb6ddf19] {
+.tags[data-v-6d442c16] {
   color: var(--ib-text-2);
 }
-.empty[data-v-cb6ddf19] {
+.empty[data-v-6d442c16] {
   margin: 24px 0;
   color: var(--ib-muted);
   text-align: center;

@@ -364,9 +364,10 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
      * @param {number} unitIndex
      * @param {'image'|'mask'} kind
      * @param {File} file
+     * @param {boolean} [processed] - The image is already preprocessed: it is used without a preprocessor
      * @returns {Promise<void>}
      */
-    function setUnitImage(unitIndex, kind, file) {
+    function setUnitImage(unitIndex, kind, file, processed = false) {
         return enqueue(async () => {
             const tab = getTab();
 
@@ -375,8 +376,8 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
 
             if (kind === 'mask')
                 await loadMask(tab, unitIndex, file);
-            else
-                await loadImage(tab, unitIndex, file);
+            else if (await loadImage(tab, unitIndex, file) && processed)
+                await usePreprocessed(tab, unitIndex);
 
             pollIfActive();
         });
@@ -469,20 +470,24 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
             if (target === 'cn_mask')
                 await loadMask(tab, index, file);
             else if (await loadImage(tab, index, file)) {
-                if (target === 'cn_image') {
-                    const input = element(tab, index, 'preprocessor')?.querySelector(SELECTORS.DROPDOWN_INPUT);
-
-                    if (input)
-                        await adapter.setDropdownElementValue(input, 'None', true);
-
-                    await clearPreview(tab, index);
-                }
+                if (target === 'cn_image')
+                    await usePreprocessed(tab, index);
                 else if (target === 'cn_preprocess')
                     await preprocessToEditor(tab, index);
             }
 
             pollIfActive();
         });
+    }
+
+    // Use the control image of a unit as it is: preprocessor None, no preview
+    async function usePreprocessed(tab, index) {
+        const input = element(tab, index, 'preprocessor')?.querySelector(SELECTORS.DROPDOWN_INPUT);
+
+        if (input)
+            await adapter.setDropdownElementValue(input, 'None', true);
+
+        await clearPreview(tab, index);
     }
 
     async function preprocessToEditor(tab, index) {
