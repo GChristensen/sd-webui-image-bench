@@ -5,6 +5,7 @@ Handles upload, download, import, and export operations.
 This module is framework-agnostic and works with both FastAPI and aiohttp.
 """
 
+import asyncio
 import filecmp
 import os
 import json
@@ -305,6 +306,84 @@ async def save_tray_images(tray_data: Dict[str, Any], kind: str, image_bench_dir
             except Exception as e:
                 # Continue with other images even if one fails
                 print(f"[Image Bench] Error copying image to tray: {e}")
+
+
+# Seconds the file of an image removed from a tray is kept, so that the Undo of the removal (6 s) finds it
+REMOVED_FILE_DELAY = 10
+
+# Deletions waiting for their delay (asyncio keeps only weak references to tasks)
+_deletion_tasks = set()
+
+
+def tray_file_paths(images, image_bench_dir: str) -> set:
+    """Normalized paths of the image files that are copies in a tray directory (image-bench/<kind>/)"""
+    tray_dirs = {os.path.normcase(os.path.abspath(os.path.join(image_bench_dir, kind))) for kind in TRAY_FILES}
+    paths = set()
+
+    for image in images or []:
+        path = image.get("imagePath") if isinstance(image, dict) else None
+
+        if path:
+            path = os.path.normcase(os.path.abspath(path))
+
+            if os.path.dirname(path) in tray_dirs:
+                paths.add(path)
+
+    return paths
+
+
+def read_tray_file_paths(store_path: str, image_bench_dir: str) -> Optional[set]:
+    """The tray files a store file refers to; None if it exists but cannot be read"""
+    if not os.path.exists(store_path):
+        return set()
+
+    content = read_json_file(store_path)
+    return None if content is None else tray_file_paths(content.get("images"), image_bench_dir)
+
+
+def removed_tray_files(store_path: str, tray_data: Dict[str, Any], image_bench_dir: str) -> set:
+    """The tray files of the stored tray that the new content no longer has (call before the store file is written)"""
+    stored = read_tray_file_paths(store_path, image_bench_dir) or set()
+    return stored - tray_file_paths(tray_data.get("images"), image_bench_dir)
+
+
+def delete_unreferenced_tray_files(paths: set, store_dir: str, image_bench_dir: str) -> None:
+    """Delete the tray files that no tray store refers to (an image moved to another tray keeps its file)"""
+    referenced = set()
+
+    for filename in TRAY_FILES.values():
+        paths_of_store = read_tray_file_paths(os.path.join(store_dir, filename), image_bench_dir)
+
+        # An unreadable store may refer to any of them
+        if paths_of_store is None:
+            return
+
+        referenced |= paths_of_store
+
+    for path in paths - referenced:
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
+        except OSError as e:
+            print(f"[Image Bench] Error deleting a removed tray image: {e}")
+
+
+def schedule_tray_file_deletion(paths: set, store_dir: str, image_bench_dir: str) -> None:
+    """
+    Delete the files of removed tray images after REMOVED_FILE_DELAY, unless a tray store refers to them then
+    (an undone removal brings the entry back)
+    """
+    if not paths:
+        return
+
+    async def delete_later():
+        await asyncio.sleep(REMOVED_FILE_DELAY)
+        delete_unreferenced_tray_files(paths, store_dir, image_bench_dir)
+
+    task = asyncio.get_running_loop().create_task(delete_later())
+    _deletion_tasks.add(task)
+    task.add_done_callback(_deletion_tasks.discard)
 
 
 async def image_tray_upload(

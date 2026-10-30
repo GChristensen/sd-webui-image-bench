@@ -41,7 +41,7 @@ from PIL import Image
 from . import media
 from .controlnet_inputs import HASH, image_hashes, input_dir, input_path
 from .persist import PROMPT_HISTORY_FILE, read_json_file, replace_file
-from .tray import TRAY_FILES, unique_file_path
+from .tray import TRAY_FILES, delete_unreferenced_tray_files, read_tray_file_paths, unique_file_path
 
 PROJECT_DIR = "ib_project"
 PROJECT_FILE = "project.json"
@@ -1324,6 +1324,10 @@ def open_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
     if restore_trays:
         # A merge keeps the workspace images, which must be readable before anything is changed
         stores = {kind: read_tray_store_checked(store_dir, kind) for kind in TRAY_KINDS} if merge else {}
+        # The files of the replaced workspace, deleted once the project's trays are in place (some may be reused)
+        replaced = set() if merge else set().union(*(
+            read_tray_file_paths(os.path.join(store_dir, TRAY_FILES[kind]), image_bench_dir) or set()
+            for kind in TRAY_KINDS))
 
         for kind in TRAY_KINDS:
             directory_path = tray_dir(data_dir, kind)
@@ -1338,6 +1342,8 @@ def open_project(root: str, store_dir: str, image_bench_dir: str, platform: str,
 
             counts[kind] = len(images)
             replace_file(os.path.join(store_dir, TRAY_FILES[kind]), json.dumps({"version": 1, "images": images}))
+
+        delete_unreferenced_tray_files(replaced, store_dir, image_bench_dir)
 
     # Merged trays or parameters only leave the workspace with the project it belongs to
     if restore_trays and not merge:

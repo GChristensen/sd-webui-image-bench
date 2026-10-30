@@ -632,6 +632,42 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
         }
     }
 
+    /**
+     * Remove the control images, masks and previews of all units of both generation tabs (a blank workspace)
+     * @returns {Promise<void>}
+     */
+    function clearImages() {
+        return enqueue(async () => {
+            for (const tab of ['txt2img', 'img2img']) {
+                const count = adapter.getTabCountIn(document.getElementById(SELECTORS.CONTROLNET_TABS(tab)));
+                let shown = false;
+
+                for (let index = 0; index < count; index++) {
+                    const has = kind => !!getCanvasImage(tab, index, kind);
+
+                    if (!(has('image') || has('mask') || has('preview')) || !await showUnit(tab, index))
+                        continue;
+
+                    shown = true;
+                    element(tab, index, 'image')?.querySelector(SELECTORS.FORGE_CANVAS_REMOVE)?.click();
+                    element(tab, index, 'mask')?.querySelector(SELECTORS.FORGE_CANVAS_REMOVE)?.click();
+
+                    if (adapter.setCheckedIn(element(tab, index, 'useMask'), false))
+                        await adapter.sleep(EVENT_DELAY);
+
+                    if (has('preview'))
+                        await clearPreview(tab, index);
+                }
+
+                // Back to the unit shown in the popup
+                if (shown)
+                    await showUnit(tab, unit);
+            }
+
+            setTimeout(pollIfActive, APPLY_SETTLE_DELAY);
+        });
+    }
+
     // ---------- Projects ----------
 
     /**
@@ -802,5 +838,5 @@ export function createControlNet(uiOperations, adapter, popup, showAlert) {
     }
 
     return {subscribe, applyParams, readParams, runAction, setUnitImage, setPose, setTab, onEditorImage,
-            readEnabledUnits, captureUnits, restoreUnits};
+            clearImages, readEnabledUnits, captureUnits, restoreUnits};
 }

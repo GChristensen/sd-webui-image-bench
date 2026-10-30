@@ -772,7 +772,12 @@ class ImageBenchApi():
         await tray.save_tray_images(tray_data, kind, self.image_bench_dir, "webui")
 
         base_dir = self.get_file_path("", upper=True)
+        store_path = persist.get_store_file_path(base_dir, tray.TRAY_FILES[kind])
+        removed = tray.removed_tray_files(store_path, tray_data, self.image_bench_dir)
         await persist.write_store_file_content(base_dir, tray.TRAY_FILES[kind], json.dumps(tray_data))
+
+        # The copies of the removed images go too
+        tray.schedule_tray_file_deletion(removed, os.path.dirname(store_path), self.image_bench_dir)
 
         # Return updated tray data so frontend can update its store with new paths
         return Response(json.dumps(tray_data), media_type="application/json")

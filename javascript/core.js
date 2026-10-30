@@ -346,6 +346,8 @@ async function onMessage(msg) {
         await controlNet.applyParams(payload.unit, payload.params)
     else if (payload.type === "CONTROLNET_ACTION")
         await controlNet.runAction(payload.unit, payload.action)
+    else if (payload.type === "CLEAR_CONTROLNET_IMAGES")
+        await controlNet.clearImages()
     else if (payload.type === "SET_CONTROLNET_IMAGE")
         await controlNet.setUnitImage(payload.unit, payload.kind, payload.file, payload.processed)
     else if (payload.type === "SET_CONTROLNET_POSE")
